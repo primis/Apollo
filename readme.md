@@ -1,4 +1,4 @@
-(C) 2013 Primis Computers (Nick Sargente et al)
+(C) 2013 - 2014 Primis Computers (Nick Sargente et al)
 The Apollo Project
 
 Requirements:
@@ -22,7 +22,7 @@ the standard c library. All others may be depreceated / removed without notice.
 
 History:
 =================================================
-This kernel descends from several failed kernel projects; 
+This kernel descends from several failed kernel projects;
 * ScorchOS; by Bob Moss and Nicholas Sargente. Circa 2010
 * Mercury/SaturnOS; by Brandon Cornell and Nicholas Sargente. Circa 2012
 * Apollo Kernel Project; Circa 2009-2011. Nicholas Sargente.

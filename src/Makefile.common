@@ -1,0 +1,17 @@
+AS	= nasm
+CC	= /usr/cross/bin/i586-elf-gcc
+LD	= /usr/cross/bin/i586-elf-ld
+
+CFLAGS	= -nostdlib -nostdinc -fno-builtin -Wall -I$(ROOTDIR)include -O1
+ASFLAGS	= -felf
+
+.SUFFIXES = .c .s
+
+$(PROG): $(OBJS)
+	$(LD) -r $(OBJS) -o ../$(PROG)
+.c.o:
+	$(CC) $(CFLAGS) -c $< -o $@
+.s.o:
+	$(AS) $(ASFLAGS) $< -o $@
+clean:
+	rm -f *~ $(OBJS) $(PROG)
