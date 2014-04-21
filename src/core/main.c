@@ -1,14 +1,14 @@
 #include <sys/init.h>
+#include  <sys/screen.h>
 
-void initializeModules()
+void initModules()
 {
-
+	scrInit();
 }
 
 int main()
 {
-	while(1) {
-		initializeModules();
-	}
-	return 0;
+	initModules();
+	scrWrite("Hello, World!");
+	return 0xDEADBEEF;
 }
