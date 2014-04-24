@@ -1,0 +1,5 @@
+### Object files don't need to be revisioned.
+*.o
+
+### My update shell script. Not public
+update

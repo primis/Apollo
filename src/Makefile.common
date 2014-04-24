@@ -2,7 +2,7 @@ AS	= nasm
 CC	= /usr/cross/bin/i586-elf-gcc
 LD	= /usr/cross/bin/i586-elf-ld
 
-CFLAGS	= -Wall -O -fstrength-reduce -fomit-frame-pointer -finline-functions -nostdinc -fno-builtin -I$(ROOTDIR)include
+CFLAGS	= -Wall -O -I$(ROOTDIR)include
 ASFLAGS	= -felf
 
 .SUFFIXES = .c .s

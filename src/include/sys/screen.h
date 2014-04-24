@@ -1,5 +1,10 @@
-#ifndef __SYS_SCREEN_H
-#define __SYS_SCREEN_H
+/*
+** <screen.h>
+**
+*/
+
+#ifndef _SYS_SCREEN_H
+#define _SYS_SCREEN_H
 
 #include <sys/init.h>
 

@@ -11,10 +11,10 @@ KERNEL_STACK_SIZE       equ 0x4000
 KERNEL_VERSION          equ 1
 KERENL_VERSION          equ 1
 
-[BITS 32]         
-[GLOBAL mboot]     
-[GLOBAL start] 
-[EXTERN main]    
+[BITS 32]
+[GLOBAL mboot]
+[GLOBAL start]
+[EXTERN main]
 
 ;; CODE
 
@@ -34,13 +34,13 @@ mboot:
 ; Bootloader drops us off here
 ;;;;;
 
-start:  
+start:
 	mov esp, KERNEL_STACK + KERNEL_STACK_SIZE
 	push ebx
-	cli
+	cli		; We Don't want to be interrupted until after setup
 	call main
-	cli
-	hlt
+	cli		; By the time we hit this, the system has interrupts on.
+	hlt		; Halt the CPU with interrupts off, this deadlocks the CPU
 
 ;; BSS Datum
 section .bss
