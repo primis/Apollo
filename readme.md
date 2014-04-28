@@ -6,19 +6,25 @@ Requirements:
 This is a kernel project for x86 Hardware. Current compilation needs:
 * GNU Make (Or Compatible)
 * NASM, The Netwide Assembler
-* GCC targeted for i586-elf
+* GCC
 
-The kernel is written in X86-Assembly and ANSI-C. We are currently working on
-making it as portable as possible.
+The kernel is written in X86-Assembly and ANSI-C. We are currently working
+on making it as portable as possible.
 
 This software is licensed under the MIT License.
 (see License)
 
+Supported Architectures:
+=================================================
+Currently, only IBM-PC Compatible 486+ PC's are targeted, however this
+will change with time.
+
 Notable Features to Consider:
 =================================================
-This kernel is in development, and is therefore subject to major changes. The
-API is in a state of flux. If developing applications, stick to functions from
-the standard c library. All others may be depreceated / removed without notice.
+This kernel is in development, and is therefore subject to major changes.
+The API is in a state of flux. If developing applications, stick to
+functions from the standard c library. All others may be depreciated /
+removed without notice.
 
 History:
 =================================================
