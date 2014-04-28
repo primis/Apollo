@@ -7,7 +7,7 @@ void outb(unsigned short _port, unsigned char _data)
 
 unsigned char inb(unsigned short _port)
 {
-	unsigned int data;
+	unsigned char data;
 	asm volatile("inb %1, %0" : "=a" (data) : "dN" (_port));
 	return data;
 }

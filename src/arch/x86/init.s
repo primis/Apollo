@@ -15,6 +15,7 @@ KERENL_VERSION          equ 1
 [GLOBAL mboot]
 [GLOBAL start]
 [EXTERN main]
+[GLOBAL gdt_flush]
 
 ;; CODE
 
@@ -41,6 +42,20 @@ start:
 	call main
 	cli		; By the time we hit this, the system has interrupts on.
 	hlt		; Halt the CPU with interrupts off, this deadlocks the CPU
+
+gdt_flush:
+	mov eax, [esp+4]	; Get Pointer off the stack
+	lgdt [eax]			; Load the Pointer into the GDT register
+	mov ax, 0x10	  	; 0x10 is the offset in the GDT to our data segment
+	mov ds, ax			; Load all data segment selectors
+	mov es, ax
+	mov fs, ax
+	mov gs, ax
+	mov ss, ax
+	jmp 0x08:.flush		; 0x08 is the offset to our code segment: Far jump!
+.flush:
+	ret					; return to C calling function
+
 
 ;; BSS Datum
 section .bss

@@ -3,9 +3,8 @@
 PROG = x86.o
 ROOTDIR = ../../
 
-OBJS = init.o vga.o ports.o
+OBJS = init.o vga.o ports.o gdt.o
 
 cleanit:
-	rm ../*.o
-	rm *.o
+	rm *.o ../*.o
 include $(ROOTDIR)Makefile.common

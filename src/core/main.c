@@ -4,6 +4,7 @@
 void initModules(char c,...)
 {
 	scrInit();
+	gdtInit();
 }
 
 int main()

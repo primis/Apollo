@@ -4,5 +4,5 @@
 #define X86_MASTER_RACE
 
 void scrInit(void);
-
+void gdtInit(void);
 #endif

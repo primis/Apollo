@@ -1,8 +1,8 @@
 AS	= nasm
-CC	= /usr/cross/bin/i586-elf-gcc
-LD	= /usr/cross/bin/i586-elf-ld
+CC	= gcc -m32 -march=i486
+LD	= ld -melf_i386
 
-CFLAGS	= -Wall -O -I$(ROOTDIR)include
+CFLAGS	= -Wall -O -fno-builtin -fno-stack-protector -nostdlib -nostdinc -I$(ROOTDIR)include
 ASFLAGS	= -felf
 
 .SUFFIXES = .c .s
@@ -14,4 +14,4 @@ $(PROG): $(OBJS)
 .s.o:
 	$(AS) $(ASFLAGS) $< -o $@
 clean:
-	rm -f *~ $(OBJS) $(PROG)
+	rm -f *~ $(OBJS) $(PROG) */*.o
