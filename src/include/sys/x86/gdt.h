@@ -1,5 +1,5 @@
-#ifndef __SYS_X86_GDT_H
-#define __SYS_X86_GDT_H
+#ifndef _SYS_X86_GDT_H
+#define _SYS_X86_GDT_H
 
 struct gdt_entry_struct
 {

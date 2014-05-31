@@ -23,7 +23,7 @@ clean:
 	rm -f *.o *~
 	cd ./core ; make clean
 	cd ./libc ; make clean
-	cd ./arch/x86 ; make clean
+	cd ./arch/x86 ; make cleanit
 
 x86_link:
 	$(LD) $(LDFLAGS) -o ../bin/sys.mod $(x86_TRGTS)

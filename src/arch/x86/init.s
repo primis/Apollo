@@ -1,3 +1,8 @@
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+; (c) 2014 Apollo Develepors                                           ;
+; init.s - multiboot starting point for x86 systems                    ;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
 ;; Declarations
 ; Multiboot
 MULTIBOOT_PAGE_ALIGN    equ 1<<0

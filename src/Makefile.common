@@ -2,7 +2,7 @@ AS	= nasm
 CC	= gcc -m32 -march=i486
 LD	= ld -melf_i386
 
-CFLAGS	= -Wall -O -fno-builtin -fno-stack-protector -nostdlib -nostdinc -I$(ROOTDIR)include
+CFLAGS	= -Wall -O -fno-builtin -masm=intel -fno-stack-protector -nostdlib -nostdinc -I$(ROOTDIR)include
 ASFLAGS	= -felf
 
 .SUFFIXES = .c .s

@@ -17,5 +17,5 @@ void x86vgaPutChar(char);
 #endif
 
 void scrWrite(const char*);
-
+void scrWriteHex(unsigned int n);
 #endif
