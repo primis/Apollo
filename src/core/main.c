@@ -2,7 +2,7 @@
 #include <sys/screen.h>
 void initModules()
 {
-	scrInit();
+	vgaInit(0x3D5, 0x3D4, 0xB8000);
 	gdtInit();
 	idtInit();
 }

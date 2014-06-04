@@ -1,5 +1,20 @@
 #include <sys/screen.h>
 
+void_callback_char_t	scrInternalPutChar;
+
+void scrInit(char *_ID, void_callback_char_t _putChar)
+{
+	scrInternalPutChar 	= _putChar;	    // Register the putChar
+	scrWrite("Set Up ");
+	scrWrite(_ID);
+	scrWrite(" For Console Use\n");
+}
+
+inline void scrPutChar(char _c)		// Do we really need overhead of
+{									// Jumping for one line? No.
+	scrInternalPutChar(_c);
+}
+
 void scrWrite(const char *_str)
 {
 	while(*_str) {
