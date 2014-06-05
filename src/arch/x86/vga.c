@@ -80,8 +80,8 @@ void vgaInit(unsigned short _data, unsigned short _idx, unsigned int _p)
 {
 	vgaDataPort		= _data;
 	vgaIndexPort	= _idx;
-	scrInit("VGA", vgaPutChar);
 	vgaAttribute	= 0x03 << 8;
 	vgaTextBuffer 	= (unsigned short*)_p;
 	vgaClear();
+	scrInit("VGA", vgaPutChar);
 }
