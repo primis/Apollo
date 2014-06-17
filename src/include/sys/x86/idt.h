@@ -6,6 +6,8 @@
 #ifndef _SYS_X86_IDT_H
 #define _SYS_X86_IDT_H
 
+#include <sys/interrupt.h>
+
 struct idt_entry_struct
 {
 	unsigned short 	base_low;	// The Low 16 bits
@@ -25,10 +27,10 @@ typedef struct idt_ptr_struct idt_ptr_t;
 
 typedef struct registers
 {
-	unsigned int ds;										// DSS
-	unsigned int edi, esi, ebp, esp, ebx, edx, ecx, eax;	// Pusha
-	unsigned int int_no, err_code;					// From our Stub
-	unsigned int eip, cs, eflags, useresp, ss;		// Pushed by int
+	unsigned int ds;									// DSS
+	unsigned int edi, esi, ebp, esp, ebx, edx, ecx, eax;// Pusha
+	unsigned int int_no, err_code;						// From our Stub
+	unsigned int eip, cs, eflags, useresp, ss;			// Pushed by int
 } registers_t;
 
 /**********************************************************************/

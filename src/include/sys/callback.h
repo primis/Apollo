@@ -6,44 +6,48 @@
 #ifndef _SYS_CALLBACK_H
 #define _SYS_CALLBACK_H
 
+#include <stdarg.h>
+
 // Void Return Primatives
 typedef void (*void_callback_t)(void);
 typedef void (*void_callback_char_t)(char);
 typedef void (*void_callback_short_t)(short);
 typedef void (*void_callback_int_t)(int);
 /// Unsigned Versions
-typedef void (*void_callback_char_t)(unsigned char);
-typedef void (*void_callback_short_t)(unsigned short);
-typedef void (*void_callback_int_t)(unsigned int);
+typedef void (*void_callback_uchar_t)(unsigned char);
+typedef void (*void_callback_ushort_t)(unsigned short);
+typedef void (*void_callback_uint_t)(unsigned int);
+/// Special Unlimited Variable version.
+typedef void (*void_callback_arg_t)(unsigned int, ...);
 
 // Char Return Primatives
-typedef char (*void_callback_t)(void);
-typedef char (*void_callback_char_t)(char);
-typedef char (*void_callback_short_t)(short);
-typedef char (*void_callback_int_t)(int);
+typedef char (*char_callback_t)(void);
+typedef char (*char_callback_char_t)(char);
+typedef char (*char_callback_short_t)(short);
+typedef char (*char_callback_int_t)(int);
 /// Unsigned Versions
-typedef char (*void_callback_char_t)(unsigned char);
-typedef char (*void_callback_short_t)(unsigned short);
-typedef char (*void_callback_int_t)(unsigned int);
+typedef char (*char_callback_uchar_t)(unsigned char);
+typedef char (*char_callback_ushort_t)(unsigned short);
+typedef char (*char_callback_uint_t)(unsigned int);
 
 // Int Return Primatives
-typedef int (*void_callback_t)(void);
-typedef int (*void_callback_char_t)(char);
-typedef int (*void_callback_short_t)(short);
-typedef int (*void_callback_int_t)(int);
+typedef int (*int_callback_t)(void);
+typedef int (*int_callback_char_t)(char);
+typedef int (*int_callback_short_t)(short);
+typedef int (*int_callback_int_t)(int);
 /// Unsigned Versions
-typedef int (*void_callback_char_t)(unsigned char);
-typedef int (*void_callback_short_t)(unsigned short);
-typedef int (*void_callback_int_t)(unsigned int);
+typedef int (*int_callback_uchar_t)(unsigned char);
+typedef int (*int_callback_ushort_t)(unsigned short);
+typedef int (*int_callback_uint_t)(unsigned int);
 
 // Short Return Primatives
-typedef short (*void_callback_t)(void);
-typedef short (*void_callback_char_t)(char);
-typedef short (*void_callback_short_t)(short);
-typedef short (*void_callback_int_t)(int);
+typedef short (*short_callback_t)(void);
+typedef short (*short_callback_char_t)(char);
+typedef short (*short_callback_short_t)(short);
+typedef short (*short_callback_int_t)(int);
 /// Unsigned Versions
-typedef short (*void_callback_char_t)(unsigned char);
-typedef short (*void_callback_short_t)(unsigned short);
-typedef short (*void_callback_int_t)(unsigned int);
+typedef short (*short_callback_uchar_t)(unsigned char);
+typedef short (*short_callback_ushort_t)(unsigned short);
+typedef short (*short_callback_uint_t)(unsigned int);
 
 #endif

@@ -2,7 +2,8 @@
 #include <sys/screen.h>
 extern void gdt_flush(unsigned);	// located in init.s
 
-void gdtSetGate(int, unsigned long, unsigned long, unsigned char, unsigned char);
+void gdtSetGate(int, unsigned long, unsigned long, unsigned char,
+	unsigned char);
 
 gdt_entry_t gdt[5];
 gdt_ptr_t	gdtPointer;
