@@ -90,6 +90,7 @@ irq_common_stub:            ; All The ISR macros call this function.
 idt_flush:					; Set up a new Jump Table.
 	mov eax, [esp + 4]		; Get the pointer location from the stack.
 	lidt [eax]				; Load into the Control Register
+    sti                     ; Restore Hardware Interrupts
 	ret						;
 ;---------------------------;
 

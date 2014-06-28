@@ -1,3 +1,8 @@
+/*
+ * (c) 2014 Apollo Developers
+ * screen.c - interface with the terminal
+ */
+
 #include <sys/screen.h>
 
 void_callback_char_t	scrInternalPutChar;

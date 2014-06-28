@@ -1,3 +1,8 @@
+/*
+ * (c) 2014 Apollo Developers 
+ * interrupts.h - Uniform Interrupt Handler
+ */
+
 #include <sys/callback.h>
 #include <sys/interrupt.h>
 #include <sys/screen.h>

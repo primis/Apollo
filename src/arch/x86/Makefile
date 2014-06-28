@@ -3,7 +3,7 @@
 PROG = x86.o
 ROOTDIR = ../../
 
-OBJS = init.o vga.o ports.o gdt.o idt.o ivt.o pic.o
+OBJS = init.o vga.o ports.o gdt.o idt.o ivt.o pic.o pit.o
 
 cleanit:
 	rm *.o ../*.o
