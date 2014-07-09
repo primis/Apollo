@@ -11,7 +11,7 @@ void vgaScroll()
 	unsigned int blank = ' ' | (0x0F << 8);
 	if(vgaCursorY >= 25) {
 		int i;
-		for(i = 1; i < 24*80; i++) {
+		for(i = 0; i < 24*80; i++) {
 			vgaTextBuffer[i] = vgaTextBuffer[i+80];
 		}
 		for(i = 24*80; i<25*80; i++) {

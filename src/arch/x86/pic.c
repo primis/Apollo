@@ -68,14 +68,15 @@ void picInit(unsigned short _pic1, unsigned short _pic2)
 	outb(data2, 0xFF);	// Lines 8-15 are now masked too.
 }
 
-void irqHandler(registers_t _r)
+void irqHandler(struct regs *_r)
 {
-	if (_r.int_no >= 40) {		// Is this from the slave pic?
+	if (_r->int_no >= 40) {		// Is this from the slave pic?
 		outb(slavePIC, 0x20);	// Send Acknowledgement to the Slave
 	}
 	outb(masterPIC, 0x20);		// Send Acknowledgement to the Master
 
-	void_callback_arg_t handler = interruptHandlers[_r.int_no];
-	handler(_r.int_no, _r.err_code, _r.eax, _r.ebx, _r.ecx, _r.edx,
-		_r.edi, _r.esi);
+	void_callback_arg_t handler = interruptHandlers[_r->int_no];
+	handler(_r->int_no, _r->err_code, _r->eax, _r->ebx, _r->ecx, _r->edx,
+		_r->edi, _r->esi);
 }
+

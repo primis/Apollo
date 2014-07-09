@@ -1,8 +1,8 @@
 AS	= nasm
-CC	= gcc -m32 -march=i486
-LD	= ld -melf_i386
+CC	= /usr/cross/bin/i586-elf-gcc
+LD	= /usr/cross/bin/i586-elf-ld
 
-CFLAGS	= -Wall -fstrength-reduce  -O0 -fno-builtin -masm=intel -fno-stack-protector -nostdlib -nostdinc -I$(ROOTDIR)include
+CFLAGS	= -Wall  -ffreestanding -masm=intel -I$(ROOTDIR)include
 ASFLAGS	= -felf
 
 .SUFFIXES = .c .s

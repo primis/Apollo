@@ -16,8 +16,8 @@
 	[GLOBAL isr%1]			; Have any error codes.
 	isr%1:
 		cli
-		push byte 0					; Fake Error Code
-		push byte %1				; Push Interrupt number
+		push 0			    		; Fake Error Code
+		push %1	        			; Push Interrupt number
 		jmp 0x08:isr_common_stub	; FORCE a Far jump to pad them all
 %endmacro
 
@@ -25,9 +25,9 @@
 	[GLOBAL isr%1]			; We have to catch it.
 	isr%1:
 		cli
-		nop				; Buffer to make all macros the same size.
+		nop	    			; Buffer to make all macros the same size.
 		nop
-		push byte %1
+		push %1
 	    jmp 0x08:isr_common_stub
 %endmacro
 
@@ -35,8 +35,8 @@
 	[GLOBAL irq%2]
 	irq%2:
 		cli
-		push byte 0
-		push byte %1
+		push 0
+		push %1
 		jmp 0x08:irq_common_stub
 %endmacro
 
@@ -45,44 +45,54 @@
 ;----[ ISR Common Stub ]----;
 isr_common_stub:            ; All The ISR macros call this function.
 	pusha                   ; Save all the GP registers
-	mov ax, ds              ; Get the data segment
+	mov eax, ds             ; Get the data segment
 	push eax                ; Save it to the stack
-	mov ax, 0x10            ; Change to the kernel segment
-	mov ds, ax              ; In All the segment registers
-	mov es, ax              ;
-	mov fs, ax              ;
-	mov gs, ax              ;
+	mov eax, 0x10           ; Change to the kernel segment
+	mov  ds, eax            ; In All the segment registers
+	mov  es, eax            ;
+	mov  fs, eax            ;
+	mov  gs, eax            ;
+    mov ebx, esp            ; Store Register Pointer
+    sub esp, 4              ; Make Room for calling function
+    and esp, 0xFFFFFFF0     ; Align stack to 16 Btyes
+    mov [esp], ebx          ; Put Register pointer into stack
 	call isrHandler         ; Call the C Handler for interrupts
+    mov esp, ebx            ; Restore Stack For Calling Function
 	pop eax                 ; Restore the original Segment
-	mov ds, ax              ;
-	mov es, ax              ;
-	mov fs, ax              ;
-	mov gs, ax              ;
+	mov  ds, eax            ;
+	mov  es, eax            ;
+	mov  fs, eax            ;
+	mov  gs, eax            ;
 	popa                    ; Restore the General Purpose Registers
-	add esp, 8              ; Clean up the Stack
-	sti                     ; Restore interrupts
+    sti
+	add  esp, 8             ; Clean up the Stack
 	iret                    ; Return to the function we interrupted
 ;---------------------------;
 
 ;----[ IRQ Common Stub ]----;
 irq_common_stub:            ; All The ISR macros call this function.
 	pusha                   ; Save all the GP registers
-	mov ax, ds              ; Get the data segment
+	mov  eax, ds            ; Get the data segment
 	push eax                ; Save it to the stack
-	mov ax, 0x10            ; Change to the kernel segment
-	mov ds, ax              ; In All the segment registers
-	mov es, ax              ;
-	mov fs, ax              ;
-	mov gs, ax              ;
-	call irqHandler         ; Call the C Handler for the IRQ
-	pop eax                 ; Restore the original Segment
-	mov ds, ax              ;
-	mov es, ax              ;
-	mov fs, ax              ;
-	mov gs, ax              ;
+	mov eax, 0x10           ; Change to the kernel segment
+	mov  ds, eax            ; In All the segment registers
+	mov  es, eax            ;
+	mov  fs, eax            ;
+	mov  gs, eax            ;
+    mov ebx, esp            ; Save the stack's pointer in ebx
+    sub esp, 4              ; Add one last spot in the stack before align
+    and esp, 0xFFFFFFF0     ; Align stack for gcc (16 byte bounds)
+    mov [esp], ebx          ; Put Interrupted Register pointer on the stack
+    call irqHandler         ; Call the C Handler for the IRQ
+    mov esp, ebx            ; Restore old stack
+    pop eax                 ; Restore the original Segment
+	mov ds, eax             ;
+	mov es, eax             ;
+	mov fs, eax             ;
+	mov gs, eax             ;
 	popa                    ; Restore the General Purpose Registers
 	add esp, 8              ; Clean up the Stack
-	sti                     ; Restore interrupts
+    sti                     ;
 	iret                    ; Return to the function we interrupted
 ;---------------------------;
 

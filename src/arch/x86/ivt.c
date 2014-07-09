@@ -24,11 +24,11 @@ static void idtSetGate(unsigned char n, unsigned int base,
 	idt[n].flags	= flags;
 }
 
-void isrHandler(registers_t _r)
+void isrHandler(struct regs *_r)
 {
-	void_callback_arg_t handler = interruptHandlers[_r.int_no];
-	handler(_r.int_no, _r.err_code, _r.eax, _r.ebx, _r.ecx, _r.edx,
-		_r.edi, _r.esi);
+	void_callback_arg_t handler = interruptHandlers[_r->int_no];
+	handler(_r->int_no, _r->err_code, _r->eax, _r->ebx, _r->ecx, _r->edx,
+		_r->edi, _r->esi);
 }
 
 void idtInit()

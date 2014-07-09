@@ -25,13 +25,13 @@ struct idt_ptr_struct
 } __attribute__((packed));
 typedef struct idt_ptr_struct idt_ptr_t;
 
-typedef struct registers
+struct regs
 {
 	unsigned int ds;									// DSS
 	unsigned int edi, esi, ebp, esp, ebx, edx, ecx, eax;// Pusha
 	unsigned int int_no, err_code;						// From our Stub
 	unsigned int eip, cs, eflags, useresp, ss;			// Pushed by int
-} registers_t;
+};
 
 /**********************************************************************/
 extern void isr0();		// Differential Pair of interrupts. We use these
