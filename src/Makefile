@@ -1,29 +1,33 @@
+################################################################################
+## Apollo Kernel Makefile                                                     ## 
+################################################################################
+
+X86_C_SOURCES = $(shell ls arch/x86/*.c)
+X86_S_SOURCES = $(shell ls arch/x86/*.s)
+X86_OBJECTS   = $(X86_S_SOURCES:.s=.o) $(X86_C_SOURCES:.c=.o)
+
+LIBC_SOURCES  = $(shell ls libc/*.c)
+LIBC_OBJECTS  = $(LIBC_SOURCES:.c=.o)
+
+CORE_SOURCES  = $(shell ls core/*.c)
+CORE_OBJECTS  = $(CORE_SOURCES:.c=.o)
+
 # Kerenl's Makefile
-LD 			= ld -melf_i386
-LDFLAGS 	= -Tlink.ld
+CC			= i586-elf-gcc
+AS			= nasm
 
-
-####### x86 Arch Stuff ##############
-x86_PROG	= x86_sys.mod
-x86_TRGTS	= core.o libc.o arch/x86.o
-x86: $(x86_TRGTS) x86_link
-$(x86_PROG): $(x86) link
-
-
-####### Core Makefile Targets #######
-core.o:
-	cd ./core ; make core.o
-libc.o:
-	cd ./libc ; make libc.o
-### Archetecture Specific Targets ###
-arch/x86.o:
-	cd ./arch/x86 ; make x86.o
-
+#### Flags ####
+LDFLAGS		= -Tlink.ld -lgcc
+CFLAGS		= -Wall -ffreestanding -fbuiltin -nostdlib -masm=intel -I./include
+ASFLAGS		= -felf
+BINDIR		= ../bin/
+### Targets ###
+all: $(X86_OBJECTS) $(CORE_OBJECTS) $(LIBC_OBJECTS) link
 clean:
-	rm -f *.o *~
-	cd ./core ; make clean
-	cd ./libc ; make clean
-	cd ./arch/x86 ; make cleanit
-
-x86_link:
-	$(LD) $(LDFLAGS) -o ../bin/sys.mod $(x86_TRGTS)
+	find . -type f -name '*.o' -exec rm {} +
+link:
+	$(CC) $(CFLAGS) $(LDFLAGS) -o $(BINDIR)sys.mod $(X86_OBJECTS) $(CORE_OBJECTS) $(LIBC_OBJECTS)
+.c.o:
+	$(CC) -c $< -o $@ $(CFLAGS)
+.s.o:
+	$(AS) $(ASFLAGS) $< -o $@

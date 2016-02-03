@@ -13,7 +13,7 @@
 #include <stddef.h>
 
 void *memcpy(void*, const void*, size_t);
-void memset(void*, int, size_t);
+void *memset(void *dst, int val, size_t len);
 int memcmp(const void*, const void*, size_t);
 char *strchr(const char*, int);
 size_t strspn(const char*, const char*);

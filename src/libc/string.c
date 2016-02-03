@@ -9,14 +9,13 @@ void *memcpy(void * _dest, const void *_src, size_t _n)
 	}
 	return _dest;
 }
-void memset(void *_s, int _c, size_t _n)
-{
-    char *temp = (char*) _s;
-    for ( ; _n != 0; _n--) {
-		*temp++ = _c;
+void *memset(void *dst, int val, size_t len) {
+    char *temp = (char*) dst;
+    for ( ; len != 0; len--) {
+		*temp++ = val;
 	}
+	return dst;
 }
-
 int memcmp(const void *_s1, const void *_s2, size_t _n)
 {
 	const unsigned char *us1 = (const unsigned char *)_s1;
