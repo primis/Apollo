@@ -3,14 +3,14 @@
 ################################################################################
 .PHONY: all clean link
 
-X86_C_SOURCES = $(shell find arch/x86 -type f -name '*.c')
-X86_S_SOURCES = $(shell find arch/x86 -type f -name '*.s')
+X86_C_SOURCES != find arch/x86 -type f -name '*.c'
+X86_S_SOURCES != find arch/x86 -type f -name '*.s'
 X86_OBJECTS   = $(X86_S_SOURCES:.s=.o) $(X86_C_SOURCES:.c=.o)
 
-LIBC_SOURCES  = $(shell find libc -type f -name '*.c')
+LIBC_SOURCES  != find libc -type f -name '*.c'
 LIBC_OBJECTS  = $(LIBC_SOURCES:.c=.o)
 
-CORE_SOURCES  = $(shell find core -type f -name '*.c')
+CORE_SOURCES  != find core -type f -name '*.c'
 CORE_OBJECTS  = $(CORE_SOURCES:.c=.o)
 
 # Default Programs
@@ -23,6 +23,7 @@ CFLAGS		?= -Wall -ffreestanding -fbuiltin -nostdlib -masm=intel
 CPPFLAGS	?= -Iinclude
 NASMFLAGS	?= -felf
 BINDIR		?= ../bin/
+
 ### Targets ###
 all: link
 clean:
