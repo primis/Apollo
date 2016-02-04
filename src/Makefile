@@ -1,6 +1,7 @@
 ################################################################################
 ## Apollo Kernel Makefile                                                     ## 
 ################################################################################
+.PHONY: all clean link
 
 X86_C_SOURCES = $(shell find arch/x86 -type f -name '*.c')
 X86_S_SOURCES = $(shell find arch/x86 -type f -name '*.s')
@@ -12,22 +13,23 @@ LIBC_OBJECTS  = $(LIBC_SOURCES:.c=.o)
 CORE_SOURCES  = $(shell find core -type f -name '*.c')
 CORE_OBJECTS  = $(CORE_SOURCES:.c=.o)
 
-# Kerenl's Makefile
-CC			= i586-elf-gcc
-AS			= nasm
+# Default Programs
+CC		= i586-elf-gcc
+NASM		= nasm
 
 #### Flags ####
-LDFLAGS		= -Tlink.ld -lgcc
-CFLAGS		= -Wall -ffreestanding -fbuiltin -nostdlib -masm=intel -I./include
-ASFLAGS		= -felf
-BINDIR		= ../bin/
+LDFLAGS		?= -Tlink.ld -lgcc
+CFLAGS		?= -Wall -ffreestanding -fbuiltin -nostdlib -masm=intel
+CPPFLAGS	?= -Iinclude
+NASMFLAGS	?= -felf
+BINDIR		?= ../bin/
 ### Targets ###
-all: $(X86_OBJECTS) $(CORE_OBJECTS) $(LIBC_OBJECTS) link
+all: link
 clean:
 	find . -type f -name '*.o' -exec rm {} +
-link:
+link: $(X86_OBJECTS) $(CORE_OBJECTS) $(LIBC_OBJECTS) 
 	$(CC) $(CFLAGS) $(LDFLAGS) -o $(BINDIR)sys.mod $(X86_OBJECTS) $(CORE_OBJECTS) $(LIBC_OBJECTS)
 .c.o:
-	$(CC) -c $< -o $@ $(CFLAGS)
+	$(CC) -c $< -o $@ $(CFLAGS) $(CPPFLAGS)
 .s.o:
-	$(AS) $(ASFLAGS) $< -o $@
+	$(NASM) $(NASMFLAGS) $< -o $@
