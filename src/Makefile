@@ -2,14 +2,14 @@
 ## Apollo Kernel Makefile                                                     ## 
 ################################################################################
 
-X86_C_SOURCES = $(shell ls arch/x86/*.c)
-X86_S_SOURCES = $(shell ls arch/x86/*.s)
+X86_C_SOURCES = $(shell find arch/x86 -type f -name '*.c')
+X86_S_SOURCES = $(shell find arch/x86 -type f -name '*.s')
 X86_OBJECTS   = $(X86_S_SOURCES:.s=.o) $(X86_C_SOURCES:.c=.o)
 
-LIBC_SOURCES  = $(shell ls libc/*.c)
+LIBC_SOURCES  = $(shell find libc -type f -name '*.c')
 LIBC_OBJECTS  = $(LIBC_SOURCES:.c=.o)
 
-CORE_SOURCES  = $(shell ls core/*.c)
+CORE_SOURCES  = $(shell find core -type f -name '*.c')
 CORE_OBJECTS  = $(CORE_SOURCES:.c=.o)
 
 # Kerenl's Makefile
