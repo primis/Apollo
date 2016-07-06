@@ -1,5 +1,5 @@
 ################################################################################
-## Apollo Kernel Makefile                                                     ## 
+## Apollo Kernel Makefile                                                     ##
 ################################################################################
 .PHONY: all clean link
 
@@ -28,7 +28,7 @@ BINDIR		?= ../bin/
 all: link
 clean:
 	find . -type f -name '*.o' -exec rm {} +
-link: $(X86_OBJECTS) $(CORE_OBJECTS) $(LIBC_OBJECTS) 
+link: $(X86_OBJECTS) $(CORE_OBJECTS) $(LIBC_OBJECTS)
 	$(CC) $(CFLAGS) $(LDFLAGS) -o $(BINDIR)sys.mod $(X86_OBJECTS) $(CORE_OBJECTS) $(LIBC_OBJECTS)
 .c.o:
 	$(CC) -c $< -o $@ $(CFLAGS) $(CPPFLAGS)

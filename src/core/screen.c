@@ -9,7 +9,7 @@ void_callback_char_t	scrInternalPutChar;
 
 void scrInit(char *_ID, void_callback_char_t _putChar)
 {
-	scrInternalPutChar 	= _putChar;	    // Register the putChar
+	scrInternalPutChar 	= _putChar;	    // Register the base buffer putChar
 	scrWrite("Set Up ");
 	scrWrite(_ID);
 	scrWrite(" For Console Use\n");
@@ -56,4 +56,3 @@ void scrWriteHex(unsigned int n)
 		scrPutChar(temp + '0');
 	}
 }
-

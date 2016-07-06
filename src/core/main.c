@@ -6,7 +6,7 @@
 #include <sys/init.h>
 void initModules()
 {
-    vgaInit(0x3D5, 0x3D4, 0xB8000);             // Index, Data, Base Address. 
+    vgaInit(0x3D5, 0x3D4, 0xB8000);             // Index, Data, Base Address.
     scrWrite("Initializing the GDT\t\t\t");
     gdtInit();
     scrWrite("[ OK ]\n");
@@ -27,7 +27,7 @@ void initModules()
 int main()
 {
     initModules();
-    scrWrite("Hello, Netbooting World! :D\n"); 
+    scrWrite("Hello, Netbooting World! :D\n");
     while(1){
         ;
     }
