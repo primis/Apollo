@@ -7,6 +7,9 @@
 #define _SYS_INIT_H
 #include <sys/screen.h>
 #include <time.h>
+
+const char* gitRevision;
+
 void gdtInit(void);
 void idtInit(void);
 void vgaInit(unsigned short data, unsigned short index, unsigned int base);

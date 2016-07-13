@@ -1,5 +1,5 @@
 /*
- * (c) 2014 Apollo Developers
+ * (c) 2016 Apollo Developers
  * main.c - The Opening point of the Kernel Proper.
  */
 
@@ -7,19 +7,19 @@
 void initModules()
 {
     vgaInit(0x3D5, 0x3D4, 0xB8000);             // Index, Data, Base Address.
-    scrWrite("Initializing the GDT\t\t\t");
+    scrWrite("Initializing the GDT...");
     gdtInit();
     scrWrite("[ OK ]\n");
 
-    scrWrite("Initializing The IDT\t\t\t");
+    scrWrite("Initializing The IDT...");
     idtInit();                                  // IDT takes no Arguments.
     scrWrite("[ OK ]\n");
 
-    scrWrite("Initializing The PIC\t\t\t");
+    scrWrite("Initializing The PIC...");
     picInit(0x20, 0xA0);                        // Command Registers of the PIC
     scrWrite("[ OK ]\n");
 
-    scrWrite("Initializing the PIT\t\t\t");
+    scrWrite("Initializing the PIT...");
     pitInit(CLOCKS_PER_SEC);
     scrWrite("[ OK ]\n");
 }
@@ -27,6 +27,11 @@ void initModules()
 int main()
 {
     initModules();
+
+    // Show what git revision we've built.
+    scrWrite("Apollo Kernel, Git Revision ");
+    scrWrite(gitRevision);
+    scrWrite("\n");
     scrWrite("Hello, Netbooting World! :D\n");
     while(1){
         ;

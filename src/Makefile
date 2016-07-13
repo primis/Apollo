@@ -3,6 +3,10 @@
 ################################################################################
 .PHONY: all clean link
 
+# Git Revision for build
+GIT_REV	      != git rev-parse HEAD 2> /dev/null
+# Source files
+
 X86_C_SOURCES != find arch/x86 -type f -name '*.c'
 X86_S_SOURCES != find arch/x86 -type f -name '*.s'
 X86_OBJECTS   = $(X86_S_SOURCES:.s=.o) $(X86_C_SOURCES:.c=.o)
@@ -20,7 +24,7 @@ NASM		= nasm
 #### Flags ####
 LDFLAGS		?= -Tlink.ld -lgcc
 CFLAGS		?= -Wall -ffreestanding -fbuiltin -nostdlib -masm=intel
-CPPFLAGS	?= -Iinclude
+CPPFLAGS	?= -Iinclude -DGITREV="\"$(GIT_REV)\""
 NASMFLAGS	?= -felf
 BINDIR		?= ../bin/
 
