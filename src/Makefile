@@ -4,7 +4,7 @@
 .PHONY: all clean link
 
 # Git Revision for build
-GIT_REV	      != git rev-parse HEAD 2> /dev/null
+GIT_REV	      != git rev-parse --short HEAD 2> /dev/null
 # Source files
 
 X86_C_SOURCES != find arch/x86 -type f -name '*.c'
