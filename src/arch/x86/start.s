@@ -1,6 +1,6 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; (c) 2016 Apollo Project Developers ;;
-;; init.s - x86 bootloader passover   ;;
+;; start.s - x86 bootloader passover  ;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 ; Multiboot Macro Definitions
@@ -17,6 +17,8 @@ KERNEL_STACK_SIZE       equ 0x4000
 [GLOBAL mboot]
 [GLOBAL start]
 [EXTERN main]
+[GLOBAL gdtFlush]
+
 
 ; Multiboot Header
 ;==================
@@ -38,6 +40,21 @@ start:
     call main
     cli
     hlt
+
+; GDT Loader
+;============
+gdtFlush:
+    mov eax, [esp + 4]  ; Get the pointer from the stack
+    lgdt [eax]          ; Load that into the MSR
+    mov ax, 0x10        ; Kernel Code Segment
+    mov ds, ax          ; Reload the segments
+    mov es, ax
+    mov fs, ax
+    mov gs, ax
+    mov ss, ax
+    jmp 0x08:.flush     ; Long jump to change to the new GDT
+.flush:
+    ret                 ; new GDT is now installed
 
 ; Stack
 ;=======
