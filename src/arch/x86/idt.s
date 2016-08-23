@@ -119,7 +119,8 @@ irq_common_stub:
     
     call irqHandler ; C Code handler
 
-    mov esp, ebx    ; Recover the stack pointer (EBX isn't trashed by C)
+    pop ebx         ; Grab pre-aligned stack pointer
+    mov esp, ebx    
     mov eax, [esp + 28] ; Grab the data segment off the stack
     mov  ds, eax    ; restore it back to the segments
     mov  es, eax
