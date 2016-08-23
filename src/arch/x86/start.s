@@ -39,7 +39,8 @@ start:
     cli
     call main
     cli
-    hlt
+    hlt                 ; Deadlock Stop.
+    jmp $               ; In case we get an NMI
 
 ; GDT Loader
 ;============
