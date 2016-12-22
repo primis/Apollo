@@ -1,6 +1,7 @@
 /*
  * (c) 2016 Apollo Project Developers
- * arch/x86/interrupts.c - CPU side of x86 Interrupts */
+ * arch/x86/interrupts.c - CPU side of x86 Interrupts
+ */
 
 #include <arch/x86/idt.h>
 
