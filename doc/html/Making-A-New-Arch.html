@@ -1,0 +1,61 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <meta http-equiv="Content-Style-Type" content="text/css" />
+  <meta name="generator" content="pandoc" />
+  <title></title>
+  <style type="text/css">code{white-space: pre;}</style>
+</head>
+<body>
+<h1 id="apollo-architectures-creating-a-new-one">Apollo Architectures : Creating a New one</h1>
+<h2 id="introduction">Introduction</h2>
+<p>So You've decided to create a new archetecture support for the Apollo kernel?<br />
+There is a few tasks to complete on your platform before Apollo will happily<br />
+run on top of it.</p>
+<h2 id="prerequisites">Prerequisites</h2>
+<p>In order for Apollo to work happily on your platform, it needs to have a few<br />
+items availible.</p>
+<ul>
+<li>Your platform has to be a 32 or 64 bit system. Apollo won't support 16 bit<br />
+without massive core arch change.</li>
+<li>A Console device of some kind for boot messages, be it serial, a screen<br />
+buffer, or even a line printer.</li>
+<li>Interrput capability. Without this, the system can't do syscalls from<br />
+usermode.</li>
+<li>A timer. The kernel uses this for scheduling, and timekeeping. High<br />
+precision isn't needed, just at least 10KHz.</li>
+</ul>
+<h2 id="boot-time">Boot time</h2>
+<p>The Apollo kernel is a multiboot compliant kernel. The linker script tells<br />
+multiboot to look for a symbol called 'start'.</p>
+<p>The multiboot bootloader will be looking for a multiboot header, it's the<br />
+job of the boot.s file (or equivilent) to provide that. The flags used in the<br />
+Kernel should be:</p>
+<ul>
+<li>MULTIBOOT_MEMORY_INFO</li>
+<li>MULTIBOOT_PAGE_ALIGN</li>
+</ul>
+<p>You can find more about the multiboot header from the multiboot specification.</p>
+<p>It is your responsibility to write a function called start</p>
+<p>In your start function you should set up a stack, preferably at least 4k large.<br />
+It is also start's task to pass the multiboot header to main, stop interrupts,<br />
+and call main.</p>
+<p>The stack should be aligned to a 32 byte boundary, in accordance to the SYSV<br />
+ABI.</p>
+<h2 id="drivers-to-implement">Drivers To Implement</h2>
+<p>When Apollo boots, it runs archInit() before doing kernel setup. archInit()<br />
+should initialize all of the drivers listed below to a known state.</p>
+<ul>
+<li><p>A <a href="Making-A-Console-Driver.html">Console Driver</a>. This is a character output<br />
+device used to output the status of the kernel during bootup.</p></li>
+<li><p>An Interrupt Vector Driver. This driver should expose a function for creating<br />
+interrupt functions for syscalls. The actual syscall interface is handled<br />
+by the kernel.</p></li>
+<li><p>A Timer Driver. This should be a system timer that exposes functions to help<br />
+with scheduling such as alarm() and getTicks().</p></li>
+<li><p>Memory handler Driver. This driver basically should give the kernel 4k pages<br />
+when requested. This is used internally to power malloc().</p></li>
+</ul>
+</body>
+</html>

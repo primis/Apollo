@@ -71,8 +71,8 @@ void console_put(char c)
 void console_clear()
 {
     int i;
-    for(i=0; i<26; i++) {
-        console_put('\n');
+    for(i=0; i<=25*80; i++) {
+        console_put(' ');
     }
     cursorY = 0;
     cursorX = 0;
