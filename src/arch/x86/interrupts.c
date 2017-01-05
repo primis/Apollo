@@ -16,12 +16,13 @@ void encodeIDTEntry(IDTEntry *ptr, uint32_t base, uint16_t sel, uint8_t flags)
 
 void isrHandler(struct registers *regs)
 {
-    // Theoretically this shouldn't happen. We check anyway
+    /*/ Theoretically this shouldn't happen. We check anyway
     if(interruptHandlers[regs->intNum] != NULL) {
         voidCallback handler = interruptHandlers[regs->intNum];
         // Call the interrupt handler with argc (count) and regs (argv)
         handler(sizeof(struct registers)/sizeof(reg_t), (reg_t*)regs);
-    }
+    }*/
+    while(1);
 }
 
 void irqHandler(struct registers *regs)
