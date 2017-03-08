@@ -50,13 +50,13 @@ void isrHandler(struct registers *regs);
 #define IDT_GATE_INT32  0x0E
 #define IDT_GATE_TRAP32 0x0F
 
-#define IDT_INT32_PL0 IDT_PRES(1)   | IDT_STORE(1)  | IDT_PRIV(0) | \
+#define IDT_INT32_PL0 IDT_PRES(1)   | IDT_STORE(0)  | IDT_PRIV(0) | \
         IDT_GATE_INT32
 
-#define IDT_TRAP32_PL0 IDT_PRES(1)  | IDT_STORE(1)  | IDT_PRIV(0) | \
+#define IDT_TRAP32_PL0 IDT_PRES(1)  | IDT_STORE(0)  | IDT_PRIV(0) | \
         IDT_GATE_TRAP32
 
-#define IDT_TASK32_PL0 IDT_PRES(1)  | IDT_STORE(1)  | IDT_PRIV(0) | \
+#define IDT_TASK32_PL0 IDT_PRES(1)  | IDT_STORE(0)  | IDT_PRIV(0) | \
         IDT_GATE_TASK32
 
 

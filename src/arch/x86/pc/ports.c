@@ -1,4 +1,4 @@
-void outb(unsigned short port, unsigned short value)
+void outb(unsigned short port, unsigned char value)
 {
     asm volatile ("outb %0, %1" : : "dN" (port), "a" (value));
 }

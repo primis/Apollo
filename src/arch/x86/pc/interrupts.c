@@ -4,6 +4,7 @@
  */
 
 #include <arch/x86/idt.h>
+#include <sys/console.h>
 
 void encodeIDTEntry(IDTEntry *ptr, uint32_t base, uint16_t sel, uint8_t flags)
 {
@@ -22,6 +23,8 @@ void isrHandler(struct registers *regs)
         // Call the interrupt handler with argc (count) and regs (argv)
         handler(sizeof(struct registers)/sizeof(reg_t), (reg_t*)regs);
     }*/
+    console_write("Interrupt Received: ");
+    console_write_hex(regs->intNum);
     while(1);
 }
 

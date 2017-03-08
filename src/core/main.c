@@ -4,9 +4,11 @@
  */
 #include <sys/init.h>
 #include <sys/console.h>
+#include <arch/x86/idt.h>
 int main()
 {
     archInit();
-    console_write("test\n");
+    console_write("Arch Enabled. Initializing Base System...\n");
+    asm volatile ("int 0x03");
     return 0xDEADC0DE;
 }

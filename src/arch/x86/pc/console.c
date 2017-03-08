@@ -7,6 +7,7 @@
 
 #include <arch/x86/vga.h>
 #include <arch/x86/ports.h>
+#include <sys/console.h>
 
 static char cursorY;
 static char cursorX;
@@ -83,4 +84,5 @@ void consoleInit()
 {
     VGAPointer = (unsigned short *)VGA_BASE_POINTER;
     console_clear();
+    console_write("Console Initiated on VGA Framebuffer\n");
 }
