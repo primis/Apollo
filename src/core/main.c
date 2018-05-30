@@ -7,9 +7,10 @@
 #include <arch/x86/idt.h>
 #include <sys/multiboot.h>
 
-int main(multiboot_info_t* mbt)
+int main(multiboot_info_t* mbt, unsigned int magic)
 {
     archInit();
+    console_write_hex(magic);
     console_write("\nArch Enabled. Initializing Base System...\n");
     console_write("Multiboot header located at ");
     console_write_hex((unsigned int)&mbt);
