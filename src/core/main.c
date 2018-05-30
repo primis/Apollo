@@ -10,13 +10,14 @@
 int main(multiboot_info_t* mbt, unsigned int magic)
 {
     archInit();
-    console_write_hex(magic);
+
+    if(magic == MULTIBOOT_BOOTLOADER_MAGIC) {
+        console_write("Confirmed Multiboot Compliant System\n");
+        console_write("Flags from multiboot: ");
+        console_write_hex(mbt->flags);
+    }
+
     console_write("\nArch Enabled. Initializing Base System...\n");
-    console_write("Multiboot header located at ");
-    console_write_hex((unsigned int)&mbt);
-    console_write(". VGA Framebuffer is defined at: ");
-    console_write_hex(mbt->framebuffer_addr & 0xFFFFFFFF);
-    console_write(".\n");
     asm volatile ("int 0x03");
     return 0xDEADC0DE;
 }
