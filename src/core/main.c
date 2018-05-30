@@ -15,6 +15,11 @@ int main(multiboot_info_t* mbt, unsigned int magic)
         console_write("Confirmed Multiboot Compliant System\n");
         console_write("Flags from multiboot: ");
         console_write_hex(mbt->flags);
+        if (mbt->flags & MULTIBOOT_INFO_MEMORY) {
+            console_write("Memory Found: ");
+            console_write_hex(mbt->mem_upper+mbt->mem_lower);
+            console_write(" Kilobytes.\n");
+        }
     }
 
     console_write("\nArch Enabled. Initializing Base System...\n");
