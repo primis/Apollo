@@ -30,6 +30,7 @@ void encodeGDTEntry(GDTEntry *ptr, uint32_t base, uint32_t limit, uint16_t type)
     }
 
     // Type is nice and simple... Because we did the work in the header.
+    // Smart Data, dumb code! :D
     gdt[5] = type & 0xFF;
     gdt[6] = (type >> 8) & 0xF0;
     // Encode the limit. Horribly convoluted.

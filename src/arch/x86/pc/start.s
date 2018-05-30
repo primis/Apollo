@@ -34,7 +34,9 @@ mboot:
 ;==========================
 
 start:
+    ; Set up stack
     mov esp, KERNEL_STACK + KERNEL_STACK_SIZE
+    
     push ebx
     cli
     call main

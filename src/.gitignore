@@ -1,6 +1,2 @@
 ### Object files don't need to be revisioned.
 *.o
-
-### My update shell scripts. Not public
-update
-update.local
