@@ -21,10 +21,10 @@ FRAMEBUFFER_EGA_TEXT    equ 2   ; Standard text mode
 KERNEL_STACK_SIZE       equ 0x4000
 
 ; Set Video mode here:
-VBE_MODE                equ FRAMEBUFFER_EGA_TEXT    ; We want text mode
-FRAMEBUFFER_WIDTH       equ 80                      ; 80 char wide
-FRAMEBUFFER_HEIGHT      equ 43                      ; 43 lines worth
-FRAMEBUFFER_BPP         equ 16                      ; 8 for char + 8 for color
+VBE_MODE                equ FRAMEBUFFER_INDEXED     ; We want graphics mode
+FRAMEBUFFER_WIDTH       equ 1024                    ; 1024 px char wide
+FRAMEBUFFER_HEIGHT      equ 768                     ; 768px tall
+FRAMEBUFFER_BPP         equ 32                      ; 32 bpp
 
 
 [BITS 32]
