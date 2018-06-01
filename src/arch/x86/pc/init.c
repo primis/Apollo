@@ -34,7 +34,8 @@ int archInit(multiboot_info_t* mbt, unsigned int magic)
         console_write(" Multiboot bootloader not detected, system halting!\n");
         return -1;
     }
-
+    console_write("VBE reports address ");
+    console_write_hex(mbt->framebuffer_addr & 0xFFFFFFFF);
     // We're all set up on the arch side, time to pass control to kernel main
     main();
     return 0;
