@@ -3,15 +3,11 @@
  * arch/x86/init.c - Initialization function for x86 platform.
  */
 
+#include <stdio.h>
+#include <sys/core.h>
 #include <arch/x86/gdt.h>
 #include <arch/x86/idt.h>
 #include <arch/x86/vga.h>
-#include <sys/console.h>
-#include <sys/multiboot.h>
-
-
-// We have to call main function from archInit.
-void main();
 
 /*
  * archInit() - Called by start.s to set up the hardware specific parts of
@@ -25,18 +21,17 @@ int archInit(multiboot_info_t* mbt, unsigned int magic)
     idtInit();
 
 
-    console_write("Checking for multiboot... ");
+    printf("Checking for multiboot... ");
 
     if(magic == MULTIBOOT_BOOTLOADER_MAGIC) {   // Were we loaded by multiboot?
-        console_write("[ OK ]\n");
+        printf("[ OK ]\n");
     } else {
-        console_write(" [ ERROR! ]\n");
-        console_write(" Multiboot bootloader not detected, system halting!\n");
+        printf(" [ ERROR! ]\n");
+        printf(" Multiboot bootloader not detected, system halting!\n");
         return -1;
     }
-    console_write("Multiboot Flags ");
-    console_write_hex(mbt->flags);
-    console_write((char *)mbt->cmdline);
+    // Now time to parse the multiboot header
+    multiboot_parse(mbt);
     // We're all set up on the arch side, time to pass control to kernel main
     main();
     return 0;
