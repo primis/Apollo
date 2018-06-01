@@ -3,7 +3,6 @@
  * core/interrupts.c - cpu agnostic interrupt code
  */
 
-#include <sys/init.h>
 #include <sys/interrupts.h>
 
 voidCallback interruptHandlers[256];
