@@ -1,6 +1,6 @@
 /*
  * (c) 2017 Apollo Project Developers
- * console.c - Early Kernel mode console for debugging
+ * vga_console.c - Early Kernel mode console for debugging
  * We use VGA cause it's easy, though this can be anything
  * that can output a charecter set
  */

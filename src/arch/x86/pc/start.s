@@ -1,5 +1,5 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;; (c) 2016 Apollo Project Developers ;;
+;; (c) 2018 Apollo Project Developers ;;
 ;; start.s - x86 bootloader passover  ;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
@@ -17,7 +17,7 @@ KERNEL_STACK_SIZE       equ 0x4000
 [BITS 32]
 [GLOBAL mboot]
 [GLOBAL start]
-[EXTERN main]
+[EXTERN archInit]
 [GLOBAL gdtFlush]
 
 
@@ -40,7 +40,7 @@ start:
     push eax            ; Should be the multiboot magic number   
     push ebx            ; Should be the multiboot header
     cli
-    call main
+    call archInit
     cli
     hlt                 ; Deadlock Stop.
     jmp $               ; In case we get an NMI
