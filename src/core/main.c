@@ -17,8 +17,8 @@ int main(multiboot_info_t* mbt, unsigned int magic)
         console_write_hex(mbt->flags);
         if (mbt->flags & MULTIBOOT_INFO_MEMORY) {
             console_write("Memory Found: ");
-            console_write_hex(mbt->mem_upper+mbt->mem_lower);
-            console_write(" Kilobytes.\n");
+            console_write_hex((mbt->mem_upper+mbt->mem_lower)/1024);
+            console_write(" MB.\n");
         }
     }
 
