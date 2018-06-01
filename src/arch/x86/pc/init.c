@@ -34,12 +34,9 @@ int archInit(multiboot_info_t* mbt, unsigned int magic)
         console_write(" Multiboot bootloader not detected, system halting!\n");
         return -1;
     }
-    console_write("VBE MODE ");
-    console_write_hex(mbt->vbe_mode);
-    console_write("\nVBE reports address ");
-    console_write_hex(mbt->framebuffer_addr & 0xFFFFFFFF);
-    console_write("\nDisplay size");
-    console_write_hex(mbt->framebuffer_width * mbt->framebuffer_height);
+    console_write("Multiboot Flags ");
+    console_write_hex(mbt->flags);
+    console_write((char *)mbt->cmdline);
     // We're all set up on the arch side, time to pass control to kernel main
     main();
     return 0;
