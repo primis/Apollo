@@ -7,8 +7,9 @@
 #define __SYS_CORE_H
 
 #include <sys/multiboot.h>
+#define KSTALLOC_SZ 4098
 
-void multiboot_parse(multiboot_info_t* mbt);
+void multiboot_parse(multiboot_info_t*, multiboot_info_t*);
 void main();
-
+unsigned int kstalloc(unsigned int len);
 #endif

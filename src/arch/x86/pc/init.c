@@ -14,8 +14,11 @@
  * the kernel before calling main.
  */
 
+multiboot_info_t *mboot;
+
 int archInit(multiboot_info_t* mbt, unsigned int magic)
 {
+
     consoleInit();
     gdtInit();
     idtInit();
@@ -30,8 +33,9 @@ int archInit(multiboot_info_t* mbt, unsigned int magic)
         printf(" Multiboot bootloader not detected, system halting!\n");
         return -1;
     }
-    // Now time to parse the multiboot header
-    multiboot_parse(mbt);
+    // Now time to parse the multiboot info (for debugging) and copy
+    // the contents of it to known memory
+    multiboot_parse(mboot, mbt);
     // We're all set up on the arch side, time to pass control to kernel main
     main();
     return 0;
