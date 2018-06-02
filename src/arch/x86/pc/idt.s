@@ -6,7 +6,6 @@
 [BITS 32]
 [GLOBAL idtFlush]
 [EXTERN isrHandler]
-[EXTERN irqHandler]
 [GLOBAL isr0]
 [GLOBAL isr1]
 ; Macros to make our lives easy
@@ -26,14 +25,6 @@
         nop
         push %1
         jmp 0x08:isr_common_stub
-%endmacro
-
-%macro IRQ 2; IRQ's have a service number and a real number
-    irq%2:
-        cli
-        push 0
-        push %1
-        jmp 0x08:irq_common_stub
 %endmacro
 
 ; IDT Flush -- Tell the CPU where interrupts go for servicing
@@ -95,51 +86,6 @@ isr_common_stub:
     add esp, 12     ; Remove DS, intNum and ErrCode
     iret
 
-; IRQ Service Stub (Yes. it is a copy-paste of the ISR one)
-
-irq_common_stub:
-    push ds         ; Store all registers (faster than PUSHA, doesn't keep ESI)
-    push ebp        ; Also lets us set the order :)
-    push ebx        ; EBX is the only register C doesn't clobber
-    push edi
-    push esi
-    push edx
-    push ecx
-    push eax
-    mov eax, 0x10   ; Kernel Data Segment
-    mov  ds, eax
-    mov  es, eax
-    mov  fs, eax
-    mov  gs, eax    ; Set all segment registers
-    mov ebx, esp    ; Store stack before aligning it
-    sub esp, 4      ; Add room for stack pointer
-    and esp, 0xFFFFFFF0 ; Align 16
-    mov [esp], ebx  ; Put the old stack pointer on the stack
-    cld             ; SYSV ABI requires DF to be clear on function entry
-    
-    call irqHandler ; C Code handler
-
-    pop ebx         ; Grab pre-aligned stack pointer
-    mov esp, ebx    
-    mov eax, [esp + 28] ; Grab the data segment off the stack
-    mov  ds, eax    ; restore it back to the segments
-    mov  es, eax
-    mov  fs, eax
-    mov  gs, eax    ; Restore the old segment
-    pop eax         ; We now pop everything off in reverse order.
-    pop ecx
-    pop edx
-    pop esi
-    pop edi         
-    pop ebx         
-    pop ebp         
-    sti             ; Restore the interrupts
-    add esp, 12     ; Cleanup stack
-    iret
-
-; Macro time!
-%assign i 0
-
 ; Macro time!
 %assign i 0
 
@@ -157,18 +103,7 @@ ISR_NOERRCODE 9
     %assign i i+1
 %endrep
 
-%rep 17
-    ISR_NOERRCODE i
-    %assign i i+1
-%endrep
-
-%rep 16
-    %assign j i-32
-    IRQ i, j
-    %assign i i+1
-%endrep
-
-%rep 207
+%rep 240
     ISR_NOERRCODE i
     %assign i i+1
 %endrep
