@@ -5,7 +5,6 @@
  */
 
 #include <arch/x86/ports.h>
-#include <arch/x86/idt.h>
 #include <arch/x86/pic.h>
 
 void PIC_init(unsigned char icw1, unsigned char icw3, unsigned char icw4,
