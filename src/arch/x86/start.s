@@ -30,7 +30,7 @@ section .text
 
 ; This is the multiboot header.
 mboot:
-    ALIGN 4
+    ALIGN 32
     dd MULTIBOOT_HEADER_MAGIC
     dd MULTIBOOT_HEADER_FLAGS
     dd MULTIBOOT_CHECKSUM

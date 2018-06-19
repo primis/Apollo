@@ -4,7 +4,7 @@
  */
 
 #include <arch/x86/idt.h>
-#include <sys/console.h>
+#include <hal.h>
 #include <arch/x86/pic.h>
 
 static const unsigned short masterPIC = 0x20;
@@ -38,12 +38,11 @@ void isrHandler(struct registers *regs)
     if(regs->intNum >= 0x20 && regs->intNum < 0x30) {
         irqHandler(regs);
     }
-    console_write("Interrupt Received: ");
-    console_write_hex(regs->intNum);
+    write_console("Interrupt Received", 18);
     // TODO: actual passoff to a function that cares!
 }
 
-void idtInit()
+int idtInit()
 {
     static IDTEntry    idt[256];
     static IDTPointer  idtPtr;
@@ -99,4 +98,16 @@ void idtInit()
 
     // Finally, we can push changes to the CPU and enable interrupts
     idtFlush((uint32_t)&idtPtr);
+    return 0;
 }
+
+static prereq_t prereqs[] = { {"x86/gdt",NULL}, {NULL, NULL} };
+static prereq_t load_after[] = { {"debugger",NULL}, {NULL, NULL}};
+/*
+MODULE = {
+    .name = "interrupts",
+    .required = prereqs,
+    .load_after = load_after,
+    .init = &idtInit,
+    .fini = NULL
+};*/

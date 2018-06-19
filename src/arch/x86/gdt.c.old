@@ -4,7 +4,7 @@
  */
 
 #include <arch/x86/gdt.h>
-
+#include <hal.h>
 
 /*
  * These have to be global because otherwise we couldn't modify the gdt later
@@ -49,7 +49,7 @@ void encodeGDTEntry(GDTEntry *ptr, uint32_t base, uint32_t limit, uint16_t type)
 /**
  * gdtInit - Fill the GDT with the barebones for flat segmentation.
  */
-void gdtInit()
+int gdtInit()
 {
     gdtPointer.limit = (sizeof(GDTEntry) * 5) - 1;
     gdtPointer.base  = (uint32_t *)GDT; // Actual Entries.
@@ -59,6 +59,14 @@ void gdtInit()
     encodeGDTEntry(&GDT[3], 0, 0xFFFFFFFF, GDT_CODE_PL3);
     encodeGDTEntry(&GDT[4], 0, 0xFFFFFFFF, GDT_DATA_PL3);
     gdtFlush((uint32_t)&gdtPointer);
+    return 0;
 }
-
-
+/*
+static prereq_t prereqs[] = { {"console", NULL}, {"debugger",NULL}, {NULL,NULL} };
+MODULE = {
+    .name = "x86/gdt",
+    .required = NULL,
+    .load_after = prereqs,
+    .init = &gdtInit,
+    .fini = NULL
+};*/

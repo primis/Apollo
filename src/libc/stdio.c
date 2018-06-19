@@ -5,7 +5,7 @@
 
 #include <stdio.h>
 #include <string.h>
-#include <sys/console.h>
+#include <hal.h>
 
 #if 1
 #include <stdarg.h> /* va_list, va_start(), va_arg(), va_end() */
@@ -89,7 +89,9 @@ int printf(const char *fmt, ...)
 
 int putchar(int c)
 {
-    console_put(c);
+    char str[2] = "\0";
+    str[0] = (char)c;
+    write_console(str, 1);
     return 0;
 }
 
@@ -261,7 +263,7 @@ DO_NUM:				if(flags & PR_32) /* load the value to be printed. l=long=32 bits: */
 				flags &= ~PR_LZ;
 				where = va_arg(args, unsigned char *);
 EMIT:
-				actual_wd = strlen(where);
+				actual_wd = strlen((char*)where);
 
 				if(flags & PR_WS)
 					actual_wd++;

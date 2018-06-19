@@ -24,12 +24,13 @@ NASM		= nasm
 #### Flags ####
 LDFLAGS		?= -Tlink.ld -lgcc
 CFLAGS		?= -Wall -ffreestanding -fbuiltin -nostdlib -masm=intel
-CPPFLAGS	?= -Iinclude -DGITREV="\"$(GIT_REV)\""
+CPPFLAGS	?= -Iinclude -DGITREV="\"$(GIT_REV)\"" -DX86
 NASMFLAGS	?= -felf
 BINDIR		?= ../bin/
 
 ### Targets ###
 all: link
+
 clean:
 	find . -type f -name '*.o' -exec rm {} +
 link: $(X86_OBJECTS) $(CORE_OBJECTS) $(LIBC_OBJECTS)

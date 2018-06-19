@@ -36,7 +36,7 @@ typedef struct {
     uint32_t base;
 } __attribute__((packed)) IDTPointer;
 
-void idtInit();
+int idtInit();
 void encodeIDTEntry(IDTEntry *ptr, uint32_t base, uint16_t sel, uint8_t flags);
 void isrHandler(struct registers *regs);
 

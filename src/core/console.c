@@ -1,35 +1,127 @@
 /*
  * (c) 2017 Apollo Project Developers
  * core/console.c - Console interface for early kernel debugging
+ *
+ * TODO: Implement spinlocks and uncomment the lines for them!
  */
 
-#include <sys/console.h>
+#include <sys/hal.h>
 
-void console_write(char *c) {
-    int i=0;
-    while (c[i])
-    {
-        // defined on a per-arch basis.
-        console_put(c[i++]);
+static console_t *consoles = NULL;
+
+// A lock for all console operations.
+static spinlock_t lock = SPINLOCK_RELEASED;
+
+int register_console(console_t *c)
+{
+   // spinlock_acquire(&lock);
+
+    if (consoles) {
+        consoles->prev = c;
     }
+    c->next = consoles;
+    c->prev = NULL;
+
+    consoles = c;
+
+    // If an open() was provided, call it.
+    if (c->open) {
+        c->open(c);
+    }
+    write_console("New console Registerd\n", 22);
+    //spinlock_release(&lock);
+    return 0;
 }
 
-void console_write_hex(unsigned int n) {
-    int i, tmp;
-    int noZero = 1; // Use as bool
-    console_write("0x");
-    for(i=28; i>=0; i-=4)
-    {
-        tmp = (n >> i) & 0xF;
-        if(tmp==0 && noZero!=0)
-        {
-            continue;
-        } else if (tmp >= 0xA) {
-            noZero = 0;
-            console_put(tmp - 0xA + 'A');
-        } else {
-            noZero = 0;
-            console_put(tmp + '0');
+void unregister_console(console_t *c)
+{
+   // spinlock_acquire(&lock);
+    console_t *prev = NULL;
+    console_t *this = consoles;
+
+    while(this) {
+        if(this == c) {
+            if(this->next) {
+                this->next->prev = prev;
+            }
+            if(this->prev) {
+                this->prev->next = this->next;
+            }
+            if(!prev) {
+                consoles = c;
+            }
+
+            if(this->flush) {
+                this->flush(this);
+            }
+            if(this->close) {
+                this->close(this);
+            }
+            break;
+        }
+        prev = this;
+        this = this->next;
+    }
+    //spinlock_release(&lock);
+}
+
+// write to all consoles
+void write_console(const char *buf, int len)
+{
+   // spinlock_acquire(&lock);
+    console_t *this = consoles;
+    while (this) {
+        if(this->write) {
+            this->write(this, buf, len);
+        }
+        this = this->next;
+    }
+    //spinlock_release(&lock);
+}
+
+int read_console(char *buf, int len)
+{
+    if (len == 0) {
+        return 0;
+    }
+   // spinlock_acquire(&lock);
+    console_t *this = consoles;
+    while (this) {
+        if (this->read) {
+            int n = this->read(this, buf, len);
+            if (n > 0) {
+                spinlock_release(&lock);
+                return n;
+            }
+        }
+        this = this->next;
+        if (!this) {
+            this = consoles;
         }
     }
+    //spinlock_release(&lock);
+    return -1;
 }
+
+static int shutdown_console()
+{
+    console_t *this = consoles;
+    while (this) {
+        if (this->flush) {
+            this->flush(this);
+        }
+        if (this->close) {
+            this->close(this);
+        }
+        this = this->next;
+    }
+    return 0;
+}
+
+MODULE = {
+    .name = "console",
+    .required = NULL,
+    .load_after = NULL,
+    .init = NULL,
+    .fini = &shutdown_console,
+};

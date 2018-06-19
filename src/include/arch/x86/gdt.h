@@ -17,7 +17,7 @@ typedef struct {
     uint8_t entry[8];   // Makes it easier to do sizeof() and definitions.
 } __attribute__((packed)) GDTEntry;
 
-void gdtInit();
+int gdtInit();
 void encodeGDTEntry(GDTEntry *ptr, uint32_t base, uint32_t limit, uint16_t type);
 
 /*
