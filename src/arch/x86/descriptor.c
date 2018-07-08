@@ -4,7 +4,8 @@
  */
 
 #include <arch/x86/gdt.h>
-#include <hal.h>
+#include <sys/hal.h>
+#include <stdio.h>
 
 /*
  * These have to be global because otherwise we couldn't modify the gdt later
@@ -61,12 +62,11 @@ int gdtInit()
     gdtFlush((uint32_t)&gdtPointer);
     return 0;
 }
-/*
-static prereq_t prereqs[] = { {"console", NULL}, {"debugger",NULL}, {NULL,NULL} };
+static prereq_t prereqs[] = { {"console",NULL}, {"debugger",NULL}, {NULL,NULL} };
 MODULE = {
     .name = "x86/gdt",
     .required = NULL,
     .load_after = prereqs,
     .init = &gdtInit,
-    .fini = NULL
-};*/
+    .fini = NULL,
+};

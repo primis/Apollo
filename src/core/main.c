@@ -5,6 +5,7 @@
 
 #include <sys/hal.h>
 #include <string.h>
+#include <stdio.h>
 
 // These are defined by the linker from the "modules" section
 extern module_t __start_modules, __stop_modules;
@@ -45,8 +46,6 @@ int main(int argc, char **argv)
             init_module(m);
         }
         // Finally, run the main function, unless we're in test harness mode.
-
-        write_console("Init'd",6);
         for(;;);
         kmain(argc, argv);
     }
@@ -149,17 +148,12 @@ static module_t *find_module(const char *name)
 }
 
 static void log_status(int status, const char *name, const char *text) {
-    write_console("[",1);
     if (status == 0) {
-        write_console("\033[32m OK \033[0m", 13);
+        printf("[\033[32m OK \033[0m] ");
     } else {
-        write_console("\033[31mFAIL\022[0m", 13);
+        printf("[\033[31mFAIL\022[0m] ");
     }
-    write_console("] ", 2);
-    write_console(text, strlen(text));
-    write_console(" ", 1);
-    write_console(name, strlen(name));
-    write_console("\n", 1);
+    printf("%s %s\n", text, name);
 #ifdef HOSTED
     printf("main: %s %s with status %d\n", text, name, status);
 #endif

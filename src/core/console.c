@@ -28,7 +28,9 @@ int register_console(console_t *c)
     if (c->open) {
         c->open(c);
     }
-    write_console("New console Registerd\n", 22);
+    // There's some sort of weird thing going on with console. If you
+    // Don't write something to it during init, it wont work at all.
+    write_console("\n", 1);
     //spinlock_release(&lock);
     return 0;
 }

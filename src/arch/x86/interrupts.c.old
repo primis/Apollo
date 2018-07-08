@@ -4,7 +4,7 @@
  */
 
 #include <arch/x86/idt.h>
-#include <hal.h>
+#include <sys/hal.h>
 #include <arch/x86/pic.h>
 
 static const unsigned short masterPIC = 0x20;
@@ -101,13 +101,33 @@ int idtInit()
     return 0;
 }
 
+void disable_interrupts()
+{
+    __asm__ __volatile__("cli");
+}
+
+void enable_interrupts()
+{
+    __asm__ __volatile__("sti");
+}
+
+
+
+void set_interrupt_state(int en)
+{
+    if(en == 0) {
+        __asm__ __volatile__("cli");
+    } else {
+        __asm__ __volatile__("sti");
+    }
+}
+
 static prereq_t prereqs[] = { {"x86/gdt",NULL}, {NULL, NULL} };
 static prereq_t load_after[] = { {"debugger",NULL}, {NULL, NULL}};
-/*
 MODULE = {
     .name = "interrupts",
     .required = prereqs,
     .load_after = load_after,
     .init = &idtInit,
     .fini = NULL
-};*/
+};

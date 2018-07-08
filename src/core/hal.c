@@ -5,7 +5,7 @@
  * Idea and most of implementation borrowed from James Molloy
  */
 
-#include <hal.h>
+#include <sys/hal.h>
 
 // Weak definition means that these functions will be overridden at compile
 // time if another symbol exists with the same name. This lets us make
