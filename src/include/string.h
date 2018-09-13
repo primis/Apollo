@@ -6,6 +6,8 @@
 #ifndef _STRING_H
 #define _STRING_H
 
+#include <stddef.h>
+
 #ifndef NULL
     #define NULL 0
 #endif
@@ -15,24 +17,25 @@
    typedef unsigned int size_t;
 #endif
 
-void *memcpy(void *destination, const void *source, size_t num);
-void *memmove(void *destination, const void *source, size_t num);
-char *strcpy(char *destination, const char *source);
-char *strncpy(char *destination, const char *source, size_t num);
-void *memset(void *ptr, int value, size_t num);
-size_t strlen(const char *str);
-char *strcat(char *destination, const char *source);
-char *strncat(char *destination, const char *source, size_t num);
-int memcmp(const void *ptr1, const void *ptr2, size_t num);
-int strcmp(const char *str1, const char *str2);
-int strncmp(const char *str1, const char *str2, size_t num);
-const void *memchr(const void *ptr, int value, size_t num);
-char *strchr(const char *str, int character);
-size_t strcspn(const char *str1, const char *str2);
-char *strpbrk(const char *str1, const char *str2);
-char *strrchr(const char *str, int character);
-size_t strspn(const char *str1, const char *str2);
-char *strstr(const char *str1, const char *str2);
-char *strtok(char *str, const char *delimiters);
+void *memcpy(void *, const void *, size_t);
+void *memmove(void *, const void *, size_t);
+char *strcpy(char *, const char *);
+char *strncpy(char *, const char *, size_t);
+void *memset(void *, int, size_t);
+size_t strlen(const char *);
+char *strcat(char *, const char *);
+char *strncat(char *, const char *, size_t);
+int memcmp(const void *, const void *, size_t);
+int strcmp(const char *, const char *);
+int strncmp(const char *, const char *, size_t);
+const void *memchr(const void *, int, size_t);
+char *strchr(const char *, int);
+size_t strcspn(const char *, const char *);
+char *strpbrk(const char *, const char *);
+char *strrchr(const char *, int);
+size_t strspn(const char *, const char *);
+char *strstr(const char *, const char *);
+char *strtok(char *, const char *);
+
 
 #endif /* _STRING_H */

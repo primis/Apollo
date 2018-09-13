@@ -34,8 +34,8 @@ SOBJECTS	:= $(patsubst %.s,$(BUILD)/%.s.o,$(SSOURCES))
 SRCDIR		!= find src/ -type d | tr '\n' ' '
 
 WARNINGS	:= -Wall -Wextra -Wno-unused-parameter
-DEFS		:= -ffreestanding -fbuiltin -nostdlib -DGITREV="\"$(GIT_REV)\""\
-		-Isrc/include
+DEFS		:= -fbuiltin -DGITREV="\"$(GIT_REV)\""\
+		-Isrc/include -O0 -std=c99
 
 all: link
 
