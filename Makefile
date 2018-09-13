@@ -47,7 +47,7 @@ $(BUILD)/%.c.o: %.c Makefile | setup_builddir
 
 link: $(SOBJECTS) $(COBJECTS)
 	@printf "\033[1mLINK\033[0m $@\n"
-	@$(CC) $(DEFS) $(WARNINGS) $(LDFLAGS) $(TARGET_LDFLAGS) -o bin/sys.mod \
+	@$(CC) $(DEFS) $(WARNINGS) $(LDFLAGS) $(TARGET_LDFLAGS) -o bin/$(BIN) \
 	$(SOBJECTS) $(COBJECTS)
 
 setup_builddir:

@@ -4,6 +4,7 @@
  */
 
 #include <string.h>
+#if !defined(HOSTED) // check for hosted system
 
 void *memcpy(void *destination, const void *source, size_t num)
 {
@@ -217,4 +218,4 @@ char *strtok(char *str, const char *delimiters)
     ptr = *ptr ? *ptr=0, ptr+1 : 0;
     return str;
 }
-
+#endif // Hosted Check

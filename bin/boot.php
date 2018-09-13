@@ -1,4 +1,4 @@
 #!ipxe
 
-kernel sys.mod
+kernel x86-sys.mod
 boot
