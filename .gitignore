@@ -1,0 +1,11 @@
+# Gitignore file
+
+# Prereq files
+*.d
+
+# Object Files
+*.o
+
+# The build trees
+build*/
+
