@@ -2,6 +2,7 @@
 # Target is x86
 # Copyright 2018 Apollo Developers
 
+CC				:= i586-elf-gcc
 BIN				:= x86-sys.mod
 AS				:= nasm
 ASFLAGS			:= -felf

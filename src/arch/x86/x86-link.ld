@@ -1,14 +1,26 @@
 ENTRY(start)
 SECTIONS
 {
-	.text 0x100000 :
+    .init 0x100000 :
+    {
+        PROVIDE (__start = .);
+        *(.init)
+    }
+    
+    .init.bss ALIGN(4096) :
+    {
+        *(.init.bss)
+    }
+
+    .text ALIGN(4096) :
 	{
 		code = .; _code = .; __code = .;
 		*(.text)
-		. = ALIGN(4096);
+        *(.text.exit .text.exit.*)
+        *(.text.startup text.startup.*)
 	}
 
-	.data :
+	.data ALIGN(4096) :
 	{
         PROVIDE (__startup_begin = .);
         *(.startup)
@@ -23,14 +35,12 @@ SECTIONS
         *(.ctors)
         PROVIDE(__ctors_end = .);
 		*(.rodata)
-		. = ALIGN(4096);
 	}
 
-	.bss :
+	.bss ALIGN(4096):
 	{
 		bss = .; _bss = .; __bss = .;
 		*(.bss .bss.* .gnu.linkonce.b.*)
-		. = ALIGN(4096);
 	}
     PROVIDE(__end = .);
 	end = .; _end = .; __end = .;

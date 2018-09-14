@@ -8,7 +8,9 @@ MULTIBOOT_PAGE_ALIGN    equ 1<<0
 MULTIBOOT_MEMORY_INFO   equ 1<<1 
 MULTIBOOT_VIDEO_MODE    equ 1<<2
 MULTIBOOT_HEADER_MAGIC  equ 0x1BADB002
-MULTIBOOT_HEADER_FLAGS  equ MULTIBOOT_PAGE_ALIGN | MULTIBOOT_MEMORY_INFO
+
+
+MULTIBOOT_HEADER_FLAGS  equ (MULTIBOOT_PAGE_ALIGN | MULTIBOOT_MEMORY_INFO)
 MULTIBOOT_CHECKSUM      equ -(MULTIBOOT_HEADER_MAGIC + MULTIBOOT_HEADER_FLAGS)
 
 
@@ -22,18 +24,33 @@ KERNEL_STACK_SIZE       equ 0x4000
 [GLOBAL start]
 [EXTERN archInit]
 [GLOBAL gdtFlush]
+[GLOBAL KERNEL_STACK]
+[EXTERN code]
+[EXTERN bss]
+[EXTERN end]
 
 
 ; Multiboot Header
 ;==================
-section .text
+section .init
 
 ; This is the multiboot header.
 mboot:
-    ALIGN 32
+    align 32
+    ;dd 0x1BADB002
+    ;dd 0x11
+    ;dd 0xE4524FFA 
+
     dd MULTIBOOT_HEADER_MAGIC
     dd MULTIBOOT_HEADER_FLAGS
     dd MULTIBOOT_CHECKSUM
+    dd mboot
+    dd code
+    dd bss
+    dd end
+    dd start
+
+
 
 ; Bootloader dropoff point
 ;==========================
@@ -64,9 +81,14 @@ gdtFlush:
 .flush:
     ret                 ; new GDT is now installed
 
+; Multiboot Padding
+section .init.bss nobits
+pd: resb    0x1000
+pt: resb    0x1000
+
 ; Stack
 ;=======
 section .bss
-ALIGN 32
+ALIGN 8192
 KERNEL_STACK:
     resb KERNEL_STACK_SIZE
