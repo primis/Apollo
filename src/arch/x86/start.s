@@ -23,12 +23,10 @@ KERNEL_STACK_SIZE       equ 0x4000
 [GLOBAL mboot]
 [GLOBAL start]
 [EXTERN archInit]
-[GLOBAL gdtFlush]
 [GLOBAL KERNEL_STACK]
 [EXTERN code]
 [EXTERN bss]
 [EXTERN end]
-
 
 ; Multiboot Header
 ;==================
@@ -37,10 +35,6 @@ section .init
 ; This is the multiboot header.
 mboot:
     align 32
-    ;dd 0x1BADB002
-    ;dd 0x11
-    ;dd 0xE4524FFA 
-
     dd MULTIBOOT_HEADER_MAGIC
     dd MULTIBOOT_HEADER_FLAGS
     dd MULTIBOOT_CHECKSUM
@@ -66,20 +60,6 @@ start:
     hlt                 ; Deadlock Stop.
     jmp $               ; In case we get an NMI
 
-; GDT Loader
-;============
-gdtFlush:
-    mov eax, [esp + 4]  ; Get the pointer from the stack
-    lgdt [eax]          ; Load that into the MSR
-    mov ax, 0x10        ; Kernel Code Segment
-    mov ds, ax          ; Reload the segments
-    mov es, ax
-    mov fs, ax
-    mov gs, ax
-    mov ss, ax
-    jmp 0x08:.flush     ; Long jump to change to the new GDT
-.flush:
-    ret                 ; new GDT is now installed
 
 ; Multiboot Padding
 section .init.bss nobits

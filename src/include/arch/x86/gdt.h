@@ -7,18 +7,54 @@
 #define __ARCH_X86_GDT_H
 
 #include <stdint.h>
-extern void gdtFlush(uint32_t);
+
+typedef struct {
+    uint16_t limit_low;
+    uint16_t base_low;
+    uint8_t  base_mid;
+    uint8_t  type : 4;
+    uint8_t  s    : 1;            /* 's' should always be 1, except for */
+    uint8_t  dpl  : 2;            /* the NULL segment. */
+    uint8_t  p    : 1;
+    uint8_t  limit_high : 4;
+    uint8_t  avail: 1;
+    uint8_t  l    : 1;
+    uint8_t  d    : 1;
+    uint8_t  g    : 1;
+    uint8_t  base_high;
+} gdt_entry_t;
+
 typedef struct {
     uint16_t limit;
-    uint32_t *base;
-} __attribute__((packed)) GDTPointer;
+    uint32_t base;
+} __attribute__((packed)) gdt_ptr_t;
 
 typedef struct {
-    uint8_t entry[8];   // Makes it easier to do sizeof() and definitions.
-} __attribute__((packed)) GDTEntry;
+    uint32_t prev_tss;
+    uint32_t esp0, ss0, esp1, ss1, esp2, ss2;
+    uint32_t cr3, eip, eflags;
+    uint32_t eax, ecx, edx, ebx, esp, ebp, esi, edi;
+    uint32_t es, cs, ss, ds, fs, gs;
+    uint32_t ldt;
+    uint16_t trap, iomap_base;
+} tss_entry_t;
 
-int gdtInit();
-void encodeGDTEntry(GDTEntry *ptr, uint32_t base, uint32_t limit, uint16_t type);
+extern void gdtFlush();
+
+#define TY_CODE 8
+
+/* Applies to code segments */
+#define TY_CONFORMING 4
+#define TY_READABLE 2
+
+/* Applies to data segments. */
+#define TY_DATA_EXPAND_DIRECTION 4
+#define TY_DATA_WRITABLE 2
+
+/* Applies to both; set by the CPU. */
+#define TY_ACCESSED 1
+
+
 
 /*
  * Here There Be Macros... Y'arr
@@ -52,37 +88,28 @@ void encodeGDTEntry(GDTEntry *ptr, uint32_t base, uint32_t limit, uint16_t type)
 #define SEG_CODE_EXRDC     0x0E // Execute/Read, conforming
 #define SEG_CODE_EXRDCA    0x0F // Execute/Read, conforming, accessed
 
-#define GDT_CODE_PL0 SEG_DESCTYPE(1) | SEG_PRES(1) | SEG_SAVL(0) | \
-                     SEG_LONG(0)     | SEG_SIZE(1) | SEG_GRAN(1) | \
+#define GDT_CODE_PL0 SEG_DESCTYPE(1) | SEG_PRES(1) | \
                      SEG_PRIV(0)     | SEG_CODE_EXRD
 
-#define GDT_DATA_PL0 SEG_DESCTYPE(1) | SEG_PRES(1) | SEG_SAVL(0) | \
-                     SEG_LONG(0)     | SEG_SIZE(1) | SEG_GRAN(1) | \
+#define GDT_DATA_PL0 SEG_DESCTYPE(1) | SEG_PRES(1) | \
                      SEG_PRIV(0)     | SEG_DATA_RDWR
 
-
-#define GDT_CODE_PL1 SEG_DESCTYPE(1) | SEG_PRES(1) | SEG_SAVL(0) | \
-                     SEG_LONG(0)     | SEG_SIZE(1) | SEG_GRAN(1) | \
+#define GDT_CODE_PL1 SEG_DESCTYPE(1) | SEG_PRES(1) | \
                      SEG_PRIV(1)     | SEG_CODE_EXRD
 
-#define GDT_DATA_PL1 SEG_DESCTYPE(1) | SEG_PRES(1) | SEG_SAVL(0) | \
-                     SEG_LONG(0)     | SEG_SIZE(1) | SEG_GRAN(1) | \
+#define GDT_DATA_PL1 SEG_DESCTYPE(1) | SEG_PRES(1) | \
                      SEG_PRIV(1)     | SEG_DATA_RDWR
 
-#define GDT_CODE_PL2 SEG_DESCTYPE(1) | SEG_PRES(1) | SEG_SAVL(0) | \
-                     SEG_LONG(0)     | SEG_SIZE(1) | SEG_GRAN(1) | \
+#define GDT_CODE_PL2 SEG_DESCTYPE(1) | SEG_PRES(1) | \
                      SEG_PRIV(2)     | SEG_CODE_EXRD
 
-#define GDT_DATA_PL2 SEG_DESCTYPE(1) | SEG_PRES(1) | SEG_SAVL(0) | \
-                     SEG_LONG(0)     | SEG_SIZE(1) | SEG_GRAN(1) | \
+#define GDT_DATA_PL2 SEG_DESCTYPE(1) | SEG_PRES(1) | \
                      SEG_PRIV(2)     | SEG_DATA_RDWR
 
-#define GDT_CODE_PL3 SEG_DESCTYPE(1) | SEG_PRES(1) | SEG_SAVL(0) | \
-                     SEG_LONG(0)     | SEG_SIZE(1) | SEG_GRAN(1) | \
+#define GDT_CODE_PL3 SEG_DESCTYPE(1) | SEG_PRES(1) | \
                      SEG_PRIV(3)     | SEG_CODE_EXRD
 
-#define GDT_DATA_PL3 SEG_DESCTYPE(1) | SEG_PRES(1) | SEG_SAVL(0) | \
-                     SEG_LONG(0)     | SEG_SIZE(1) | SEG_GRAN(1) | \
+#define GDT_DATA_PL3 SEG_DESCTYPE(1) | SEG_PRES(1) | \
                      SEG_PRIV(3)     | SEG_DATA_RDWR
 
 #endif // __ARCH_X86_GDT_H
