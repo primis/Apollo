@@ -1,3 +1,9 @@
+/*
+ * (c) 2018 Apollo Project Developers
+ * arch/x86/descriptors.c - GDT & TSS
+ */
+
+
 #include <sys/hal.h>
 #include <arch/x86/gdt.h>
 #include <stdio.h>
