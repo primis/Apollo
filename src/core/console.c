@@ -6,18 +6,26 @@
  */
 
 #include <sys/hal.h>
+#include <adt/ringbuf.h>
+#include <string.h>
+#include <stdio.h>
 
 static console_t *consoles = NULL;
 
 // A lock for all console operations.
 static spinlock_t lock = SPINLOCK_RELEASED;
 
+char_ringbuf_t console_buf;    // Console buffer, used for pre-screen.
+char console_char_buf[1920];   // 80*24
+
 int register_console(console_t *c)
 {
-   // spinlock_acquire(&lock);
-
+    // spinlock_acquire(&lock);
+    int first_console = 0; // Used to detect if we dump the buffer.
     if (consoles) {
         consoles->prev = c;
+    } else {
+        first_console = 1;
     }
     c->next = consoles;
     c->prev = NULL;
@@ -28,9 +36,15 @@ int register_console(console_t *c)
     if (c->open) {
         c->open(c);
     }
-    // There's some sort of weird thing going on with console. If you
-    // Don't write something to it during init, it wont work at all.
-    write_console("\n", 1);
+
+    if (first_console) {
+        char buf[1920]; // Magic number = 80*24
+        char_ringbuf_read(&console_buf, buf, console_buf.buffer_length);
+        // Printf works here. if we use write_console we get garbage.
+        // Honestly I have no idea why.
+        printf("%s",buf);
+    }
+
     //spinlock_release(&lock);
     return 0;
 }
@@ -72,6 +86,9 @@ void write_console(const char *buf, int len)
 {
    // spinlock_acquire(&lock);
     console_t *this = consoles;
+    if(consoles == NULL) {
+        char_ringbuf_write(&console_buf, buf, len);
+    }
     while (this) {
         if(this->write) {
             this->write(this, buf, len);
@@ -120,10 +137,17 @@ static int shutdown_console()
     return 0;
 }
 
+int console_init()
+{
+    memset(console_char_buf, 0, 1920);                  // Zero out the buffer.
+    console_buf = make_char_ringbuf(console_char_buf, 1920);
+    return 0;
+}
+
 MODULE = {
     .name = "console",
     .required = NULL,
     .load_after = NULL,
-    .init = NULL,
+    .init = &console_init,
     .fini = &shutdown_console,
 };

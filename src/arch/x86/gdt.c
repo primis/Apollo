@@ -1,6 +1,6 @@
 /*
  * (c) 2018 Apollo Project Developers
- * arch/x86/descriptors.c - GDT & TSS
+ * arch/x86/gdt.c - GDT & TSS
  */
 
 
