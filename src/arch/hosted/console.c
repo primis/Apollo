@@ -6,14 +6,6 @@
 
 static struct termios orig;
 
-console_t c = {
-  .open = NULL,
-  .close = NULL,
-  .read = &c_read,
-  .write = &write,
-  .flush = NULL,
-  .data = NULL
-};
 
 int c_read(console_t *obj, char *buf, int len) {
   fd_set set;
@@ -31,6 +23,15 @@ int c_read(console_t *obj, char *buf, int len) {
 int c_write(console_t *obj, const char *buf, int len) {
   return (int)write(1, buf, len);
 }
+
+console_t c = {
+  .open = NULL,
+  .close = NULL,
+  .read = &c_read,
+  .write = &c_write,
+  .flush = NULL,
+  .data = NULL
+};
 
 int init_console() {
   struct termios t;
