@@ -2,12 +2,29 @@
 # Target is x86
 # Copyright 2018 Apollo Developers
 
-CC				:= i586-elf-gcc
-BIN				:= x86-sys.mod
-AS				:= nasm
-ASFLAGS			:= -felf
-TARGET_DEFS 	:= -DX86=1 -m32 -masm=intel -ffreestanding -nostdlib
-TARGET_LDFLAGS	:= -m32 -Tsrc/arch/x86/x86-link.ld -nostdlib -lgcc -n
+
+# Check for different Cross compilers in reverse order
+# We need to make the shell bash for "command -v" to work
+SHELL		:= $(shell which bash)
+CC		:= $(shell command -v i586-elf-gcc)
+ifndef CC
+CC		:= $(shell command -v i686-elf-gcc)
+endif
+
+# Fall back case to regular GCC
+ifndef CC
+CC		:= gcc
+TARGET_LDFLAGS	:= -m32 -Tsrc/arch/x86/x86-link.ld -nostdlib -n
+$(warning Using default GCC for compilation, please consider installing a cross compiler!)
+endif
+
+
+
+BIN		:= x86-sys.mod
+AS		:= nasm
+ASFLAGS		:= -felf
+TARGET_DEFS 	:= -DX86=1 -m32 -masm=intel -ffreestanding -nostdlib	
+TARGET_LDFLAGS	?= -m32 -Tsrc/arch/x86/x86-link.ld -nostdlib -lgcc -n
 CSOURCES	:= $(shell find src/arch/x86 -type f -name "*.c") $(CSOURCES_TI)
 SSOURCES 	:= $(shell find src/arch/x86 -type f -name "*.s") $(SSOURCES_TI)
 

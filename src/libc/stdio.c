@@ -130,7 +130,7 @@ int do_printf(const char *fmt, va_list args, fnptr_t fn, void *ptr)
 			}
 			state++; /* found %, get next char and advance state to check if next char is a flag */
 			fmt++;
-
+			/* Falls Through */
 		case 1: /* STATE 1: AWAITING FLAGS (%-0) */
 			if(*fmt == '%')	/* %% */
 			{
@@ -156,7 +156,7 @@ int do_printf(const char *fmt, va_list args, fnptr_t fn, void *ptr)
 				flags |= PR_LZ;
 				fmt++;
 			}
-
+			/* Falls Through */
 		case 2: /* STATE 2: AWAITING (NUMERIC) FIELD WIDTH */
 			if(*fmt >= '0' && *fmt <= '9')
 			{
@@ -165,7 +165,7 @@ int do_printf(const char *fmt, va_list args, fnptr_t fn, void *ptr)
 				break;
 			}
 			state++;
-
+			/* Falls Through */
 		case 3: /* STATE 3: AWAITING MODIFIER CHARS (FNlh) */
 			if(*fmt == 'F')
 			{
@@ -185,7 +185,7 @@ int do_printf(const char *fmt, va_list args, fnptr_t fn, void *ptr)
 				break;
 			}
 			state++;
-
+			/* Falls through */
 		case 4: /* STATE 4: AWAITING CONVERSION CHARS (Xxpndiuocs) */
 			where = buf + PR_BUFLEN - 1;
 			*where = '\0';
@@ -193,15 +193,20 @@ int do_printf(const char *fmt, va_list args, fnptr_t fn, void *ptr)
 			{
 			case 'X':
 				flags |= PR_CA;
+				/* Falls through */
 			/* xxx - far pointers (%Fp, %Fn) not yet supported */
 			case 'x':
+				/* Falls through */
 			case 'p':
+				/* Falls through */	
 			case 'n':
 				radix = 16;
 				goto DO_NUM;
 			case 'd':
+				/* Falls through */	
 			case 'i':
 				flags |= PR_SG;
+				/* Falls through */	
 			case 'u':
 				radix = 10;
 				goto DO_NUM;
@@ -313,6 +318,7 @@ EMIT2:			if((flags & PR_LJ) == 0)  /* Pad on left with spaces or zeroes (for rig
 			default:
 				break;
 			}
+			/* Falls Through */
 		default:
 			state = flags = given_wd = 0;
 			break;
