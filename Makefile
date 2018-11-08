@@ -8,7 +8,7 @@
 # Git revision number
 GIT_REV		!= git rev-parse --short HEAD 2> /dev/null
 BUILD		:= build
-TARGETS		!= find . -maxdepth 1 -type f -name '*.mk' 
+TARGETS		!= find . -maxdepth 1 -type f -name '*.mk'
 TARGETS		!= echo $(TARGETS) | sed -e 's/.mk//' -e 's/.\/target-//'
 
 # Documentation
@@ -45,16 +45,16 @@ SOBJECTS	:= $(patsubst %.s,$(BUILD)/%.s.o,$(SSOURCES))
 SRCDIR		!= find src/ -type d | tr '\n' ' '
 
 WARNINGS	:= -Wall -Wextra -Wno-unused-parameter
-DEFS		:= -fbuiltin -DGITREV="\"$(GIT_REV)\""\
-		
+DEFS		:= -Isrc/include -fbuiltin -DGITREV="\"$(GIT_REV)\""\
+
 
 all: link doc
 
 # C files are compiled universally the same, assembler targets are defined in
 # The target specific makefiles
-$(BUILD)/%.c.o: %.c Makefile | setup_builddir 
+$(BUILD)/%.c.o: %.c Makefile | setup_builddir
 	@printf "\033[1mCC\033[0m   $<\n"
-	@$(CC) -c $< -o $@ $(DEFS) $(TARGET_DEFS) $(WARNINGS) 
+	@$(CC) -c $< -o $@ $(DEFS) $(TARGET_DEFS) $(WARNINGS)
 
 link: $(SOBJECTS) $(COBJECTS)
 	@printf "\033[1mLINK\033[0m $@\n"
@@ -65,7 +65,7 @@ setup_builddir:
 	@mkdir -p $(BUILD)
 	@cd $(BUILD) && mkdir -p `echo $(SRCDIR)`
 
-clean: 
+clean:
 	@printf "\033[1mCLEAN\033[0m \n"
 	@find $(BUILD) -type f -name '*.o' -exec rm {} +
 	@find $(HTMLDIR) -type f -exec rm {} +
