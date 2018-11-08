@@ -14,6 +14,9 @@
 extern void isr0();
 extern void isr1();
 
+extern void (*ack_irq)(unsigned);
+extern void (*enable_irq)(uint8_t, unsigned);
+
 // Sorted by what pushed them
 struct registers {
     reg_t eax, ecx, edx, esi, edi, ebx, ebp;

@@ -1,8 +1,10 @@
 #ifndef __ARCH_X86_PORTS_H
 #define __ARCH_X86_PORTS_H
 
-void outb(unsigned short port, unsigned char value);
-unsigned char inb(unsigned short port);
-unsigned short inw(unsigned short port);
+#include <stdint.h>
+
+void outb(uint16_t port, uint8_t value);
+uint8_t inb(uint16_t port);
+uint16_t inw(uint16_t port);
 void iowait(void);
 #endif

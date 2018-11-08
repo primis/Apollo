@@ -3,22 +3,23 @@
  * ports.c - x86 I/O databus commends
  */
 
+#include <arch/x86/ports.h>
 
-void outb(unsigned short port, unsigned char value)
+void outb(uint16_t port, uint8_t value)
 {
     __asm__ __volatile__ ("outb %0, %1" : : "dN" (port), "a" (value));
 }
 
-unsigned char inb(unsigned short port)
+uint8_t inb(uint16_t port)
 {
-    unsigned char ret;
+    uint8_t ret;
     __asm__ __volatile__ ("inb %0, %1" : "=a" (ret) : "dN" (port));
     return ret;
 }
 
-unsigned short inw(unsigned short port)
+uint16_t inw(uint16_t port)
 {
-    unsigned short ret;
+    uint16_t ret;
     __asm__ __volatile__ ("inw %0, %1" : "=a" (ret) : "dN" (port));
     return ret;
 }

@@ -5,6 +5,7 @@
 
 #ifndef __ARCH_X86_PIC_H
 #define __ARCH_X86_PIC_H
+#include <stdint.h>
 
 // PIC Commands
 
@@ -36,14 +37,16 @@
 #define PIC_READ_ISR    PIC_READ_REGISTER | PIC_OCW3_SELECT | PIC_ISR_SELECT
 #define PIC_READ_IRR    PIC_READ_REGISTER | PIC_OCW3_SELECT
 
+#define PIC1_CMD 0x20
+#define PIC2_CMD 0xA0
 
-void PIC_init(unsigned char icw1, unsigned char icw3, unsigned char icw4,
-        int offset, unsigned short cmd);
 
-void PIC_set_mask(unsigned char line, unsigned short data);
-void PIC_clear_mask(unsigned char line, unsigned short data);
-void PIC_sendEOI(unsigned short command);
-unsigned char PIC_get_IRR(unsigned short command);
-unsigned char PIC_get_ISR(unsigned short command);
+void PIC_init(uint8_t icw1, uint8_t icw3, uint8_t icw4, int off, uint16_t cmd);
+
+void PIC_set_mask(uint8_t line, uint16_t data);
+void PIC_clear_mask(uint8_t line, uint16_t data);
+void PIC_sendEOI(uint16_t command);
+uint8_t PIC_get_IRR(uint16_t command);
+uint8_t PIC_get_ISR(uint16_t command);
 
 #endif
