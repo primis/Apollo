@@ -32,3 +32,17 @@ void iowait(void)
     // for POST Codes, so that's kinda cool.
     __asm__ __volatile__ ("outb 0x80, %0" : : "a" ((unsigned char)0));
 }
+
+
+// Write to an offset port given a base
+void write_register(int base, int reg, uint8_t value)
+{
+    outb((uint16_t)base+reg, value);
+}
+
+// Same, but read
+uint8_t read_register(int base, int reg)
+{
+    return inb((uint16_t)base+reg);
+}
+

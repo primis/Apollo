@@ -48,6 +48,13 @@ WARNINGS	:= -Wall -Wextra -Wno-unused-parameter
 DEFS		:= -Isrc/include -fbuiltin -DGITREV="\"$(GIT_REV)\""\
 
 
+# Enable Test Functions
+
+ifdef TEST
+	DEFS	:= $(DEFS) -DTEST=1
+endif
+
+
 all: link doc
 
 # C files are compiled universally the same, assembler targets are defined in

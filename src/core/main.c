@@ -7,6 +7,7 @@
 #include <string.h>
 #include <stdio.h>
 
+
 // These are defined by the linker from the "modules" section
 extern module_t __start_modules, __stop_modules;
 
@@ -45,10 +46,15 @@ int main(int argc, char **argv)
         for(module_t *m = &__start_modules, *e = &__stop_modules; m < e; m++) {
             init_module(m);
         }
+        // Identify ourselves
+
+        printf("Apollo Kernel, Source Version %s", GITREV);
         // Finally, run the main function, unless we're in test harness mode.
         for(;;);
         kmain(argc, argv);
     }
+
+
 
     // We've returned from kernel, that means we're shutting down.
     // Run the finishing modules.
