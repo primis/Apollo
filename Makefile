@@ -23,6 +23,14 @@ HTMLDIRS 	:= $(shell cd doc && find -type d | tr '\n' ' ')
 # Platform Agnostic Source Code
 CSOURCES_TI	!= find src/core src/libc src/adt -type f -name '*.c'
 
+#Third Party Source Code
+CSOURCES_TP	!= find src/third_party -type f -name '*.c'
+
+CSOURCES_TI	:= $(CSOURCES_TI) $(CSOURCES_TP)
+
+INCLUDEDIR	!= find src -type d -name "include" -printf "-I%p " 
+
+
 all:
 
 ifndef TARGET
@@ -45,7 +53,7 @@ SOBJECTS	:= $(patsubst %.s,$(BUILD)/%.s.o,$(SSOURCES))
 SRCDIR		!= find src/ -type d | tr '\n' ' '
 
 WARNINGS	:= -Wall -Wextra -Wno-unused-parameter
-DEFS		:= -Isrc/include -fbuiltin -DGITREV="\"$(GIT_REV)\""\
+DEFS		:= $(INCLUDEDIR) -fbuiltin -DGITREV="\"$(GIT_REV)\""\
 
 
 # Enable Test Functions

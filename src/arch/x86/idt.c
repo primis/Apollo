@@ -6,6 +6,8 @@
 #include <arch/x86/idt.h>
 #include <stdio.h>
 
+extern void idt_flush(uint32_t);
+
 #define NUM_TRAP_STRS 20 	// x86 has 20 hardware traps
 #define NUM_HANDLERS 256    // Max handlers x86 allows
 #define MAX_HANDLERS_PER_INT 4  // Number of software handlers per interrupt
@@ -49,6 +51,28 @@ idt_ptr_t   idt_ptr;
 void (*ack_irq)(unsigned) = 0;
 void (*enable_irq)(uint8_t, unsigned) = 0;
 
+void enable_interrupts()
+{
+    __asm__ volatile("sti");
+}
+
+void disable_interrupts()
+{
+    __asm__ volatile("cli");
+}
+
+void set_interrupt_state(int enable)
+{
+    if(enable) {
+        enable_interrupts();
+    } else {
+        disable_interrupts();
+    }
+}
+
+void trap() {
+    __asm__ volatile("int 0x03");
+}
 
 /**
  ** Debugging Functions
@@ -112,22 +136,24 @@ static int init_idt()
 {
     uint32_t i, delta;
 
-    register_debugger_handler("print-idt", "Print the IDT", &print_idt);
-    register_debugger_handler("print-interrupt-handlers",
-        "Print all registered interrupt handlers", &print_handlers);
-
     delta = (uint32_t)isr1 - (uint32_t)isr0; // Get size of each handler
+
     idt_ptr.limit   = sizeof(idt_entry_t) * 256 - 1;
     idt_ptr.base    = (uint32_t) &idt;
     memset(&idt, 0, sizeof(idt_entry_t) * 265);
-    for (i = 0; i < NUM_HANDLERS; i++) {
+
+    for (i = 0; i < 256; i++) {
         // 0x08 is the Code segment
         // IDT_INT32_PL0 is the flags (see <arch/x86/idt.h>
-        set_idt_entry(i, (uint32_t)isr0 + (delta * i), 0x08, IDT_INT32_PL0);
+        set_idt_entry(i, (uint32_t)isr0 + (delta * i), 0x08, 0x8E);
     }
 
-    // Load IDT to the processor
-    __asm__ volatile("lidt %0" : : "m" (idt_ptr));
+    idt_flush((uint32_t)&idt_ptr);
+
+    register_debugger_handler("print-idt", "Print the IDT", &print_idt);
+    register_debugger_handler("print-interrupt-handlers",
+        "Print all registered interrupt handlers", &print_handlers);
+    set_interrupt_state(1);
     return 0;
 }
 
@@ -185,6 +211,7 @@ void interrupt_handler(x86_regs_t *regs)
     unsigned i, e;
     const char *desc = "";
     char buf[64];
+
 
     // Acknowledge any IRQ lines
     if(ack_irq) {

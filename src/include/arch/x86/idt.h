@@ -17,15 +17,7 @@ extern void isr1();
 extern void (*ack_irq)(unsigned);
 extern void (*enable_irq)(uint8_t, unsigned);
 
-// Sorted by what pushed them
-struct registers {
-    reg_t eax, ecx, edx, esi, edi, ebx, ebp;
-    reg_t ds;                           // Pushed manually
-    reg_t intNum, errCode;              // ISR stub
-    reg_t eip, cs, eflags, useresp, ss; // INT itself
-};
-
-typedef struct {
+typedef struct idt_entry {
     uint16_t base_low;
     uint16_t selector;
     uint8_t  always0;
@@ -33,7 +25,7 @@ typedef struct {
     uint16_t base_high;
 } __attribute__((packed)) idt_entry_t;
 
-typedef struct {
+typedef struct idt_ptr {
     uint16_t limit;
     uint32_t base;
 } __attribute__((packed)) idt_ptr_t;

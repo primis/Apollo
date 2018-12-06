@@ -5,6 +5,8 @@
 
 [BITS 32]
 [EXTERN interrupt_handler]
+[GLOBAL idt_flush]
+
 
 %macro ISR_NOERRCODE 1
     [GLOBAL isr%1]
@@ -25,6 +27,11 @@
         jmp 0x08:isr_common_stub
 %endmacro
 
+idt_flush:
+    mov eax, [esp + 4]
+    lidt [eax]
+    ret
+
 isr_common_stub:
     pusha
     mov eax, ds
@@ -35,12 +42,11 @@ isr_common_stub:
     mov es, eax
     mov fs, eax
     mov gs, eax
-    mov ebp, esp        ; Save stack pointer so we can fix the stack
-    sub esp, 4          ; Make room for an argument
-    and esp, 0xFFFFFFF0 ; SVR4 Compatible alignment
-    mov [esp], ebx     ; shows up as x86_regs_t* argument to c
+    
+    push esp
+    
     call interrupt_handler
-    mov esp, ebx        ; get back the old stack pointer
+    add esp, 4
     pop eax             ; get back the old data segment
     mov ds, eax
     mov es, eax

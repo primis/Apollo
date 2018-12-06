@@ -73,10 +73,8 @@ typedef struct module {
     uintptr_t padding[2];   // Alignment.
 } module_t;
 
-// Compiler magic here - using a separate namespace to allow us to load
-// modules without having to explicitly call on them from main.
-
 #define MODULE static module_t x __attribute__((__section__("modules"),used))
+#define run_test static module_t x __attribute__((__section__("testing"),used))
 
 /******************************************************************************
  * Console funtionality
