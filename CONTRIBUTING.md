@@ -7,23 +7,32 @@ with the maintainers of this repository before making a change.
 Please note we have a code of conduct, please follow it in all your
 interactions with the project.
 
+## Submitting an issue.
+
+1.  Create a clear and concise title for your issue.
+2.  Issue should include a concise summary. Include a screenshot, output, or
+    relevent data for the issue.
+3.  Include steps to reproduce the issue in a step by step text process.
+4.  Any other relevent information to the issue being reported. Explain why
+    you consider this an issue.
+
 ## Pull Request Process
 
 1.  Update CHANGELOG.md with details of the changes implemented. This includees
     any tests created as well
 2.  Don't break any old tests or functionality when updating unless the test has
     been determined to be wrong (requires discussion beforehand)
-3.  Add tests for any new functionality in the appropriate `test` folder 
+3.  Add tests for any new functionality in the appropriate `test` folder
     in the source tree. Tests should be comprehensive to make sure the kernel
     does not lose stability.
 4.  Any commits must be gpg signed with a key associated with your account.
     This keeps a chain of custody to allow proper back tracking of commits.
-5.  Pull requests should be flattened into a single commit. 
+5.  Pull requests should be flattened into a single commit.
 
 ## Coding style
 All code should follow the standard coding style enforced herein.
 
-1.  80 column lines. This should be practiced as a hard rule. If there are are 
+1.  80 column lines. This should be practiced as a hard rule. If there are are
     commands that break this, consider rewriting them, or splitting them between
     two lines.
 2.  K&R style bracing should be used consistently.
