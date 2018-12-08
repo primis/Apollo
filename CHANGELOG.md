@@ -4,13 +4,19 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to
 [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## 0.0.1 - 2018-12-08
+## [Unreleased]
+### Added
+- MIT License tag for README.md
+
+### Changed
+- Changelog spec to 1.0.0 from 0.3.0. (Visibility changes)
+## [0.0.1] - 2018-12-08
 ### Added
 - Semantic Versioning starting at 0.0.1
 - This CHANGELOG file
 - CONTRIBUTING.md for contributors to follow our guides
 
-## 0.0.0 - Before 2018-12-08
+## [0.0.0] - Before 2018-12-08
 This is documenting the state of the kernel before CHANGELOG was implemented
 
 ### Added
