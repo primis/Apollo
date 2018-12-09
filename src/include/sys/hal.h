@@ -17,7 +17,7 @@ typedef struct spinlock {
 } spinlock_t;
 
 // Platform Specific hal.h's
-// Right now we only have one - x86
+// Right now we only have one real one - x86
 
 #if defined(X86)
 #include "arch/x86/hal.h"
@@ -26,6 +26,13 @@ typedef struct spinlock {
 #else
 #error Unknown Target. Please use an existing target.
 #endif
+
+
+// Check for test harness
+#ifndef TEST_HARNESS
+#define TEST_HARNESS 0
+#endif
+
 
 // hal.h is going to have a lot of functions.
 

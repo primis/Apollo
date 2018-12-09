@@ -14,16 +14,22 @@ extern module_t __start_modules, __stop_modules;
 // Function definitions that are only used inside main. (these will be moved)
 static void earlypanic(const char *msg, const char *msg2);
 static module_t *find_module(const char *name);
-static void resolve_module(module_t *m);
-static void init_module(module_t *m);
 static void fini_module(module_t *m);
 static void log_status(int status, const char *name, const char *text);
+
+// TODO: put these in a header
+void set_log_level(int);
+void resolve_module(module_t *m);
+void init_module(module_t *m);
 
 // This variable will be overridden if we are in a test harness.
 module_t *test_module __attribute__((weak)) = (module_t*)NULL;
 
+static int logLevel;
+
 int main(int argc, char **argv)
 {
+    set_log_level(1); // Turn on logging
     // Set all module states to not initialised so the dependency tree works
     for(module_t *m = &__start_modules, *e = &__stop_modules; m < e; m++) {
         m->state = MODULE_NOT_INITIALISED;
@@ -35,36 +41,43 @@ int main(int argc, char **argv)
     }
 
     // Init the console first, that way we have output.
+
     module_t *m = find_module("console");
     if(m) {
         init_module(m);
     }
-    // If we're in a test harness, only load the test module dependencies
-    if(test_module) {
-        init_module(test_module);
-    } else {
-        for(module_t *m = &__start_modules, *e = &__stop_modules; m < e; m++) {
+    for(module_t *m = &__start_modules, *e = &__stop_modules; m < e; m++) {
+        if(m != test_module) { // this should be done last!
             init_module(m);
         }
-        // Identify ourselves
+    }
 
-        printf("Apollo Kernel, Source Version %s", GITREV);
-        // Finally, run the main function, unless we're in test harness mode.
+    if(test_module && TEST_HARNESS == 1) {
+        set_log_level(0);
+        init_module(test_module);
+    } else {
         for(;;);
         kmain(argc, argv);
     }
-
-
+    set_log_level(1); // This could have been changed elsewhere.
 
     // We've returned from kernel, that means we're shutting down.
     // Run the finishing modules.
     for(module_t *m = &__start_modules, *e = &__stop_modules; m < e; m++) {
         fini_module(m);
     }
+#ifndef HOSTED
+    for(;;); // Spin loop
+#endif
     return 0;
 }
 
-static void resolve_module(module_t *m)
+void set_log_level(int l)
+{
+    logLevel = l;
+}
+
+void resolve_module(module_t *m)
 {
     // Did we already resolve the pre-requisites?
     if (m->state >= MODULE_PREREQS_RESOLVED) {
@@ -83,7 +96,7 @@ static void resolve_module(module_t *m)
 }
 
 // Initialize the module!
-static void init_module(module_t *m)
+void init_module(module_t *m)
 {
     if (m->state >= MODULE_INIT_RUN) {
         return;
@@ -154,6 +167,9 @@ static module_t *find_module(const char *name)
 }
 
 static void log_status(int status, const char *name, const char *text) {
+    if (logLevel == 0) {
+        return; // No logging enabled
+    }
     if (status == 0) {
         printf("[\033[32m OK \033[0m] ");
     } else {

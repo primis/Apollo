@@ -7,6 +7,7 @@ and this project adheres to
 ## [Unreleased]
 ### Added
 - MIT License tag for README.md
+- Testing autoload just like modules
 
 ### Changed
 - Changelog spec to 1.0.0 from 0.3.0. (Visibility changes)

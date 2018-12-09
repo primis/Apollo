@@ -5,7 +5,7 @@
 
 ; Multiboot Macro Definitions
 MULTIBOOT_PAGE_ALIGN    equ 1<<0
-MULTIBOOT_MEMORY_INFO   equ 1<<1 
+MULTIBOOT_MEMORY_INFO   equ 1<<1
 MULTIBOOT_VIDEO_MODE    equ 1<<2
 MULTIBOOT_HEADER_MAGIC  equ 0x1BADB002
 
@@ -52,11 +52,12 @@ mboot:
 start:
     ; Set up stack
     mov esp, KERNEL_STACK + KERNEL_STACK_SIZE
-    push eax            ; Should be the multiboot magic number   
+    push eax            ; Should be the multiboot magic number
     push ebx            ; Should be the multiboot header
     cli
     call archInit
     cli
+    jmp $               ; endless loop
     hlt                 ; Deadlock Stop.
     jmp $               ; In case we get an NMI
 

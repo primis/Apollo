@@ -28,8 +28,7 @@ CSOURCES_TP	!= find src/third_party -type f -name '*.c'
 
 CSOURCES_TI	:= $(CSOURCES_TI) $(CSOURCES_TP)
 
-INCLUDEDIR	!= find src -type d -name "include" -printf "-I%p " 
-
+INCLUDEDIR	!= find src -type d -name "include" -printf "-I%p "
 
 all:
 
@@ -56,12 +55,6 @@ WARNINGS	:= -Wall -Wextra -Wno-unused-parameter
 DEFS		:= $(INCLUDEDIR) -fbuiltin -DGITREV="\"$(GIT_REV)\""\
 
 
-# Enable Test Functions
-
-ifdef TEST
-	DEFS	:= $(DEFS) -DTEST=1
-endif
-
 
 all: link doc
 
@@ -73,8 +66,8 @@ $(BUILD)/%.c.o: %.c Makefile | setup_builddir
 
 link: $(SOBJECTS) $(COBJECTS)
 	@printf "\033[1mLINK\033[0m $@\n"
-	@$(CC) $(DEFS) $(WARNINGS) $(LDFLAGS) $(TARGET_LDFLAGS) -o bin/$(BIN) \
-	$(SOBJECTS) $(COBJECTS)
+	@$(CC) $(DEFS) $(TDEFS) $(WARNINGS) $(LDFLAGS) $(TARGET_LDFLAGS) \
+	-o bin/$(BIN) $(SOBJECTS) $(COBJECTS)
 
 setup_builddir:
 	@mkdir -p $(BUILD)
@@ -84,6 +77,11 @@ clean:
 	@printf "\033[1mCLEAN\033[0m \n"
 	@find $(BUILD) -type f -name '*.o' -exec rm {} +
 	@find $(HTMLDIR) -type f -exec rm {} +
+
+
+test: DEFS += -DTEST_HARNESS=1
+test: link
+
 
 doc_setup:
 	@mkdir -p $(HTMLDIR)
