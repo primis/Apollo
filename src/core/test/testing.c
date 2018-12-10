@@ -26,8 +26,8 @@ static void run_all_tests()
 
 static int testing()
 {
-    // Making a fake argc so we can request verbosity.
-    const char *argv[] = {"test", "-v"};
+    // Making a fake argc.
+    const char *argv[] = {"test"};
 
     module_t *m, *e = &__stop_testing;
     // Basically a copy of main.c, but just for tests
@@ -39,7 +39,7 @@ static int testing()
         resolve_module(m);
     }
     // Run testsi
-    return UnityMain(2, argv, run_all_tests);
+    return UnityMain(1, argv, run_all_tests);
 }
 
 
