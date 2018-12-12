@@ -3,23 +3,17 @@
  * testing.c - Testing harness interface
  */
 
-
 #include <sys/hal.h>
-#include <unity_fixture.h>
+#include <sys/testing.h>
 
-// Defined in main.c
-extern void resolve_module(module_t *m);
-extern void init_module(module_t *m);
-extern void set_log_level(int);
-
-// Symbols defined by the linker. Essentially an array of test modules!
-extern module_t __start_testing, __stop_testing;
+// Symbols defined by the linker. Essentially an array of test functions!
+extern test_mod_t __start_testing, __stop_testing;
 
 static void run_all_tests()
 {
-    module_t *m, *e = &__stop_testing;
-    for(m = &__start_testing; m < e; m++) {
-        init_module(m);
+    test_mod_t *m, *e = &__stop_testing;
+    for (m = &__start_testing; m < e; m++) {
+        m->runner(); // Run the test
     }
 }
 
@@ -27,19 +21,9 @@ static void run_all_tests()
 static int testing()
 {
     // Making a fake argc.
-    const char *argv[] = {"test"};
+    const char *argv[] = {"test", "-v"};
 
-    module_t *m, *e = &__stop_testing;
-    // Basically a copy of main.c, but just for tests
-    for (m = &__start_testing; m < e; m++) {
-        m->state = MODULE_NOT_INITIALISED;
-    }
-    // Resolve prerequesites of the tests
-    for(m = &__start_testing; m < e; m++) {
-        resolve_module(m);
-    }
-    // Run testsi
-    return UnityMain(1, argv, run_all_tests);
+    return UnityMain(2, argv, run_all_tests);
 }
 
 

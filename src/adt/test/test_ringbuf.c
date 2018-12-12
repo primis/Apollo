@@ -3,9 +3,8 @@
  * test_ringbuf.c - Testing the ringbuffer
  */
 
-#include <sys/hal.h>
 #include <adt/ringbuf.h>
-#include <unity_fixture.h>
+#include <sys/testing.h>
 
 static char_ringbuf_t test_buf;
 static char buffer[9];
@@ -29,16 +28,3 @@ TEST(ringbuf_test, readWriteTest)
     TEST_ASSERT_EQUAL_STRING("Hello", buff2);
 }
 
-static int run_tests()
-{
-    RUN_TEST_CASE(ringbuf_test, readWriteTest);
-    return 0;
-}
-
-run_test = {
-    .name = "test_ringbuf",
-    .required = NULL,
-    .load_after = NULL,
-    .init = &run_tests,
-    .fini = NULL
-};

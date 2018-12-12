@@ -1,5 +1,5 @@
 #include <sys/hal.h>
-#include <unity_fixture.h>
+#include <sys/testing.h>
 
 TEST_GROUP(interrupt_test);
 
@@ -50,21 +50,3 @@ TEST(interrupt_test, TooManyHandlers)
     // unregister all the interrupts we assigned.
     while(unregister_interrupt_handler(3, &callback, (void*)i--) == 0);
 }
-
-static int run_tests()
-{
-    RUN_TEST_CASE(interrupt_test, pointerDataTest);
-    RUN_TEST_CASE(interrupt_test, actuallyUnregisters);
-    RUN_TEST_CASE(interrupt_test, TooManyHandlers);
-    return 0;
-}
-
-static prereq_t p[] = { {"interrupts", NULL}, {NULL, NULL} };
-
-run_test = {
-    .name = "interrupt_test",
-    .required = p,
-    .load_after = NULL,
-    .init = &run_tests,
-    .fini = NULL
-};

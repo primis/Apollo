@@ -81,7 +81,6 @@ typedef struct module {
 } module_t;
 
 #define MODULE static module_t x __attribute__((__section__("modules"),used))
-#define run_test static module_t x __attribute__((__section__("testing"),used))
 
 /******************************************************************************
  * Console funtionality

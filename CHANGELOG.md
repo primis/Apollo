@@ -8,6 +8,9 @@ and this project adheres to
 ### Added
 - MIT License tag for README.md
 - Testing autoload just like modules
+- Tests for Ringbuffer and Interrupts
+### Changed
+- Testing is seamlessly ran now thanks to core/testing.c and macro magic
 
 ### Changed
 - Changelog spec to 1.0.0 from 0.3.0. (Visibility changes)
