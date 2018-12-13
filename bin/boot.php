@@ -13,5 +13,5 @@ kernel x86-sys.mod
 boot
 
 :test
-kernel x86-sys-test.mod
+kernel test-x86-sys.mod
 boot
