@@ -4,12 +4,14 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to
 [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [Unreleased]
+## [0.0.2] - 2018-12-12
 ### Added
 - MIT License tag for README.md
 - Testing autoload just like modules
 - Tests for Ringbuffer and Interrupts
+- Menu for iPXE boot
 ### Changed
+- Moved Testing into a seperate directory
 - Testing is seamlessly ran now thanks to core/testing.c and macro magic
 
 ### Changed
