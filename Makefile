@@ -23,10 +23,13 @@ HTMLDIRS 	:= $(shell cd doc && find -type d | tr '\n' ' ')
 # Platform Agnostic Source Code
 CSOURCES_TI	!= find src/core src/libc src/adt -type f -name '*.c'
 
-#Third Party Source Code
+# Third Party Source Code
 CSOURCES_TP	!= find src/third_party -type f -name '*.c'
 
 CSOURCES_TI	:= $(CSOURCES_TI) $(CSOURCES_TP)
+
+# Test Source Code
+TESTSOURCES != find src/test/core src/test/libc src/test/adt -type f -name '*.c'
 
 INCLUDEDIR	!= find src -type d -name "include" -printf "-I%p "
 
@@ -49,6 +52,7 @@ endif
 
 COBJECTS	:= $(patsubst %.c,$(BUILD)/%.c.o,$(CSOURCES))
 SOBJECTS	:= $(patsubst %.s,$(BUILD)/%.s.o,$(SSOURCES))
+TESTOBJECTS	:= $(patsubst %.c,$(BUILD)/%.c.o,$(TESTSOURCES))
 SRCDIR		!= find src/ -type d | tr '\n' ' '
 
 WARNINGS	:= -Wall -Wextra -Wno-unused-parameter
@@ -56,7 +60,7 @@ DEFS		:= $(INCLUDEDIR) -fbuiltin -DGITREV="\"$(GIT_REV)\""\
 
 
 
-all: link doc
+all: test link doc
 
 # C files are compiled universally the same, assembler targets are defined in
 # The target specific makefiles
@@ -66,7 +70,7 @@ $(BUILD)/%.c.o: %.c Makefile | setup_builddir
 
 link: $(SOBJECTS) $(COBJECTS)
 	@printf "\033[1mLINK\033[0m $@\n"
-	@$(CC) $(DEFS) $(TDEFS) $(WARNINGS) $(LDFLAGS) $(TARGET_LDFLAGS) \
+	@$(CC) $(DEFS) $(WARNINGS) $(LDFLAGS) $(TARGET_LDFLAGS) \
 	-o bin/$(BIN) $(SOBJECTS) $(COBJECTS)
 
 setup_builddir:
@@ -78,10 +82,11 @@ clean:
 	@find $(BUILD) -type f -name '*.o' -exec rm {} +
 	@find $(HTMLDIR) -type f -exec rm {} +
 
-
 test: DEFS += -DTEST_HARNESS=1
-test: link
-
+test: $(SOBJECTS) $(COBJECTS) $(TESTOBJECTS)
+	@printf "\033[1mLINK TEST\033[0m $0\n"
+	@$(CC) $(DEFS) $(WARNINGS) $(LDFLAGS) $(TARGET_LDFLAGS) \
+	-o bin/test-$(BIN) $(SOBJECTS) $(COBJECTS) $(TESTOBJECTS)
 
 doc_setup:
 	@mkdir -p $(HTMLDIR)
