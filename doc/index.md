@@ -1,7 +1,3 @@
-The Apollo Project
-==================
-
-
 Sections
 --------
 

@@ -1,7 +1,7 @@
-Apollo Architectures
-=====================
+Architectures
+-------------
 
 [Go Back](..)
 
-* [x86-pc](arch-x86-pc)
-* [Create Your Own](Making-A-New-Arch)
+* [x86-pc](x86/pc/)
+* [Create Your Own](new-arch/)

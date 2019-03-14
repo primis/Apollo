@@ -1,5 +1,5 @@
-Apollo Architectures: x86 PC
-============================
+x86 PC
+------
 
 Introduction
 ------------
@@ -11,5 +11,5 @@ platform.
 Availible Drivers
 -----------------
 
-* [Console Driver](arch-x86-pc-console.html)
+* [Console Driver](console.html)
 
