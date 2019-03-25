@@ -6,11 +6,16 @@
 
 
 
-
+// TODO: seperate UART and x86 specific stuff here...
 #define UART_BASE_COM1 0x3f8
 #define UART_BASE_COM2 0x2f8
 #define UART_BASE_COM3 0x3e8
 #define UART_BASE_COM4 0x2e8
+
+#define UART_IRQ_COM1 36
+#define UART_IRQ_COM2 35
+#define UART_IRQ_COM3 36
+#define UART_IRQ_COM4 35
 
 // UART REGISTERS
 

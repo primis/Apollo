@@ -63,12 +63,3 @@ int init_irq()
     return 0;
 }
 
-static prereq_t prereqs[] = { {"interrupts", NULL}, {NULL, NULL} };
-
-MODULE = {
-    .name = "x86/irq",
-    .required = prereqs,
-    .load_after = NULL,
-    .init = &init_irq,
-    .fini = NULL
-};

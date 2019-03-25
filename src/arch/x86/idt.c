@@ -50,7 +50,7 @@ idt_ptr_t   idt_ptr;
 // IRQ stuff. Implemented in another file.
 void (*ack_irq)(unsigned) = 0;
 void (*enable_irq)(uint8_t, unsigned) = 0;
-
+int init_irq();
 void enable_interrupts()
 {
     __asm__ volatile("sti");
@@ -58,7 +58,7 @@ void enable_interrupts()
 
 void disable_interrupts()
 {
-    __asm__ volatile("cli");
+   __asm__ volatile("cli");
 }
 
 void set_interrupt_state(int enable)
@@ -153,6 +153,7 @@ static int init_idt()
     register_debugger_handler("print-idt", "Print the IDT", &print_idt);
     register_debugger_handler("print-interrupt-handlers",
         "Print all registered interrupt handlers", &print_handlers);
+    init_irq();
     set_interrupt_state(1);
     return 0;
 }

@@ -14,19 +14,42 @@
 
 #define UART_BUFSZ 32
 
-
+// We assume a max of 4 COM lines
+// TODO: implement using malloc!!!
 static console_t consoles[4];
 static serial_state_t states[4];
 static char bufs[4][UART_BUFSZ];
-static int bases[4] =  {UART_BASE_COM1, UART_BASE_COM2,
-                        UART_BASE_COM3, UART_BASE_COM4};
-
+static int bases[4] = {UART_BASE_COM1, UART_BASE_COM2,
+                       UART_BASE_COM3, UART_BASE_COM4};
+static int irqs[4]  = {UART_IRQ_COM1, UART_IRQ_COM2,
+                       UART_IRQ_COM3, UART_IRQ_COM4};
 static void send_data(int base, uint8_t byte)
 {
     // Busy loop (See TODO on top)
     while((read_register(base, UART_LSR) & UART_EMPTY_TRANS) == 0);
 
     write_register(base, UART_RXTX, byte);
+}
+
+
+static uint8_t is_data_ready(int base)
+{
+    // Check to see if UART has anything in buffer for us
+    if (read_register(base, UART_LSR) & UART_DATA_READY) {
+        return 1;
+    }
+    return 0;
+}
+
+static uint8_t get_data_nonblock(int base)
+{
+    return read_register(base, UART_RXTX);
+}
+
+static uint8_t get_data_block(int base)
+{
+    while (!is_data_ready(base));
+    return get_data_nonblock(base);
 }
 
 static int write(console_t *obj, const char *buf, int len)
@@ -69,8 +92,12 @@ static int open(console_t *obj)
     buf = (UART_ENABLE_FIFO | UART_CLEAR_RECV_FIFO | UART_CLEAR_TRANS_FIFO);
     // FIFO buffer size
     buf += UART_FIFO_INT_14;
+    // Enable FIFO, clear 14 byte buffer
+    // TODO: is this the right size???
     write_register(base, UART_IIFIFO, buf);
+    // Enable IRQ's Ready to send / DSR is turned on
     write_register(base, UART_MCR, 0x0b); // TODO: MAGIC NUMBERS!!!
+    // Re-enable serial interrupts (from the uart side)
     write_register(base, UART_INTEN, 0x0C);
 
     return 0;
@@ -127,12 +154,46 @@ static uint8_t is_connected(int base) {
     return UART_8250;
 }
 
+static int serial_interrupt_handler(struct regs *regs, void *p)
+{
+    serial_state_t *state = (serial_state_t*)p;
+    uint8_t data = get_data_block(state->base);
+    char_ringbuf_write(&state->buf, (char*)&data, 1);
+
+    return 0;
+}
+
+static int read(console_t *obj, char *buf, int len)
+{
+    int n;
+    uint8_t c;
+
+    if (len < 1) {
+        return 0; // why'd you even ask for zero bytes?
+    }
+    serial_state_t *COM = (serial_state_t*)obj->data;
+    n = char_ringbuf_read(&COM->buf, buf, len);
+    if (n) {        // Is it a non null?
+        return n;   // Hooray! no waiting :D
+    }
+    while (is_data_ready(COM->base)) {
+        c = get_data_nonblock(COM->base);
+        if(c == '\r') {
+            c = '\n';
+        }
+        char_ringbuf_write(&COM->buf, (char*)&c, 1);
+    }
+    return char_ringbuf_read(&COM->buf, buf, len);
+}
 
 static int register_serial()
 {
     int i;
+
     // TODO: Scan for bases instead of assuming
-    for(i = 0; i < 2; i++) {
+    // TODO: don't set like this, check kernel line from multiboot
+    // TODO: allow for more than 4 (right now that's limit from hardcoding)
+    for(i = 0; i < 4; i++) {
         if(!is_connected(bases[i])) {
             continue; // no serial port here, go to next one
         }
@@ -144,13 +205,14 @@ static int register_serial()
         states[i].stop_bits = UART_ONE_STOP_BIT;
         consoles[i].open    = &open;
         consoles[i].close   = NULL;
-        consoles[i].read    = NULL;  // TODO: implement READ
+        consoles[i].read    = &read;
         consoles[i].write   = &write;
         consoles[i].flush   = NULL;
         consoles[i].data    = (void*)&states[i];
 
         (void)register_console(&consoles[i]);
-
+        (void)register_interrupt_handler(irqs[i], &serial_interrupt_handler,
+                                         (void*)&states[i]);
     }
     return 0;
 }

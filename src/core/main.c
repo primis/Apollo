@@ -56,7 +56,11 @@ int main(int argc, char **argv)
         set_log_level(0);
         init_module(test_module);
     } else {
-        for(;;);
+        for(;;) {
+            char a = 0;
+            read_console(&a, 1);
+            printf("%c", a);
+        }
         kmain(argc, argv);
     }
     set_log_level(1); // This could have been changed elsewhere.
