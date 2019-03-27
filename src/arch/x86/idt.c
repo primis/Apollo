@@ -61,6 +61,13 @@ void disable_interrupts()
    __asm__ volatile("cli");
 }
 
+int get_interrupt_state()
+{
+    uint32_t flags;
+    __asm__ volatile ( "pushf \n\t" "pop %0" : "=g"(flags) );
+    return flags & (1 << 9); // Return the interrupt enabled flag
+}
+
 void set_interrupt_state(int enable)
 {
     if(enable) {

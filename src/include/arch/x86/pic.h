@@ -1,6 +1,6 @@
 /*
  * (C) 2018 Apollo Project Developers
- * pic.h - Definitions for controlling the PIT microcontrollers
+ * pic.h - Definitions for controlling the PIC microcontrollers
  */
 
 #ifndef __ARCH_X86_PIC_H

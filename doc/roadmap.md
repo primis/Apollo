@@ -15,7 +15,7 @@ Release 0.1.0
         - [ ] Floppy Disk Controller
 - [ ]  Basic I/O Support
     - [ ] PS/2 Keyboard
-    - [ ] Serial I/O
+    - [X] Serial I/O
     - [ ] Parallel Port
 - [ ] Some Standard Library Implemented
     - [ ] All of String.h

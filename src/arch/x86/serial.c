@@ -217,7 +217,7 @@ static int register_serial()
     return 0;
 }
 
-static prereq_t prereqs[] = { {"console",NULL}, {NULL,NULL} };
+static prereq_t prereqs[] = {{"console",NULL}, {"interrupts",NULL}, {NULL,NULL}};
 
 MODULE = {
     .name       = "x86/serial",

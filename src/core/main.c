@@ -56,6 +56,7 @@ int main(int argc, char **argv)
         set_log_level(0);
         init_module(test_module);
     } else {
+        enable_interrupts();
         for(;;) {
             char a = 0;
             read_console(&a, 1);
