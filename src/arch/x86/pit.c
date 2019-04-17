@@ -15,22 +15,29 @@ static const uint32_t PIT_config[] = { 36157, 99, 2, 27, 3, 2 };
 
 static int timekeeping(struct regs *regs, void *p)
 {
+    // Grab current timestamp so we can update it
     uint64_t ts = get_timestamp();
+
     timekeeping_state_t *state = (timekeeping_state_t*)p;
-
-    state->ticks                 += 1;
+    state->ticks            += 1;
     state->correction_count += 1;
-
-    // PIT is definately gonna be set to less than 1 uS
-    ts += state->us_per_tick; // Add microseconds the clock.
     state->us_correction_count++;
+
     if(state->us_correction_count >= state->us_correction_rate) {
         ts += state->us_correction_factor;
+        state->us_correction_count = 0;
     }
+
     if (state->correction_count >= state->correction_rate) {
-        state->ticks = state->ticks + state->correction_factor;
+        // Add ticks that we missed from the rounding error
+        state->ticks += state->correction_factor;
+        // Factor into the system clock
+        ts += (state->us_per_tick * state->correction_factor);
         state->correction_count = 0;
     }
+
+    // The PIT is set to around 27 microseconds
+    ts += state->us_per_tick;
     set_timestamp(ts);
     return 0;
 }
@@ -77,7 +84,7 @@ static int PIT_init()
 static prereq_t prereqs[] = {{"interrupts", NULL}, {NULL, NULL}};
 
 MODULE = {
-    .name = "PIT",
+    .name = "timekeeping",
     .required = prereqs,
     .load_after = NULL,
     .init = &PIT_init,
