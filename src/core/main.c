@@ -1,5 +1,6 @@
 /*
- * (c) 2016 Apollo Project Developers
+ * (c) 2019 Apollo Project Developers
+ * For terms, see LICENSE
  * Main.c - Main function of kernel activity
  */
 
@@ -27,7 +28,7 @@ module_t *test_module __attribute__((weak)) = (module_t*)NULL;
 
 static int logLevel;
 
-int main(int argc, char **argv)
+int main(int argc, char* argv[])
 {
     set_log_level(1); // Turn on logging
     // Set all module states to not initialised so the dependency tree works
@@ -51,7 +52,6 @@ int main(int argc, char **argv)
             init_module(m);
         }
     }
-
     if(test_module && TEST_HARNESS == 1) {
         set_log_level(0);
         init_module(test_module);

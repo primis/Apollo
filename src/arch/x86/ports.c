@@ -1,5 +1,6 @@
 /*
  * (c) 2018 Apollo Project Developers
+ * For terms, see LICENSE
  * ports.c - x86 I/O databus commends
  */
 
@@ -46,3 +47,38 @@ uint8_t read_register(int base, int reg)
     return inb((uint16_t)base+reg);
 }
 
+inline uint32_t read_cr0()
+{
+    uint32_t ret;
+    __asm__ __volatile__ ("mov %0, cr0" : "=r" (ret));
+    return ret;
+}
+
+inline uint32_t read_cr2()
+{
+    uint32_t ret;
+    __asm__ __volatile__ ("mov %0, cr2" : "=r" (ret));
+    return ret;
+}
+
+inline uint32_t read_cr3()
+{
+    uint32_t ret;
+    __asm__ __volatile__ ("mov %0, cr3" : "=r" (ret));
+    return ret;
+}
+
+inline void write_cr0(uint32_t val)
+{
+    __asm__ __volatile__ ("mov cr0, %0" : : "r" (val));
+}
+
+inline void write_cr2(uint32_t val)
+{
+    __asm__ __volatile__ ("mov cr2, %0" : : "r" (val));
+}
+
+inline void write_cr3(uint32_t val)
+{
+    __asm__ __volatile__ ("mov cr3, %0" : : "r" (val));
+}

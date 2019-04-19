@@ -1,5 +1,6 @@
 /*
  * (c) 2018 Apollo Project Developers
+ * For terms, see LICENSE
  * hal.c - Hardware Abstraction Layer
  * Contains weak function prototypes that are overridden by implementaion.
  * Idea and most of implementation borrowed from James Molloy

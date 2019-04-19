@@ -1,5 +1,6 @@
 /*
  * (C) 2018 Apollo Project Developers
+ * For terms, see LICENSE
  * irq.c - Interrupt Request Lines (hardware)
  */
 

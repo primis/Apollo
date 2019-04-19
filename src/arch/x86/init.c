@@ -1,5 +1,6 @@
 /*
- * (c) 2018 Apollo Project Developers
+ * (c) 2019 Apollo Project Developers
+ * For terms, see LICENSE
  * arch/x86/init.c - Initialization function for x86 platform.
  */
 
@@ -11,8 +12,8 @@ extern int main(int argc, char **argv);
 
 multiboot_info_t mboot;
 
-// 4k for early allocator - for mult
-#define EARLYALLOC_SZ 2048
+// 4k for early allocator - for multiboot and things
+#define EARLYALLOC_SZ 4096
 
 // Bump Allocator, used to store multiboot info to a safe location
 static uintptr_t earlyalloc(unsigned len)
@@ -30,7 +31,7 @@ static uintptr_t earlyalloc(unsigned len)
 }
 
 // Called by assembly.
-int archInit(multiboot_info_t* mbt, unsigned int magic)
+int arch_init(multiboot_info_t* mbt, unsigned int magic)
 {
     int i, len;
     // Be nice to c++
@@ -80,8 +81,7 @@ int archInit(multiboot_info_t* mbt, unsigned int magic)
     i = 1;
     argv[0] = strtok((char*)mboot.cmdline, " ");
     while(argv[i] != NULL) {
-        argv[i] = strtok((char*)mboot.cmdline, " ");
-        i++;
+        argv[i++] = strtok((char*)mboot.cmdline, " ");
     }
 
     (void)main(i+1, argv);

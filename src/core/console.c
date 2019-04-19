@@ -1,5 +1,6 @@
 /*
  * (c) 2017 Apollo Project Developers
+ * For terms, see LICENSE
  * core/console.c - Console interface for early kernel debugging
  *
  * TODO: Implement spinlocks and uncomment the lines for them!

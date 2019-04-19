@@ -1,5 +1,6 @@
 /*
  * (c) 2017 Apollo Project Developers
+ * For terms, see LICENSE
  * vga_console.c - Early Kernel mode console for debugging
  * We use VGA cause it's easy, though this can be anything
  * that can output a charecter set
@@ -27,24 +28,24 @@
 #define C_LIGHTBROWN     14
 #define C_WHITE          15
 
-static char escape_buf[4];
-static int escape_buf_idx = 0;
-static int escape_nums[4];
-static int escape_num_idx = 0;
-static char cursorY = 0;
-static char cursorX = 0;
-static unsigned short *VGAPointer;
-static int backColor = C_BLACK;
-static int foreColor = C_LIGHTGRAY;
-static int foreBold  = 0;
-static int in_escape = 0;
+static char     escape_buf[4];
+static int      escape_buf_idx = 0;
+static int      escape_nums[4];
+static int      escape_num_idx = 0;
+static uint8_t  cursorY = 0;
+static uint8_t  cursorX = 0;
+static uint16_t *VGAPointer;
+static int      backColor = C_BLACK;
+static int      foreColor = C_LIGHTGRAY;
+static int      foreBold  = 0;
+static int      in_escape = 0;
 
 
 static void cls();
 
 static void move_cursor()
 {
-    unsigned short cursorLocation = cursorY * 80 + cursorX;
+    uint16_t cursorLocation = cursorY * 80 + cursorX;
     outb(VGA_INDEX_3, VGA_CURSOR_HIGH_BYTE);
     outb(VGA_INDEX_3+1, cursorLocation >> 8);
     outb(VGA_INDEX_3, VGA_CURSOR_LOW_BYTE);
@@ -134,8 +135,8 @@ static int handle_escape(char c) {
 static void scroll()
 {
     // Yes this isn't a byte, but the real info is only in 8 bits.
-    unsigned short attributeByte = (backColor<<12) | (foreColor<<8);
-    unsigned short blank = 0x20 | attributeByte;
+    uint16_t attributeByte = (backColor<<12) | (foreColor<<8);
+    uint16_t blank = 0x20 | attributeByte;
     if(cursorY >= 25) {
         int i;
         for(i=0; i<24*80; i++) {
@@ -148,10 +149,10 @@ static void scroll()
     }
 }
 
-static void putChar(char c)
+static void put_char(char c)
 {
-    unsigned short attributeByte = (backColor<<12) | (foreColor<<8);
-    unsigned short *location;
+    uint16_t attributeByte = (backColor<<12) | (foreColor<<8);
+    uint16_t *location;
     if (in_escape) {
         in_escape = handle_escape(c);
         return;
@@ -187,7 +188,7 @@ static void cls()
 {
     int i;
     for(i=0; i<=25*80; i++) {
-        putChar(' ');
+        put_char(' ');
     }
     cursorY = 0;
     cursorX = 0;
@@ -197,7 +198,7 @@ static void cls()
 static int write(console_t *obj, const char *buf, int len)
 {
     for (int i = 0; i<len; i++){
-        putChar(buf[i]);
+        put_char(buf[i]);
     }
     return len;
 }
@@ -213,7 +214,7 @@ console_t c = {
 
 static int register_screen()
 {
-    VGAPointer = (unsigned short *)VGA_BASE_POINTER;
+    VGAPointer = (uint16_t *)VGA_BASE_POINTER;
     cls();
     register_console(&c);
     return 0;

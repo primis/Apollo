@@ -1,5 +1,6 @@
 /*
  * (c) 2018 Apollo Project Developers
+ * For terms, see LICENSE
  * pic.c - Initialize the programmable interrupt controllers
  *
  */

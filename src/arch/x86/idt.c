@@ -1,5 +1,6 @@
 /*
  * (oc) 2018 Apollo Developers
+ * For terms, see LICENSE
  * idt.c - Interrupt Descriptor Table
  */
 #include <sys/hal.h>

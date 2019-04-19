@@ -1,5 +1,6 @@
 /*
  * (c) 2018 Apollo Developers
+ * For terms, see LICENSE
  * Serial.c - x86 Serial Driver
  */
 

@@ -1,5 +1,6 @@
 /*
  * (c) 2018 Apollo Project Developers
+ * For terms, see LICENSE
  * pit.c - Initialize the programmable interrupt timer
  * Driver for the 8253/8254
  */

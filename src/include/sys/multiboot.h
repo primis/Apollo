@@ -93,7 +93,7 @@
 
 #include <stdint.h>
 
-struct multiboot_header
+typedef struct multiboot_header
 {
   /* Must be MULTIBOOT_MAGIC - see above.  */
   uint32_t magic;
@@ -116,7 +116,7 @@ struct multiboot_header
   uint32_t width;
   uint32_t height;
   uint32_t depth;
-};
+} multiboot_t;
 
 /* The symbol table for a.out.  */
 struct multiboot_aout_symbol_table
