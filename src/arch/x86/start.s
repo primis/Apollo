@@ -4,45 +4,16 @@
 ;; start.s - x86 bootloader passover  ;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-; Multiboot Macro Definitions
-MULTIBOOT_PAGE_ALIGN    equ 1<<0
-MULTIBOOT_MEMORY_INFO   equ 1<<1
-MULTIBOOT_VIDEO_MODE    equ 1<<2
-MULTIBOOT_HEADER_MAGIC  equ 0x1BADB002
-
-
-MULTIBOOT_HEADER_FLAGS  equ (MULTIBOOT_PAGE_ALIGN + MULTIBOOT_MEMORY_INFO)
-MULTIBOOT_CHECKSUM      equ -(MULTIBOOT_HEADER_MAGIC + MULTIBOOT_HEADER_FLAGS)
-
-
 ; Kernel Stack size definition up here for visibility
 KERNEL_STACK_SIZE       equ 0x4000
 
-
-
 [BITS 32]
-[GLOBAL mboot]
 [GLOBAL start]
 [EXTERN arch_init]
 [GLOBAL KERNEL_STACK]
 [EXTERN code]
 [EXTERN bss]
 [EXTERN end]
-
-; Multiboot Header
-;==================
-section .init
-
-align 32
-; This is the multiboot header.
-mboot:
-    dd MULTIBOOT_HEADER_MAGIC
-    dd MULTIBOOT_HEADER_FLAGS
-    dd MULTIBOOT_CHECKSUM
-    resb 0x24               ; just some more space for rest of the header
-
-
-
 
 ;==========================;
 ; Bootloader dropoff point ;
@@ -60,11 +31,6 @@ start:
     hlt                 ; Deadlock Stop.
     jmp $               ; In case we get an NMI
 ;;;;;;;;;;;;;;;;;;;;;;;;;
-
-; Multiboot Padding
-section .init.bss nobits
-pd: resb    0x1000
-pt: resb    0x1000
 
 ; Stack
 ;=======
