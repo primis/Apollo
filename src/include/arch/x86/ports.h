@@ -3,6 +3,8 @@
 
 #include <stdint.h>
 
+#define IRQ(n) (n+32)
+
 typedef struct {
     int reg;
     uint8_t cmd;

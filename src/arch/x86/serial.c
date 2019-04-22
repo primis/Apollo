@@ -81,7 +81,13 @@ static int open(console_t *obj)
     buf =  (status->data_bits);
     buf += (status->parity);
     buf += (status->stop_bits);
+    // flush the serial buffer a bit
+    read_register(base, UART_INTEN);
+    read_register(base, UART_INTEN);
+    read_register(base, UART_INTEN);
+    read_register(base, UART_INTEN);
 
+    // Disable interrupts from the device
     write_register(base, UART_INTEN, 0);
     // Enable Divisor Latch Access Bit (DLAB), to set the baud rate
     write_register(base, UART_LCR, UART_DLAB);
@@ -108,7 +114,13 @@ static int open(console_t *obj)
 static uint8_t is_connected(int base) {
     uint8_t iir;
     uint8_t msr;
-
+    /**
+    // TODO: Detect if we're in QEMU via CPUID or ACPI tables
+    // Qemu will hang if we try to detect
+    if (base == bases[0]) {
+        return 1; // Not sure what QEMU emulates...
+    }
+    */
     // First off, check Modem Status, make sure a chip exists at that address
     msr = read_register(base, UART_MSR);
     if(!(msr & (UART_DATA_SET_READY | UART_CLEAR_TO_SEND))) {
@@ -194,7 +206,8 @@ static int register_serial()
     // TODO: Scan for bases instead of assuming
     // TODO: don't set like this, check kernel line from multiboot
     // TODO: allow for more than 4 (right now that's limit from hardcoding)
-    for(i = 0; i < 4; i++) {
+    // TODO: can only use 2 unless we distunguish in IRQ which is which
+    for(i = 0; i < 2; i++) {
         if(!is_connected(bases[i])) {
             continue; // no serial port here, go to next one
         }
@@ -210,9 +223,8 @@ static int register_serial()
         consoles[i].write   = &write;
         consoles[i].flush   = NULL;
         consoles[i].data    = (void*)&states[i];
-
-        (void)register_console(&consoles[i]);
-        (void)register_interrupt_handler(irqs[i], &serial_interrupt_handler,
+        register_console(&consoles[i]);
+        register_interrupt_handler(irqs[i], &serial_interrupt_handler,
                                          (void*)&states[i]);
     }
     return 0;

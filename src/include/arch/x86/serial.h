@@ -12,10 +12,10 @@
 #define UART_BASE_COM3 0x3e8
 #define UART_BASE_COM4 0x2e8
 
-#define UART_IRQ_COM1 36
-#define UART_IRQ_COM2 35
-#define UART_IRQ_COM3 36
-#define UART_IRQ_COM4 35
+#define UART_IRQ_COM1 IRQ(4)
+#define UART_IRQ_COM2 IRQ(3)
+#define UART_IRQ_COM3 IRQ(4)
+#define UART_IRQ_COM4 IRQ(3)
 
 // UART REGISTERS
 
