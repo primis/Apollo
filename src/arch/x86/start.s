@@ -38,3 +38,9 @@ section .bss
 ALIGN 8192
 KERNEL_STACK:
     resb KERNEL_STACK_SIZE
+
+section .comment
+KERN_INFO:
+db 'Apollo Kernel 32 Bit Intel', 0
+GIT_REV:
+db 'GIT build number ', GITREV, 0

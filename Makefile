@@ -57,7 +57,7 @@ TESTOBJECTS	:= $(patsubst %.c,$(BUILD)/%.c.o,$(TESTSOURCES))
 SRCDIR		!= find src/ -type d | tr '\n' ' '
 
 WARNINGS	:= -Wall -Wextra -Wno-unused-parameter
-DEFS		:= $(INCLUDEDIR) -fbuiltin -DGITREV="\"$(GIT_REV)\""\
+DEFS		:= $(INCLUDEDIR) -fbuiltin -DGITREV="\"$(GIT_REV)\""
 
 
 
