@@ -15,29 +15,33 @@ KERNEL_STACK_SIZE       equ 0x4000
 [EXTERN bss]
 [EXTERN end]
 
-;==========================;
-; Bootloader dropoff point ;
-;==========================;
-
-start:
-    ; Set up stack
-    mov esp, KERNEL_STACK + KERNEL_STACK_SIZE
-    push eax            ; Should be the multiboot magic number
-    push ebx            ; Should be the multiboot header
+;============================;
+; Bootloader's dropoff point ;
+; Dropped here from start    ;
+;============================; 
+section .text
+global higherhalf:function higherhalf.end-higherhalf
+higherhalf:
+    mov esp, stack      ; Multiboot doesnt give us a valid stack
+    xor ebp, ebp        ; Clear the stack frame
+    push ebx            ; Should be multiboot header
     cli                 ; Make sure we don't get any errornous interrupts
     call arch_init      ; Pass control to C
     cli                 ;
     jmp $               ; endless loop
     hlt                 ; Deadlock Stop.
     jmp $               ; In case we get an NMI
+.end:                   ;
 ;;;;;;;;;;;;;;;;;;;;;;;;;
 
 ; Stack
 ;=======
 section .bss
 ALIGN 8192
-KERNEL_STACK:
+global stack_base
+stack_base:
     resb KERNEL_STACK_SIZE
+stack:  ; label for esp only (bottom of the stack)
 
 section .comment
 KERN_INFO:
