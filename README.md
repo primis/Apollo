@@ -1,5 +1,5 @@
 ### The Apollo Project
-_(C) 2013 - 2019 Primis Computers (Allie Sargente et al)_
+_(C) 2013 - 2021 Primis Computers (Allie Sargente et al)_
 ![](https://img.shields.io/apm/l/vim-mode.svg)
 
 Requirements:
