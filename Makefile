@@ -12,13 +12,13 @@ TARGETS		!= find . -maxdepth 1 -type f -name '*.mk'
 TARGETS		!= echo $(TARGETS) | sed -e 's/.mk//' -e 's/.\/target-//'
 
 # Documentation
-MDSOURCES	!= find doc -type f -name '*.md'
+MDSOURCES	!= find docs -type f -name '*.md'
 MARKDOWN 	:= pandoc
 HTMLDIR		:= html
 MDFLAGS		:= --from gfm --to html --standalone \
 		--metadata title="Apollo Kernel Documentation"
-HTMLDOCS	:= $(patsubst doc/%.md,$(HTMLDIR)/%.html,$(MDSOURCES))
-HTMLDIRS 	:= $(shell cd doc && find -type d | tr '\n' ' ')
+HTMLDOCS	:= $(patsubst docs/%.md,$(HTMLDIR)/%.html,$(MDSOURCES))
+HTMLDIRS 	:= $(shell cd docs && find -type d | tr '\n' ' ')
 
 
 # Platform Agnostic Source Code
@@ -95,6 +95,6 @@ doc_setup:
 
 doc: doc_setup | $(HTMLDOCS)
 
-html/%.html: doc/%.md
+html/%.html: docs/%.md
 	@printf "\033[1mHTML\033[0m $<\n"
 	@$(MARKDOWN) $(MDFLAGS) $< --output $@
