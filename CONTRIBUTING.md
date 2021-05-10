@@ -11,36 +11,40 @@ interactions with the project.
 
 1.  Create a clear and concise title for your issue.
 2.  Issue should include a concise summary. Include a screenshot, output, or
-    relevent data for the issue.
+    relevant data for the issue.
 3.  Include steps to reproduce the issue in a step by step text process.
-4.  Any other relevent information to the issue being reported. Explain why
+4.  Any other relevant information to the issue being reported. Explain why
     you consider this an issue.
 
 ## Pull Request Process
 
-1.  Update CHANGELOG.md with details of the changes implemented. This includees
+1.  Update CHANGELOG.md with details of the changes implemented. This includes
     any tests created as well
 2.  Don't break any old tests or functionality when updating unless the test has
     been determined to be wrong (requires discussion beforehand)
 3.  Add tests for any new functionality in the appropriate `test` folder
     in the source tree. Tests should be comprehensive to make sure the kernel
     does not lose stability.
-4.  Any commits must be gpg signed with a key associated with your account.
+4.  Any commits *must* be gpg signed with a key associated with your account.
     This keeps a chain of custody to allow proper back tracking of commits.
 5.  Pull requests should be flattened into a single commit.
+6.  Recognize that all code will be considered under the license found in 
+    LICENSE.md, any code which cannot be legally distributed under this license
+    will not be considered for pull requests
 
 ## Coding style
 All code should follow the standard coding style enforced herein.
 
-1.  80 column lines. This should be practiced as a hard rule. If there are are
+1.  80 column lines. This should be practiced as a semi-hard rule. If there are
     commands that break this, consider rewriting them, or splitting them between
-    two lines.
+    two lines if possible.
 2.  K&R style bracing should be used consistently.
 3.  Comments should be used, but not overused for obvious content. Comments
-    should use the c++ `\\` style except for file descriptors at the beginning
-    of each file. Comments should not include any curses or offensive content.
+    should use the c++ `//` style except for file descriptors at the beginning
+    of each file. Comments should not include any inappropriate or offensive
+    language.
 4.  Avoid monolithic functions. Indented code should never drop below 4 indents.
-    Consider exposing that to a seperate function or rewriting the logic at that
+    Consider exposing that to a separate function or rewriting the logic at that
     point.
 
 ## Code of Conduct
@@ -49,10 +53,10 @@ All code should follow the standard coding style enforced herein.
 
 In the interest of fostering an open and welcoming environment, we as
 contributors and maintainers pledge to make participation in our project and
-community a harrasment-free zone for everyone, regardless of age, disability,
+community a harassment-free zone for everyone, regardless of age, disability,
 ethnicity, gender identity and expression, level of experience, nationality,
-appearance, race, religion, or sexual identiy and orientation. Please note that
-this is not an exhaustive list. Any harrasment of any kind will not be allowed
+appearance, race, religion, or sexual identify and orientation. Please note that
+this is not an exhaustive list. Any harassment of any kind will not be allowed
 or tolerated.
 
 ### Our Standards
@@ -100,7 +104,7 @@ further defined and clarified by project maintainers.
 ### Enforcement
 
 Instances of abusive, harassing, or otherwise unacceptable behavior may be
-reported by contacting the project team at [INSERT EMAIL ADDRESS]. All
+reported by contacting the project team at allie@sargente.org. All
 complaints will be reviewed and investigated and will result in a response that
 is deemed necessary and appropriate to the circumstances. The project team is
 obligated to maintain confidentiality with regard to the reporter of an incident.
