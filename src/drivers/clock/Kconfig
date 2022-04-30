@@ -1,0 +1,19 @@
+menu "Timekeeping"
+
+config CLOCK_RTC_CMOS
+    bool "RTC Driver"
+    depends on X86_BASE
+    help
+        The Real Time Clock driver pulls the system time from the CMOS
+        chip built into many systems. This enables wall time be read by
+        the kernel.
+
+config CLOCK_8254
+    bool "Intel 8254"
+    depends on X86_BASE
+    help
+        The Intel 8254 also known as the Programmable Interval Timer
+        is standard in all IBM-PC systems. It should be enabled to allow
+        Timekeeping functionality unless another method is being used.
+
+endmenu

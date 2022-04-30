@@ -1,6 +1,6 @@
 /*
  * (c) 2018 Apollo Project Developers
- * <hal.h> - Hardware Abstraction Layer
+ * <sys/hal.h> - Hardware Abstraction Layer
  *
  * Thank you to James Molloy for the concept
  */
@@ -234,6 +234,8 @@ int register_callback(uint32_t num_millis, int periodic, void(*cb)(void*),
         void *data);
 
 int unregister_callback(void(*cb)(void*));
+
+void system_shutdown(void);
 
 /*****************************************************************************
  * Memory Management

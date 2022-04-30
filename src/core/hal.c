@@ -92,6 +92,12 @@ void set_interrupt_state(int enable)
     return;
 }
 
+void system_shutdown() weak;
+void system_shutdown()
+{
+  return;
+}
+
 void trap() weak;
 void trap()
 {

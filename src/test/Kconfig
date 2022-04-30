@@ -1,0 +1,7 @@
+config TESTING
+    bool "Enable Kernel Unit Tests"
+    help
+        This option enables the unit testing of the base kernel.
+        When this is active, testing support will be compiled in.
+        Please note that the kernel will not function normally if
+        this is selected.

@@ -1,4 +1,5 @@
-# Gitignore file
+# User Setting files 
+.vscode*/
 
 # Prereq files
 *.d

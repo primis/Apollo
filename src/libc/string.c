@@ -4,12 +4,14 @@
  */
 
 #include <string.h>
+#include <stdint.h>
 #if !defined(HOSTED) // check for hosted system
 
 void *memcpy(void *destination, const void *source, size_t num)
 {
-    char *sp = (char*) source;
-    char *dp = (char*) destination;
+    uint8_t *dp = destination;
+    const uint8_t *sp = source;
+
     for(; num != 0; num--) {
         *dp++ = *sp++;
     }
@@ -77,7 +79,7 @@ void *memset(void *ptr, int value, size_t num)
 
 size_t strlen(const char *str)
 {
-    size_t num;
+    size_t num = 0;
     while(str[num]) {
         num++;
     }

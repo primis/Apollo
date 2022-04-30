@@ -1,10 +1,13 @@
 /*
- * (c) 2018 Apollo Project Developers
+ * (c) 2022 Apollo Project Developers
  * <arch/x86/hal.h> - Hardware abstraction layer
  */
 
 #ifndef __ARCH_X86_HAL_H
 #define __ARCH_X86_HAL_H
+
+#include <stdint.h>
+#include <sys/hal.h>
 
 #define THREAD_STACK_SZ 0x2000 // Kernel stack 8k
 

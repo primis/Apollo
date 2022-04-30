@@ -1,0 +1,41 @@
+menuconfig ARCH
+    bool "Architectures"
+    help
+      This menu contains all the architectures supported for building.
+if ARCH
+
+menu "Architectures"
+
+config TARGET
+    string "Target Definition"
+    default x86
+    help
+        This selects what build type will be used to compile the kernel
+        Available platforms are:
+         - hosted
+         - x86
+         
+if TARGET=x86
+config X86_BASE
+    bool "x86 Base Functionality"
+    default y
+    select LIBC
+    select IRQCHIP_8259
+    help
+        This package should always be selected when building for 32 bit
+        Intel machines that are IBM PC compatible. Unless you really
+        know what you are doing do not turn this off.
+endif
+
+if TARGET=hosted
+config HOSTED_BASE
+    bool "Hosted Base Functionality"
+    default y
+    select LIBC
+    help 
+        This package should always be selected when building for hosted
+        enviorments. Without it dependencies will not be met.
+endif
+
+endmenu
+endif #if ARCH

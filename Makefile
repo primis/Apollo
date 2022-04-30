@@ -3,13 +3,9 @@
 #############################
 .PHONY: all clean link
 
-
-
 # Git revision number
 GIT_REV		!= git rev-parse --short HEAD 2> /dev/null
 BUILD		:= build
-TARGETS		!= find . -maxdepth 1 -type f -name '*.mk'
-TARGETS		!= echo $(TARGETS) | sed -e 's/.mk//' -e 's/.\/target-//'
 
 # Documentation
 MDSOURCES	!= find docs -type f -name '*.md'
@@ -20,48 +16,34 @@ MDFLAGS		:= --from gfm --to html --standalone \
 HTMLDOCS	:= $(patsubst docs/%.md,$(HTMLDIR)/%.html,$(MDSOURCES))
 HTMLDIRS 	:= $(shell cd docs && find -type d | tr '\n' ' ')
 
-
-# Platform Agnostic Source Code
-CSOURCES_TI	!= find src/core src/libc src/adt -type f -name '*.c'
-
-# Third Party Source Code
-CSOURCES_TP	!= find src/third_party -type f -name '*.c'
-
-CSOURCES_TI	:= $(CSOURCES_TI) $(CSOURCES_TP)
-
-# Test Source Code
-TESTSOURCES != find src/test/core src/test/libc src/test/adt -type f -name '*.c'
-
 INCLUDEDIR	!= find src -type d -name "include" -printf "-I%p "
 
-all:
-
-ifndef TARGET
-	# Not a fatal error if clean or doc
-	ifeq($(MAKECMDGOALS),clean)
-	else ifeq ($(MAKECMDGOALS),doc)
-	else
-		$(error TARGET is not set, availible targets: $(TARGETS))
-endif
-
-TARGETL		!= echo $(TARGET) | tr '[:upper:]' '[:lower:]'
-
-ifdef TARGET
-	BUILD 	:= build-$(TARGETL)
--include target-$(TARGETL).mk
-endif
-
-COBJECTS	:= $(patsubst %.c,$(BUILD)/%.c.o,$(CSOURCES))
-SOBJECTS	:= $(patsubst %.s,$(BUILD)/%.s.o,$(SSOURCES))
-TESTOBJECTS	:= $(patsubst %.c,$(BUILD)/%.c.o,$(TESTSOURCES))
-SRCDIR		!= find src/ -type d | tr '\n' ' '
+include .config
+TARGETL		!= echo $(CONFIG_TARGET) | tr '[:upper:]' '[:lower:]'
+BUILD 		:= build-$(TARGETL)
+include $(shell pwd)/scripts/target-$(TARGETL).mk
 
 WARNINGS	:= -Wall -Wextra -Wno-unused-parameter
 DEFS		:= $(INCLUDEDIR) -fbuiltin -DGITREV="\"$(GIT_REV)\""
 
+HELPER_MK	:= $(shell pwd)/scripts/helper.mk
+MK_FLAGS	:= --no-print-directory -s
+SUBDIRS		:= $(shell find . -name Makefile)
+SUBDIRS		:= $(patsubst %Makefile,%,$(SUBDIRS))
+SUBDIRS	 	:= $(patsubst %./,%,$(SUBDIRS))
+OBJECTS		:= $(shell for dir in $(SUBDIRS); do\
+				 TOP_DIR=`pwd` $(MAKE) $(MK_FLAGS) -f $(HELPER_MK) -C $$dir;\
+				 done;)
 
+ifeq ($(CONFIG_TESTING),y)
+	DEFS	+= -DTEST_HARNESS=1
+	BIN		:= test-$(BIN)
+endif
 
-all: test link doc
+OBJECTS		:= $(patsubst %.o,$(BUILD)/%.o,$(OBJECTS))
+SRCDIR		!= find src/ -type d | tr '\n' ' '
+
+all: link doc
 
 # C files are compiled universally the same, assembler targets are defined in
 # The target specific makefiles
@@ -69,10 +51,10 @@ $(BUILD)/%.c.o: %.c Makefile | setup_builddir
 	@printf "\033[1mCC\033[0m   $<\n"
 	@$(CC) -c $< -o $@ $(DEFS) $(TARGET_DEFS) $(WARNINGS)
 
-link: $(SOBJECTS) $(COBJECTS)
+link: $(OBJECTS)
 	@printf "\033[1mLINK\033[0m $@\n"
 	@$(CC) $(DEFS) $(WARNINGS) $(LDFLAGS) $(TARGET_LDFLAGS) \
-	-o bin/$(BIN) $(SOBJECTS) $(COBJECTS)
+	-o bin/$(BIN) $(OBJECTS)
 
 setup_builddir:
 	@mkdir -p $(BUILD)
@@ -80,14 +62,8 @@ setup_builddir:
 
 clean:
 	@printf "\033[1mCLEAN\033[0m \n"
-	@find $(BUILD) -type f -name '*.o' -exec rm {} +
+	@find . -type d -name "build*" -exec rm -rf {} +
 	@find $(HTMLDIR) -type f -exec rm {} +
-
-test: DEFS += -DTEST_HARNESS=1
-test: $(SOBJECTS) $(COBJECTS) $(TESTOBJECTS)
-	@printf "\033[1mLINK TEST\033[0m $0\n"
-	@$(CC) $(DEFS) $(WARNINGS) $(LDFLAGS) $(TARGET_LDFLAGS) \
-	-o bin/test-$(BIN) $(SOBJECTS) $(COBJECTS) $(TESTOBJECTS)
 
 doc_setup:
 	@mkdir -p $(HTMLDIR)
@@ -98,3 +74,6 @@ doc: doc_setup | $(HTMLDOCS)
 html/%.html: docs/%.md
 	@printf "\033[1mHTML\033[0m $<\n"
 	@$(MARKDOWN) $(MDFLAGS) $< --output $@
+
+menuconfig:
+	@kconfig-mconf Kconfig

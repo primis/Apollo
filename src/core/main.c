@@ -1,5 +1,5 @@
 /*
- * (c) 2019 Apollo Project Developers
+ * (c) 2022 Apollo Project Developers
  * For terms, see LICENSE
  * Main.c - Main function of kernel activity
  */
@@ -43,25 +43,22 @@ int main(int argc, char* argv[])
 
     // Init the console first, that way we have output.
 
-    module_t *m = find_module("console");
-    if(m) {
-        init_module(m);
+    module_t *console = find_module("console");
+    if(console) {
+        init_module(console);
     }
+
     for(module_t *m = &__start_modules, *e = &__stop_modules; m < e; m++) {
-        if(m != test_module) { // this should be done last!
+        if((m != test_module) && (m != console)) { // this should be done last!
             init_module(m);
         }
     }
+
     if(test_module && TEST_HARNESS == 1) {
         set_log_level(0);
         init_module(test_module);
     } else {
         enable_interrupts();
-        for(;;) {
-            char a = 0;
-            read_console(&a, 1);
-            printf("%c", a);
-        }
         kmain(argc, argv);
     }
     set_log_level(1); // This could have been changed elsewhere.

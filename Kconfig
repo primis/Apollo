@@ -1,0 +1,9 @@
+mainmenu "Apollo Kernel Configuration"
+
+source "src/arch/Kconfig"
+
+source "src/drivers/Kconfig"
+
+source "src/libc/Kconfig"
+
+source "src/test/Kconfig"

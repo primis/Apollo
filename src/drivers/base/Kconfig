@@ -1,0 +1,9 @@
+menu "Base System Drivers"
+
+config QEMU_SHUTDOWN
+    bool "QEMU Shutdown Hack"
+    depends on X86_BASE
+    help
+        Allow QEMU to be shut down and exit without using ACPI Calls.
+
+endmenu

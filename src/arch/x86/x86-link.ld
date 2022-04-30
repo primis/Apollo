@@ -58,5 +58,5 @@ SECTIONS
         PROVIDE(__end = . - 0xC0000000);
 	}
     /* end of kernel symbol */
-    _kernel_end = .; 
+    __kernel_end = .; 
 }

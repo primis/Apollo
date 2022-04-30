@@ -1,6 +1,6 @@
 /*
  * (C) 2018 Apollo Project Developers
- * pic.h - Definitions for controlling the PIC microcontrollers
+ * pic.h - Definitions for controlling the Programmable Interrupt Controller
  */
 
 #ifndef __ARCH_X86_PIC_H

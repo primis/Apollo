@@ -1,0 +1,10 @@
+menu "Drivers"
+source "src/drivers/clock/Kconfig"
+
+source "src/drivers/base/Kconfig"
+
+source "src/drivers/console/Kconfig"
+
+source "src/drivers/irqchip/Kconfig"
+
+endmenu

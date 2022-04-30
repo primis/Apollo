@@ -5,17 +5,17 @@
 ;; This will eventually have multiboot 2 as well ;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-[GLOBAL mboot]
+[GLOBAL mboot_hdr]
 [EXTERN higherhalf]
 
 ; Multiboot Macro Definitions
 MULTIBOOT_PAGE_ALIGN    equ 1<<0
 MULTIBOOT_MEMORY_INFO   equ 1<<1
 MULTIBOOT_VIDEO_MODE    equ 1<<2
+
 MULTIBOOT_HEADER_MAGIC  equ 0x1BADB002
 
-
-MULTIBOOT_HEADER_FLAGS  equ (MULTIBOOT_PAGE_ALIGN + MULTIBOOT_MEMORY_INFO)
+MULTIBOOT_HEADER_FLAGS  equ ( MULTIBOOT_MEMORY_INFO)
 MULTIBOOT_CHECKSUM      equ -(MULTIBOOT_HEADER_MAGIC + MULTIBOOT_HEADER_FLAGS)
 
 ; Multiboot Header
@@ -24,7 +24,7 @@ section .init
 
 align 32
 ; This is the multiboot header.
-mboot:
+mboot_hdr:
     dd MULTIBOOT_HEADER_MAGIC
     dd MULTIBOOT_HEADER_FLAGS
     dd MULTIBOOT_CHECKSUM
@@ -32,7 +32,7 @@ mboot:
 global _start:function _start.end-_start
 _start:
     mov eax, pd                 ; Move magic number into pd
-    mov dword [eax], pt + 3     ; addrs 0 - 0x400000
+    mov dword [eax], pt + 3     ; addrs 0 - 0x400000 = pt | WRITE | PRESENT
     mov dword [eax+0xC00], pt+3 ; addrs 0xC0000000 - 0xC0400000
     
     ;; Loop through all 1024 pages in pt, set them to identity mapped
@@ -40,8 +40,8 @@ _start:
     mov ecx, 0                  ; start a loop
 .loop:
     mov eax, ecx                ; grab loop number
-    shl eax, 12                 ;
-    or  eax, 3                  ; Bit twiddling
+    shl eax, 12                 ; basically add 0xC0000000 to the address
+    or  eax, 3                  ; Bit twiddling (Write | Present)
     mov [edx+ecx*4], eax        ; pt[ecx * sizeof(entry)] -> tmp
 
     inc ecx                     ;

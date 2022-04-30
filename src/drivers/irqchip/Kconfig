@@ -1,0 +1,9 @@
+menu "IRQ Chips"
+
+config IRQCHIP_8259
+    bool "Intel 8259"
+    depends on X86_BASE
+    help
+        The standard IRQ Chip found in all IBM-PC compatibles.
+
+endmenu

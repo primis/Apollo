@@ -1,0 +1,25 @@
+config CONSOLE
+    bool "Kernel Console"
+    help 
+        Enable Kernel Console support.
+
+if CONSOLE
+menu "Console Drivers"
+
+config CONSOLE_HOSTED
+    bool "Hosted Console Support"
+    depends on HOSTED_BASE
+    help
+        Driver that utilizes stdio when on a hosted system
+
+config CONSOLE_VGA
+    bool "VGA Text Console"
+    depends on X86_BASE
+    help
+        Driver that utilizes the VGA Framebuffer for kernel console
+
+source "src/drivers/console/serial/Kconfig"
+
+endmenu
+
+endif # if CONSOLE

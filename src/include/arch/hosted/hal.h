@@ -1,5 +1,5 @@
 /*
- * (c) 2018 Apollo Project Developers
+ * (c) 2022 Apollo Project Developers
  * <hosted/hal.h> Hosted Hal.h
  * Used to testbed the kernel without baremetal
  */
@@ -7,7 +7,9 @@
 #ifndef HOSTED_HAL_H
 #define HOSTED_HAL_H
 
-#include <stdio.h>
+#include <stdint.h>
+#include <sys/hal.h>
+
 #define THREAD_STACK_SZ 0x10000  // 64KB of kernel stack.
 
 typedef struct address_space {
