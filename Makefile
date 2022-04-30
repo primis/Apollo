@@ -77,3 +77,4 @@ html/%.html: docs/%.md
 
 menuconfig:
 	@kconfig-mconf Kconfig
+
