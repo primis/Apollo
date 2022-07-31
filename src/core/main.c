@@ -8,7 +8,6 @@
 #include <string.h>
 #include <stdio.h>
 
-
 // These are defined by the linker from the "modules" section
 extern module_t __start_modules, __stop_modules;
 
@@ -28,9 +27,23 @@ module_t *test_module __attribute__((weak)) = (module_t*)NULL;
 
 static int logLevel;
 
+static int search_argv(const char* arg, int argc, char **argv) 
+{
+    int i;
+    for(i = 0; i < argc; i++)
+    {
+        if(strcmp(argv[i], arg) == 0) {
+            return 1;
+        }
+    }
+    return 0;
+}
+
 int main(int argc, char* argv[])
 {
-    set_log_level(1); // Turn on logging
+    int log_level_setting = search_argv("debug=y", argc, argv);
+
+    set_log_level(log_level_setting); // Turn on logging
     // Set all module states to not initialised so the dependency tree works
     for(module_t *m = &__start_modules, *e = &__stop_modules; m < e; m++) {
         m->state = MODULE_NOT_INITIALISED;
@@ -53,7 +66,6 @@ int main(int argc, char* argv[])
             init_module(m);
         }
     }
-
     if(test_module && TEST_HARNESS == 1) {
         set_log_level(0);
         init_module(test_module);
@@ -61,7 +73,7 @@ int main(int argc, char* argv[])
         enable_interrupts();
         kmain(argc, argv);
     }
-    set_log_level(1); // This could have been changed elsewhere.
+    set_log_level(log_level_setting); // This could have been changed elsewhere.
 
     // We've returned from kernel, that means we're shutting down.
     // Run the finishing modules.
@@ -124,6 +136,8 @@ void init_module(module_t *m)
     if (m->init) {
         int ok = m->init();
         log_status(ok, m->name, "Started");
+    } else {
+        log_status(-1, m->name, "No init() found!");
     }
 }
 
@@ -175,7 +189,7 @@ static void log_status(int status, const char *name, const char *text) {
     if (status == 0) {
         printf("[\033[32m OK \033[0m] ");
     } else {
-        printf("[\033[31mFAIL\022[0m] ");
+        printf("[\033[31mFAIL\033[0m] ");
     }
     printf("%s %s\n", text, name);
 #ifdef HOSTED
@@ -196,4 +210,3 @@ static void earlypanic(const char *msg, const char *msg2) {
 #endif
     for (;;);
 }
-

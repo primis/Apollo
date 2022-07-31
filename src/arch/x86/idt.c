@@ -4,13 +4,14 @@
  * idt.c - Interrupt Descriptor Table
  */
 #include <sys/hal.h>
-#include <arch/x86/idt.h>
 #include <stdio.h>
+
+#include "include/idt.h"
 
 extern void idt_flush(uint32_t);
 
 #define NUM_TRAP_STRS 20 	// x86 has 20 hardware traps
-#define NUM_HANDLERS 256    // Max handlers x86 allows
+#define NUM_HANDLERS 50    // Max handlers x86 allows
 #define MAX_HANDLERS_PER_INT 4  // Number of software handlers per interrupt
 
 static const char *trap_strs[NUM_TRAP_STRS] = {
@@ -36,6 +37,30 @@ static const char *trap_strs[NUM_TRAP_STRS] = {
 	"SIMD floating-point exception"
 };
 
+extern void isr0(),     isr1(),     isr2(),     isr3(),     isr4(), 
+            isr5(),     isr6(),     isr7(),     isr8(),     isr9(),
+            isr10(),    isr11(),    isr12(),    isr13(),    isr14(),
+            isr15(),    isr16(),    isr17(),    isr18(),    isr19(),
+            isr20(),    isr21(),    isr22(),    isr23(),    isr24(), 
+            isr25(),    isr26(),    isr27(),    isr28(),    isr29(),
+            isr30(),    isr31(),    isr32(),    isr33(),    isr34(), 
+            isr35(),    isr36(),    isr37(),    isr38(),    isr39(),
+            isr40(),    isr41(),    isr42(),    isr43(),    isr44(), 
+            isr45(),    isr46(),    isr47(),    isr48(),    isr49();
+
+static const void* hander_function[NUM_HANDLERS] = {
+    &isr0,  &isr1,  &isr2,  &isr3,  &isr4, 
+    &isr5,  &isr6,  &isr7,  &isr8,  &isr9,
+    &isr10, &isr11, &isr12, &isr13, &isr14,   
+    &isr15, &isr16, &isr17, &isr18, &isr19,
+    &isr20, &isr21, &isr22, &isr23, &isr24,   
+    &isr25, &isr26, &isr27, &isr28, &isr29,
+    &isr30, &isr31, &isr32, &isr33, &isr34,   
+    &isr35, &isr36, &isr37, &isr38, &isr39,
+    &isr40, &isr41, &isr42, &isr43, &isr44,   
+    &isr45, &isr46, &isr47, &isr48, &isr49
+};
+
 static struct {
     interrupt_handler_t handler;
     void *p;
@@ -46,7 +71,6 @@ unsigned num_handlers[NUM_HANDLERS];
 
 idt_entry_t idt[NUM_HANDLERS];
 idt_ptr_t   idt_ptr;
-
 
 // IRQ stuff. Implemented in another file.
 void (*ack_irq)(unsigned) = 0;
@@ -142,18 +166,16 @@ static void set_idt_entry(uint8_t n, uint32_t base, uint16_t sel, uint8_t flags)
 
 static int init_idt()
 {
-    uint32_t i, delta;
-
-    delta = (uint32_t)isr1 - (uint32_t)isr0; // Get size of each handler
-
+    uint32_t i;
+    
     idt_ptr.limit   = sizeof(idt_entry_t) * 256 - 1;
-    idt_ptr.base    = (uint32_t) &idt;
-    memset(&idt, 0, sizeof(idt_entry_t) * 265);
+    idt_ptr.base    = (uint32_t)&idt[0];
+    memset(&idt, 0, sizeof(idt_entry_t) * NUM_HANDLERS);
 
-    for (i = 0; i < 256; i++) {
+    for (i = 0; i < NUM_HANDLERS; i++) {
         // 0x08 is the Code segment
         // IDT_INT32_PL0 is the flags (see <arch/x86/idt.h>
-        set_idt_entry(i, (uint32_t)isr0 + (delta * i), 0x08, 0x8E);
+        set_idt_entry(i, (uint32_t)hander_function[i], 0x08, IDT_INT32_PL0);
     }
 
     idt_flush((uint32_t)&idt_ptr);

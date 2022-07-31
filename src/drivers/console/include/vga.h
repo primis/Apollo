@@ -1,13 +1,9 @@
 #ifndef __VGA_TEXT_H
 #define __VGA_TEXT_H
 
-#define VGA_BASE_POINTER 0xB8000    // TODO: These are specific, 
-#define VGA_INDEX_1 0x3C4           // consider moving them to a config!
-#define VGA_INDEX_2 0x3CE
-#define VGA_INDEX_3 0x3D4
-
-#define VGA_CURSOR_HIGH_BYTE 14
-#define VGA_CURSOR_LOW_BYTE 15
+#define VGA_BASE_POINTER_1 0xA0000 
+#define VGA_BASE_POINTER_2 0xB0000 
+#define VGA_BASE_POINTER_3 0xB8000 
 
 // VGA Colors
 #define VGA_C_BLACK           0

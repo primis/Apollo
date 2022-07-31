@@ -7,7 +7,6 @@
 
 #include <arch/x86/ports.h>
 #include <arch/x86/pic.h>
-#include <arch/x86/idt.h>
 
 /**
  ** Generic PIC driver code

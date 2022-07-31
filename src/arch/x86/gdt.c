@@ -4,12 +4,11 @@
  * arch/x86/gdt.c - GDT & TSS
  */
 
-
 #include <sys/hal.h>
-#include <arch/x86/gdt.h>
 #include <stdio.h>
 #include <string.h>
 
+#include "include/gdt.h"
 
 static gdt_ptr_t gdt_ptr;
 static gdt_entry_t entries[MAX_CORES+5];

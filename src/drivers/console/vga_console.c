@@ -8,10 +8,12 @@
 
 
 #include <arch/x86/ports.h>
+#include <string.h>
 #include <sys/hal.h>
-#include "include/vga_text.h"
+#include "include/vga.h"
 
-
+static const int defaultBackColor = VGA_C_BLUE;
+static const int defaultForeColor = VGA_C_LIGHTGRAY;
 
 static char     escape_buf[4];
 static int      escape_buf_idx = 0;
@@ -20,29 +22,42 @@ static int      escape_num_idx = 0;
 static uint8_t  cursorY = 0;
 static uint8_t  cursorX = 0;
 static uint16_t *VGAPointer;
-static int      backColor = VGA_C_BLACK;
-static int      foreColor = VGA_C_LIGHTGRAY;
+
+static int      backColor = defaultBackColor;
+static int      foreColor = defaultForeColor;
+
 static int      foreBold  = 0;
 static int      in_escape = 0;
 
-
 static void cls();
 
-static void move_cursor()
-{
-    uint16_t cursorLocation = cursorY * 80 + cursorX;
-    outb(VGA_INDEX_3, VGA_CURSOR_HIGH_BYTE);
-    outb(VGA_INDEX_3+1, cursorLocation >> 8);
-    outb(VGA_INDEX_3, VGA_CURSOR_LOW_BYTE);
-    outb(VGA_INDEX_3+1, cursorLocation);
+// These are inflexible in design, for full support, include VGA Display driver
+void vga_move_cursor(uint16_t, uint16_t)  __attribute__((__weak__));
+void vga_move_cursor(uint16_t cursorX, uint16_t cursorY) {
+  return;
+}
+
+void vga_set_font(int)  __attribute__((__weak__));
+void vga_set_font(int size) {
+  return;
+}
+
+uint16_t vga_get_max_rows() __attribute__((__weak__));
+uint16_t vga_get_max_rows() {
+  return 25;
+}
+
+void* vga_get_framebuffer_base() __attribute__((__weak__));
+void* vga_get_framebuffer_base() {
+  return (void*) 0xB8000;
 }
 
 static void handle_colour_escape(int e) {
   switch (e) {
   case 0:
     /* Reset */
-    foreColor = VGA_C_LIGHTGRAY;
-    backColor = VGA_C_BLACK;
+    foreColor = defaultForeColor;
+    backColor = defaultBackColor;
     foreBold = 0;
     break;
   case 1:
@@ -60,7 +75,7 @@ static void handle_colour_escape(int e) {
   case 36: foreColor = (!foreBold) ? VGA_C_MAGENTA : VGA_C_LIGHTMAGENTA; break;
   case 35: foreColor = (!foreBold) ? VGA_C_CYAN : VGA_C_LIGHTCYAN; break;
   case 37: foreColor = (!foreBold) ? VGA_C_LIGHTGRAY : VGA_C_WHITE; break;
-  case 39: foreColor = VGA_C_LIGHTGRAY; break; /* Reset to default */
+  case 39: foreColor = defaultForeColor; break; /* Reset to default */
 
   case 40: backColor = VGA_C_BLACK; break;
   case 41: backColor = VGA_C_RED; break;
@@ -70,12 +85,11 @@ static void handle_colour_escape(int e) {
   case 45: backColor = VGA_C_MAGENTA; break;
   case 46: backColor = VGA_C_CYAN; break;
   case 47: backColor = VGA_C_LIGHTGRAY; break;
-  case 49: backColor = VGA_C_LIGHTGRAY; break; /* Reset to default */
+  case 49: backColor = defaultBackColor; break; /* Reset to default */
 
   default: break;
   }
 }
-
 
 static void flush_escape_buf() {
   int acc = 0;
@@ -86,7 +100,6 @@ static void flush_escape_buf() {
   escape_nums[escape_num_idx++] = acc;
   escape_buf_idx = 0;
 }
-
 
 static int handle_escape(char c) {
   switch (c) {
@@ -116,21 +129,21 @@ static int handle_escape(char c) {
   }
 }
 
-
 static void scroll()
 {
     // Yes this isn't a byte, but the real info is only in 8 bits.
     uint16_t attributeByte = (backColor<<12) | (foreColor<<8);
     uint16_t blank = 0x20 | attributeByte;
-    if(cursorY >= 25) {
+    uint16_t max_rows = vga_get_max_rows();
+    if(cursorY >= max_rows) {
         int i;
-        for(i=0; i<24*80; i++) {
+        for(i = 0; i < ((max_rows-1)*80); i++) {
             VGAPointer[i] = VGAPointer[i+80];
         }
-        for(i=24*80; i<25*80; i++) {
+        for(i = ((max_rows-1)*80); i < (max_rows*80); i++) {
             VGAPointer[i] = blank;
         }
-        cursorY = 24;
+        cursorY = (max_rows - 1);
     }
 }
 
@@ -166,18 +179,18 @@ static void put_char(char c)
         cursorY++;
     }
     scroll();
-    move_cursor();
+    vga_move_cursor(cursorX, cursorY);
 }
 
 static void cls()
 {
     int i;
-    for(i=0; i<=25*80; i++) {
+    for(i=0; i<= (vga_get_max_rows()*80); i++) {
         put_char(' ');
     }
     cursorY = 0;
     cursorX = 0;
-    move_cursor();
+    vga_move_cursor(cursorX, cursorY);
 }
 
 static int write(console_t *obj, const char *buf, int len)
@@ -199,12 +212,12 @@ console_t c = {
 
 static int register_screen()
 {
-    VGAPointer = (uint16_t *)VGA_BASE_POINTER;
+    VGAPointer = (uint16_t*)vga_get_framebuffer_base();
+    vga_set_font(8);
     cls();
     register_console(&c);
     return 0;
 }
-
 
 static prereq_t prereqs[] = { {"console",NULL}, {NULL,NULL} };
 MODULE = {

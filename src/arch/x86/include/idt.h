@@ -1,18 +1,14 @@
 /*
- * (c) 2016 Apollo Project Developers
- * <arch/x86/idt.h> - Headers for idt.c
+ * (c) 2022 Apollo Project Developers
+ * idt.h - Headers for idt.c
  */
 
-#ifndef __ARCH_X86_IDT_H
-#define __ARCH_X86_IDT_H
-
+#ifndef __IDT_H
+#define __IDT_H
 
 #include <stdint.h> // Types
 #include <string.h> // memset
 #include <sys/interrupts.h>
-
-extern void isr0();
-extern void isr1();
 
 extern void (*ack_irq)(unsigned);
 extern void (*enable_irq)(uint8_t, unsigned);
@@ -49,5 +45,4 @@ typedef struct idt_ptr {
 #define IDT_TASK32_PL0 IDT_PRES(1)  | IDT_STORE(0)  | IDT_PRIV(0) | \
         IDT_GATE_TASK32
 
-
-#endif //__ARCH_X86_IDT_H
+#endif

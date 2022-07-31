@@ -1,0 +1,17 @@
+config DISPLAY
+    bool "Display Driver"
+    help 
+        Enable Kernel Framebuffer support.
+
+if DISPLAY
+menu "Display Drivers"
+
+config DISPLAY_VGA
+    bool "VGA Framebuffer"
+    depends on X86_BASE
+    help
+        Driver that utilize the VGA Framebuffer.
+
+endmenu
+
+endif # if DISPLAY

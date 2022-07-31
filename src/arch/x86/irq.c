@@ -5,8 +5,10 @@
  */
 
 #include <arch/x86/pic.h>
-#include <arch/x86/idt.h>
 #include <sys/hal.h>
+
+extern void (*ack_irq)(unsigned);
+extern void (*enable_irq)(uint8_t, unsigned);
 
 void acknowledge_IRQ(unsigned n)
 {
@@ -56,11 +58,12 @@ int init_irq()
     // Remap PIC 2 to offset 40, 0x02 is the idenity line on master slave
     PIC_init(0, 0x2, PIC_ICW4_8086, 40, PIC2_CMD);
 
+    ack_irq = &acknowledge_IRQ;
+    enable_irq = &enable_IRQ;
+
     // Unmask the cascade port for PIC 2
     enable_IRQ(2, 1);
 
-    ack_irq = &acknowledge_IRQ;
-    enable_irq = &enable_IRQ;
     return 0;
 }
 

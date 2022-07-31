@@ -1,6 +1,6 @@
 /*
- * (c) 2016 Apollo Project Developers
- * <arch/x86/gdt.h> - x86 32 Bit GDT definitions.
+ * (c) 2022 Apollo Project Developers
+ * gdt.h - x86 32 Bit GDT definitions.
  */
 
 #ifndef __ARCH_X86_GDT_H

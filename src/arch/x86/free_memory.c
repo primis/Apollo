@@ -9,9 +9,11 @@
 #include <stdio.h>
 extern multiboot_info_t mboot;
 
-#define MBOOT_IS_MMAP_TYPE_RAM(x) (x == 1)
+#define MBOOT_IS_MMAP_TYPE_RAM(x) (x == MULTIBOOT_MEMORY_AVAILABLE)
 #define MBOOT_MEM      (1<<0)
 #define MBOOT_MMAP (1<<6)
+
+static uint32_t total_megabytes;
 
 static void remove_range(range_t *r, uint32_t start, uint32_t end)
 {
@@ -25,13 +27,22 @@ static void remove_range(range_t *r, uint32_t start, uint32_t end)
     }
 }
 
+static char* memtype[] = {
+    "Not Available",
+    "Available",
+    "Reserved",
+    "ACPI Reclaimable",
+    "NVS",
+    "Bad Ram"
+};
+
 static int free_memory()
 {
     extern uint32_t __start, __end;  // Provided by linker
 
     // Store ranges in easy format, instead of multiboot
     range_t ranges[128], ranges_cpy[128];
-    uint32_t i;
+    uint32_t i = 0;
     unsigned n      = 0;
     uint64_t extent = 0;
     multiboot_memory_map_t *entry;
@@ -49,6 +60,12 @@ static int free_memory()
             break;
         }
 
+        // Check for a non-sensical MMAP Type, assume that they're RAM
+        if(entry->type > 5)
+        {
+            entry->type = MULTIBOOT_MEMORY_AVAILABLE;
+        }
+
         // Is this ram? (Only ram is useful for us)
         if (MBOOT_IS_MMAP_TYPE_RAM(entry->type)) {
             // Make note of start and length of the range, then increment n.
@@ -60,26 +77,19 @@ static int free_memory()
                 extent = entry->addr + entry->len;
             }
         }
+        i++;
     }
     
     // __end is size of our kernel from ld, we add some flags to it.
     uint32_t end = (((uint32_t)&__end) & ~get_page_mask()) + get_page_size();
-
+    total_megabytes = 0;
     // Run over the ranges, one of them has our kernel in it and shouldn't be
     // Marked as free (as our kernel would be overridden)
     for (i = 0; i < n; i++)
     {
         remove_range(&ranges[i], (uint32_t)&__start, end);
-        uint32_t gigs = ((uint32_t)ranges[i].extent / 0x40000000);
         uint32_t megs = ((uint32_t)ranges[i].extent / 0x100000);
-        uint32_t kilos = ((uint32_t)ranges[i].extent / 0x400);
-        if (gigs > 0) {
-            printf("\tFound %d GB at Address 0x%x\n", gigs, ranges[i].start);
-        } else if(megs > 0) {
-            printf("\tFound %d MB at Address 0x%x\n", megs, ranges[i].start);
-        } else {
-            printf("\tFound %d KB at Address 0x%x\n", kilos, ranges[i].start);
-        }
+        total_megabytes += megs;
     }
 
     // Copy the ranges to a backup, as init_physical_memory mutates them and
@@ -93,6 +103,11 @@ static int free_memory()
     init_physical_memory();
     init_cow_refcnts(ranges, n);
     return 0;
+}
+
+uint32_t free_memory_get_megs()
+{
+    return total_megabytes;
 }
 
 MODULE = {

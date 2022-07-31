@@ -12,7 +12,7 @@ jobs:
       - checkout
       - run:
           name: "Try Compilation"
-          command: "TARGET=x86 make link"
+          command: "make link"
 
 # Invoke jobs via workflows
 # See: https://circleci.com/docs/2.0/configuration-reference/#workflows

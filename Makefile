@@ -4,7 +4,7 @@
 .PHONY: all clean link
 
 # Git revision number
-GIT_REV		!= git rev-parse --short HEAD 2> /dev/null
+GIT_REV		!= git rev-parse --short HEAD 2>/dev/null |tr '[:lower:]' '[:upper:]'
 BUILD		:= build
 
 # Documentation
@@ -21,6 +21,7 @@ INCLUDEDIR	!= find src -type d -name "include" -printf "-I%p "
 include .config
 TARGETL		!= echo $(CONFIG_TARGET) | tr '[:upper:]' '[:lower:]'
 BUILD 		:= build-$(TARGETL)
+BIN			:= kernel.mod
 include $(shell pwd)/scripts/target-$(TARGETL).mk
 
 WARNINGS	:= -Wall -Wextra -Wno-unused-parameter
@@ -54,10 +55,11 @@ $(BUILD)/%.c.o: %.c Makefile | setup_builddir
 link: $(OBJECTS)
 	@printf "\033[1mLINK\033[0m $@\n"
 	@$(CC) $(DEFS) $(WARNINGS) $(LDFLAGS) $(TARGET_LDFLAGS) \
-	-o bin/$(BIN) $(OBJECTS)
+	-o $(BUILD)/apollo/$(BIN) $(OBJECTS)
 
 setup_builddir:
 	@mkdir -p $(BUILD)
+	@mkdir -p $(BUILD)/apollo
 	@cd $(BUILD) && mkdir -p `echo $(SRCDIR)`
 
 clean:
@@ -78,3 +80,5 @@ html/%.html: docs/%.md
 menuconfig:
 	@kconfig-mconf Kconfig
 
+iso:
+	@cd $(BUILD) && ../scripts/isocreate.sh

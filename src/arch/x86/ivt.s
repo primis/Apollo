@@ -3,13 +3,14 @@
 ;; ivt.s - x86 Interrupts - the asm part ;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
+;section .text
+
 [BITS 32]
 [EXTERN interrupt_handler]
 [GLOBAL idt_flush]
-[GLOBAL isr0]
-[GLOBAL isr1]
 
 %macro ISR_NOERRCODE 1
+    [GLOBAL isr%1]
     isr%1:
         cli
         push 0
@@ -18,6 +19,7 @@
 %endmacro
 
 %macro ISR_ERRCODE 1
+    [GLOBAL isr%1]
     isr%1:
         cli
         nop

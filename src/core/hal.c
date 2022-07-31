@@ -16,6 +16,16 @@
 static uint64_t timestamp;
 unsigned pmm_init_stage = PMM_INIT_START;
 
+int hal_version_major()
+{
+  return 1;
+}
+
+int hal_version_minor()
+{
+  return 0;
+}
+
 void panic(const char *message) weak;
 void panic(const char *message)
 {
@@ -50,6 +60,7 @@ void write_console(const char *buf, int len)
 {
     return;
 }
+
 int read_console(char *buf, int len) weak;
 int read_console(char *buf, int len)
 {
@@ -187,7 +198,7 @@ int get_processor_id()
 int get_num_processors() weak;
 int get_num_processors()
 {
-  return -1;
+  return 1;
 }
 int *get_all_processor_ids() weak;
 int *get_all_processor_ids()

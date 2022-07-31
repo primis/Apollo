@@ -33,8 +33,11 @@ typedef struct spinlock {
 #define TEST_HARNESS 0
 #endif
 
-
 // hal.h is going to have a lot of functions.
+
+// HAL Version. These should be changed whenever new functionality is added to the HAL
+int hal_version_major();
+int hal_version_minor();
 
 // System Panic and Assert
 void panic(const char *message) __attribute__((noreturn));
@@ -195,7 +198,7 @@ int describe_regs(struct regs *regs, int max, const char **names,
 // Returns -1 if not implemented
 int get_processor_id();
 
-// Returns -1 if not implemented
+// Returns 1 if not implemented
 int get_num_processors();
 
 // Returns pointer to array of all Processor ID's

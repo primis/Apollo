@@ -11,13 +11,15 @@
 #include <string.h>
 #include <stdio.h>
 
+#define CONSOLE_BUF_SZ (80*50)
+
 static console_t *consoles = NULL;
 
 // A lock for all console operations.
 static spinlock_t lock = SPINLOCK_RELEASED;
 
 char_ringbuf_t console_buf;    // Console buffer, used for pre-screen.
-char console_char_buf[1920];   // 80*24
+char console_char_buf[CONSOLE_BUF_SZ];   // 80*50
 
 int register_console(console_t *c)
 {
@@ -39,10 +41,11 @@ int register_console(console_t *c)
     }
 
     if (first_console) {
-        char buf[1920]; // Magic number = 80*24
+        char buf[CONSOLE_BUF_SZ]; // Magic number = 80*50
         char_ringbuf_read(&console_buf, buf, console_buf.buffer_length);
         // Printf works here. if we use write_console we get garbage.
         // Honestly I have no idea why.
+        printf("\033[0m\f");
         printf("%s",buf);
     }
 
@@ -140,8 +143,8 @@ static int shutdown_console()
 
 int console_init()
 {
-    memset(console_char_buf, 0, 1920);                  // Zero out the buffer.
-    console_buf = make_char_ringbuf(console_char_buf, 1920);
+    memset(console_char_buf, 0, CONSOLE_BUF_SZ);                  // Zero out the buffer.
+    console_buf = make_char_ringbuf(console_char_buf, CONSOLE_BUF_SZ);
     return 0;
 }
 

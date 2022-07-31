@@ -18,10 +18,9 @@ TARGET_LDFLAGS	:= -m32 -Tsrc/arch/x86/x86-link.ld -nostdlib -n
 $(warning Using default GCC, please consider installing a cross compiler!)
 endif
 
-BIN				:= x86-sys.mod
 AS				:= nasm
 ASFLAGS			:= -felf -dGITREV="'$(GIT_REV)'"
-TARGET_DEFS 	:= -DX86=1 -m32 -masm=intel -ffreestanding -nostdlib	
+TARGET_DEFS 	:= -DX86=1 -m32 -masm=intel -ffreestanding -nostdlib
 TARGET_LDFLAGS	?= -m32 -Tsrc/arch/x86/x86-link.ld -nostdlib -lgcc -n
 
 $(BUILD)/%.s.o: %.s | setup_builddir

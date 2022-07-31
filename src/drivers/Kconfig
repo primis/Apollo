@@ -7,4 +7,6 @@ source "src/drivers/console/Kconfig"
 
 source "src/drivers/irqchip/Kconfig"
 
+source "src/drivers/display/Kconfig"
+
 endmenu
