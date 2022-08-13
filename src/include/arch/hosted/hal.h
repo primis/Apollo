@@ -4,8 +4,8 @@
  * Used to testbed the kernel without baremetal
  */
 
-#ifndef HOSTED_HAL_H
-#define HOSTED_HAL_H
+#ifndef __ARCH_HOSTED_HAL_H
+#define __ARCH_HOSTED_HAL_H
 
 #include <stdint.h>
 #include <sys/hal.h>

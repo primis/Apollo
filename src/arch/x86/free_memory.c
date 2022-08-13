@@ -27,15 +27,6 @@ static void remove_range(range_t *r, uint32_t start, uint32_t end)
     }
 }
 
-static char* memtype[] = {
-    "Not Available",
-    "Available",
-    "Reserved",
-    "ACPI Reclaimable",
-    "NVS",
-    "Bad Ram"
-};
-
 static int free_memory()
 {
     extern uint32_t __start, __end;  // Provided by linker
@@ -82,14 +73,11 @@ static int free_memory()
     
     // __end is size of our kernel from ld, we add some flags to it.
     uint32_t end = (((uint32_t)&__end) & ~get_page_mask()) + get_page_size();
-    total_megabytes = 0;
     // Run over the ranges, one of them has our kernel in it and shouldn't be
     // Marked as free (as our kernel would be overridden)
     for (i = 0; i < n; i++)
     {
         remove_range(&ranges[i], (uint32_t)&__start, end);
-        uint32_t megs = ((uint32_t)ranges[i].extent / 0x100000);
-        total_megabytes += megs;
     }
 
     // Copy the ranges to a backup, as init_physical_memory mutates them and
@@ -102,6 +90,7 @@ static int free_memory()
     init_virtual_memory(ranges, n);
     init_physical_memory();
     init_cow_refcnts(ranges, n);
+    total_megabytes = (mboot.mem_upper / 1024) + 1;
     return 0;
 }
 

@@ -1,10 +1,12 @@
 /*
- * (c) 2018 Apollo Project Developers
+ * (c) 2022 Apollo Project Developers
  * For terms, see LICENSE
  * ports.c - x86 I/O databus commends
  */
 
+#include <stdint.h>
 #include <arch/x86/ports.h>
+#include <sys/resource.h>
 
 void outb(uint16_t port, uint8_t value)
 {
@@ -39,6 +41,120 @@ void iowait(void)
     __asm__ __volatile__ ("outb 0x80, %0" : : "a" ((unsigned char)0));
 }
 
+static void io_write_8(uint16_t port, void* data)
+{
+    outb(port, *(uint8_t*)data);
+}
+
+static void io_write_16(uint16_t port, void* data)
+{
+    outw(port, *(uint16_t*)data);
+}
+
+static void io_read_8(uint16_t port, void* data)
+{
+    *(uint8_t*)data = inb(port);
+}
+
+static void io_read_16(uint16_t port, void* data)
+{
+    *(uint16_t*)data = inw(port);
+}
+
+static int resource_io_data_op(void *src, resource_t *r, resource_type_t off, 
+    size_t n, int read)
+{
+    int width;
+    size_t i;
+    void (*io_op)(uint16_t, void *);
+    if(read == 1)
+    {
+        switch(r->flags & RESOURCE_WIDTH)
+        {
+            case RESOURCE_WIDTH_8:
+                io_op = io_read_8;
+                width = 1;
+                break;
+            case RESOURCE_WIDTH_16:
+                io_op = io_read_16;
+                width = 2;
+                break;
+            default:
+                return -1;
+        }
+    }
+
+    else
+    {
+        switch (r->flags & RESOURCE_WIDTH)
+        {
+            case RESOURCE_WIDTH_8:
+                io_op = io_write_8;
+                width = 1;
+                break;
+            case RESOURCE_WIDTH_16:
+                io_op = io_write_16;
+                width = 2;
+                break;
+            default:
+                return -1;
+        }
+    }
+    switch(r->flags & 0x0F)
+    {
+        case RESOURCE_IO_LINEAR:    /* Standard linear addressing IO Write */
+            off += r->start;
+            for(i = 0; i < n; i += width)
+            {
+                if(r->flags & RESOURCE_IO_SLOW)
+                {
+                    iowait();
+                }
+                io_op(off + i, (src + i));
+            }
+            break;
+
+        case RESOURCE_IO_FIFO:  /* Write to the same port, over and over */
+            for(i = 0; i < n; i++)
+            {
+                if(r->flags & RESOURCE_IO_SLOW)
+                {
+                    iowait();
+                }
+
+                io_op(r->start, (src + i));
+            }
+            break;
+            
+        case RESOURCE_IO_INDEXED: /* Write to the indexing port, then data */
+            for(i = 0; i < n; i++)
+            {
+                if(r->flags & RESOURCE_IO_SLOW)
+                {
+                    iowait();
+                }
+                
+                outb(r->start, i + off);
+                io_op(r->end, (src + i));
+            }
+            break;
+
+        default:
+            return -1;
+    }
+
+    return 0;
+}
+
+int resource_io_write(void *src, resource_t *r, resource_type_t off, size_t n)
+{
+    return resource_io_data_op(src, r, off, n, 0);
+}
+
+int resource_io_read(void *dest, resource_t *r, resource_type_t off, size_t n)
+{
+        return resource_io_data_op(dest, r, off, n, 1);
+}
 
 // Write to an offset port given a base
 void write_register(int base, int reg, uint8_t value)

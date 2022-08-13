@@ -89,7 +89,8 @@ int arch_init(multiboot_info_t* mbt, unsigned int magic)
             {
                 len = strlen((char*)mod_old[i].cmdline) + 1;
                 mod_new[i].cmdline = earlyalloc(len);
-                memcpy((uint8_t*)mod_new[i].cmdline, (uint8_t*)mod_old[i].cmdline, len);
+                memcpy((uint8_t*)mod_new[i].cmdline, 
+                    (uint8_t*)mod_old[i].cmdline, len);
                 mod_new[i].mod_start += 0xC0000000;
                 mod_new[i].mod_end   += 0xC0000000;
             }
@@ -100,7 +101,8 @@ int arch_init(multiboot_info_t* mbt, unsigned int magic)
         len = mboot.u.elf_sec.num * mboot.u.elf_sec.size;
         mboot.u.elf_sec.addr = earlyalloc(len);
         if (mboot.u.elf_sec.addr) {
-            memcpy((uint8_t*)mboot.u.elf_sec.addr, (uint8_t*)mbt->u.elf_sec.addr, len);
+            memcpy((uint8_t*)mboot.u.elf_sec.addr, 
+                (uint8_t*)mbt->u.elf_sec.addr, len);
         }
     }
     if (mboot.flags & MULTIBOOT_INFO_MEM_MAP) {

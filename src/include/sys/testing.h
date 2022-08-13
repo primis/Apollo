@@ -3,12 +3,14 @@
  * testing.h - integrate tests tighter into kernel.
  */
 
+#ifndef __SYS_TESTING_H
+#define __SYS_TESTING_H
+
 #include <unity_fixture.h>
 
 typedef struct test_mod {
     void (*runner)(void);
 } test_mod_t;
-
 
 #undef TEST
 
@@ -29,3 +31,4 @@ typedef struct test_mod {
     }\
     void  TEST_##group##_##name##_(void)
 
+#endif

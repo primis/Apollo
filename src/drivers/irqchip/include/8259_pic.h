@@ -1,11 +1,11 @@
 /*
- * (C) 2018 Apollo Project Developers
+ * (C) 2022 Apollo Project Developers
  * pic.h - Definitions for controlling the Programmable Interrupt Controller
  */
 
-#ifndef __ARCH_X86_PIC_H
-#define __ARCH_X86_PIC_H
-#include <stdint.h>
+#ifndef __8259_PIC_H
+#define __8259_PIC_H
+#include <types.h>
 
 // PIC Commands
 
@@ -36,17 +36,5 @@
 #define PIC_EOI_SP      PIC_EOI     | PIC_SPECIFIC
 #define PIC_READ_ISR    PIC_READ_REGISTER | PIC_OCW3_SELECT | PIC_ISR_SELECT
 #define PIC_READ_IRR    PIC_READ_REGISTER | PIC_OCW3_SELECT
-
-#define PIC1_CMD 0x20
-#define PIC2_CMD 0xA0
-
-
-void PIC_init(uint8_t icw1, uint8_t icw3, uint8_t icw4, int off, uint16_t cmd);
-
-void PIC_set_mask(uint8_t line, uint16_t data);
-void PIC_clear_mask(uint8_t line, uint16_t data);
-void PIC_sendEOI(uint16_t command);
-uint8_t PIC_get_IRR(uint16_t command);
-uint8_t PIC_get_ISR(uint16_t command);
 
 #endif
