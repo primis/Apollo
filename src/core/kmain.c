@@ -9,6 +9,8 @@
 
 extern uint32_t free_memory_get_megs();
 
+char* spinny[] = {"|","/","-","\\"};
+
 void kmain(int argc, char **argv)
 {
     int i;
@@ -32,6 +34,22 @@ void kmain(int argc, char **argv)
     {
         printf(" [%d] = %s\n", i, argv[i]);
     }
-
-    while(1);
+    
+    uint64_t t0 = get_timestamp();
+    uint64_t t1 = 500000;
+    i = 0;
+    printf(" ");
+    while(1)
+    {
+        if(get_timestamp() > (t0 + t1))
+        {
+            i++;
+            t0 += t1;
+            if(i > 3)
+            {
+                i = 0;
+            }
+            printf("\b%s", spinny[i]);
+        }
+    }
 }

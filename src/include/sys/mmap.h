@@ -1,5 +1,5 @@
-#ifndef MMAP_H
-#define MMAP_H
+#ifndef __SYS_MMAP_H
+#define __SYS_MMAP_H
 
 // This file steps to includes for arch specific mmap's
 

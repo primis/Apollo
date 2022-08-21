@@ -5,10 +5,12 @@
  */
 #include <sys/hal.h>
 #include <stdio.h>
+#include <sys/irqchip.h>
 
 #include "include/idt.h"
 
 extern void idt_flush(uint32_t);
+extern int init_irq();
 
 #define NUM_TRAP_STRS 20 	// x86 has 20 hardware traps
 #define NUM_HANDLERS 50    // Max handlers x86 allows
@@ -72,20 +74,6 @@ unsigned num_handlers[NUM_HANDLERS];
 idt_entry_t idt[NUM_HANDLERS];
 idt_ptr_t   idt_ptr;
 
-// IRQ stuff. Implemented in another file.
-void (*ack_irq)(unsigned) = 0;
-void (*enable_irq)(uint8_t, unsigned) = 0;
-int init_irq();
-void enable_interrupts()
-{
-    __asm__ volatile("sti");
-}
-
-void disable_interrupts()
-{
-   __asm__ volatile("cli");
-}
-
 int get_interrupt_state()
 {
     uint32_t flags;
@@ -96,9 +84,9 @@ int get_interrupt_state()
 void set_interrupt_state(int enable)
 {
     if(enable) {
-        enable_interrupts();
+        __asm__ volatile("sti");
     } else {
-        disable_interrupts();
+        __asm__ volatile("cli");
     }
 }
 
@@ -204,9 +192,8 @@ int register_interrupt_handler(int num, interrupt_handler_t handler, void *p)
     handlers[num][num_handlers[num]].handler = handler;
     handlers[num][num_handlers[num]++].p = p;
 
-    if (num >= 32 && enable_irq) {
-        enable_irq(num-32, 1);  // Enable the IRQ line if needed.
-    }
+    irqchip_unmask(num);
+
     return 0;
 }
 
@@ -228,8 +215,9 @@ int unregister_interrupt_handler(int num, interrupt_handler_t handler, void *p)
     }
     if (found) {
         num_handlers[num]--;
-        if (num_handlers[num] == 0 && num >= 32 && enable_irq) {
-            enable_irq(num-32, 0);
+        if(num_handlers[num] == 0)
+        {
+            irqchip_mask(num);
         }
         return 0;
     }
@@ -243,11 +231,8 @@ void interrupt_handler(x86_regs_t *regs)
     const char *desc = "";
     char buf[64];
 
-
     // Acknowledge any IRQ lines
-    if(ack_irq) {
-        ack_irq(num);
-    }
+    irqchip_ack(num);
 
     if (num_handlers[num]) {
         for (i = 0, e = num_handlers[num]; i != e; i++) {
@@ -267,7 +252,7 @@ void interrupt_handler(x86_regs_t *regs)
 }
 
 static prereq_t prereqs[] = { {"x86/gdt",NULL}, {NULL,NULL} };
-static prereq_t load_after[] = { {"debugger",NULL}, {NULL,NULL} };
+static prereq_t load_after[] = { {"x86/VGA/Text",NULL}, {NULL,NULL} };
 
 MODULE = {
     .name = "interrupts",

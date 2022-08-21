@@ -3,6 +3,11 @@
  * timekeeping.h - Functionality for time
  */
 
+#ifndef __SYS_TIMEKEEPING_H
+#define __SYS_TIMEKEEPING_H
+
+#include <stdint.h>
+
 typedef struct callback_state
 {
     // Data given by register_callback()
@@ -30,3 +35,4 @@ typedef struct timekeeping_state
   
 } timekeeping_state_t;
 
+#endif

@@ -5,8 +5,8 @@
  * Thank you to James Molloy for the concept
  */
 
-#ifndef __HAL_H
-#define __HAL_H
+#ifndef __SYS_HAL_H
+#define __SYS_HAL_H
 
 #include <types.h>
 

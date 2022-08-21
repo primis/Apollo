@@ -16,4 +16,8 @@
 #undef NULL
 #define NULL 0
 
+typedef size_t phys_addr_t;
+
+typedef phys_addr_t resource_type_t;
+
 #endif
