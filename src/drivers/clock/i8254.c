@@ -14,6 +14,8 @@
 static timekeeping_state_t state; 
 
 // Desired Frequency, us per tick, fractional nanoseconds leftover
+// 999Hz desired setting gives 1.000685561 ms per tick 
+// That's an accuracy loss (with corrections) of 18 seconds per year
 static const uint32_t i8254_config[] = { 36157, 27, 657 };
 
 static int timekeeping(struct regs *regs, void *p)

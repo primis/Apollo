@@ -18,6 +18,11 @@ void outw(uint16_t port, uint16_t value)
     __asm__ __volatile__ ("outw %0, %1" : : "dN" (port), "a" (value));
 }
 
+void outl(uint16_t port, uint32_t value)
+{
+    __asm__ __volatile__ ("out %0, %1" : : "dN" (port), "a" (value));
+}
+
 uint8_t inb(uint16_t port)
 {
     uint8_t ret;
@@ -29,6 +34,13 @@ uint16_t inw(uint16_t port)
 {
     uint16_t ret;
     __asm__ __volatile__ ("inw %0, %1" : "=a" (ret) : "dN" (port));
+    return ret;
+}
+
+uint32_t inl(uint16_t port)
+{
+    uint32_t ret;
+    __asm__ __volatile__ ("in %0, %1" : "=a" (ret) : "dN" (port));
     return ret;
 }
 
@@ -51,6 +63,11 @@ static void io_write_16(uint16_t port, void* data)
     outw(port, *(uint16_t*)data);
 }
 
+static void io_write_32(uint16_t port, void* data)
+{
+    outl(port, *(uint32_t*)data);
+}
+
 static void io_read_8(uint16_t port, void* data)
 {
     *(uint8_t*)data = inb(port);
@@ -59,6 +76,11 @@ static void io_read_8(uint16_t port, void* data)
 static void io_read_16(uint16_t port, void* data)
 {
     *(uint16_t*)data = inw(port);
+}
+
+static void io_read_32(uint16_t port, void* data)
+{
+    *(uint32_t*)data = inl(port);
 }
 
 static int resource_io_data_op(void *src, resource_t *r, resource_type_t off, 
@@ -79,6 +101,10 @@ static int resource_io_data_op(void *src, resource_t *r, resource_type_t off,
                 io_op = io_read_16;
                 width = 2;
                 break;
+            case RESOURCE_WIDTH_32:
+                io_op = io_read_32;
+                width = 4;
+                break;
             default:
                 return -1;
         }
@@ -95,6 +121,10 @@ static int resource_io_data_op(void *src, resource_t *r, resource_type_t off,
             case RESOURCE_WIDTH_16:
                 io_op = io_write_16;
                 width = 2;
+                break;
+            case RESOURCE_WIDTH_32:
+                io_op = io_write_32;
+                width = 4;
                 break;
             default:
                 return -1;

@@ -3,6 +3,9 @@
 
 #include <stdint.h>
 
+#define IRQCHIP_CASCADE_PRIMARY     0x00000001 
+#define IRQCHIP_CASCADE_SECONDARY   0x00000002
+
 /**
  * struct irqchip - per irq chip information
  * @name:       Unique name of the chip (see irqchip_state)
@@ -17,7 +20,8 @@
  */
 typedef struct irqchip {
     const char *name;
-    
+    uint32_t flags;
+        
     int (*mask)(struct irqchip *data, uint32_t n);
     int (*unmask)(struct irqchip *data, uint32_t n);
     int (*ack)(struct irqchip *data, uint32_t n);
