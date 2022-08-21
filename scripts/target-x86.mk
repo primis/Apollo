@@ -6,6 +6,7 @@
 # Check for different Cross compilers in reverse order
 # We need to make the shell bash for "command -v" to work
 SHELL	:= $(shell which bash)
+STRIP	:= $(shell which strip)
 CC		:= $(shell command -v i586-elf-gcc)
 ifndef CC
 CC		:= $(shell command -v i686-elf-gcc)
@@ -20,7 +21,7 @@ endif
 
 AS				:= nasm
 ASFLAGS			:= -felf -dGITREV="'$(GIT_REV)'"
-TARGET_DEFS 	:= -DX86=1 -m32 -masm=intel -ffreestanding -nostdlib
+TARGET_DEFS 	:= -DX86=1 -m32 -masm=intel -ffreestanding -nostdlib -Os 
 TARGET_LDFLAGS	?= -m32 -Tsrc/arch/x86/x86-link.ld -nostdlib -lgcc -n
 
 $(BUILD)/%.s.o: %.s | setup_builddir

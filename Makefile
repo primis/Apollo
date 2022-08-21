@@ -44,7 +44,7 @@ endif
 OBJECTS		:= $(patsubst %.o,$(BUILD)/%.o,$(OBJECTS))
 SRCDIR		!= find src/ -type d | tr '\n' ' '
 
-all: link doc
+all: link doc strip
 
 # C files are compiled universally the same, assembler targets are defined in
 # The target specific makefiles
@@ -66,6 +66,10 @@ clean:
 	@printf "\033[1mCLEAN\033[0m \n"
 	@find . -type d -name "build*" -exec rm -rf {} +
 	@find $(HTMLDIR) -type f -exec rm {} +
+
+strip:
+	@printf "\033[1mSTRIP\033[0m \n"
+	@$(STRIP) -s $(BUILD)/apollo/$(BIN)
 
 doc_setup:
 	@mkdir -p $(HTMLDIR)

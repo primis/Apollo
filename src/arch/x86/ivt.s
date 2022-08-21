@@ -1,29 +1,24 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;; (c) 2018 Apollo Project Developers    ;;
+;; (c) 2022 Apollo Project Developers    ;;
 ;; ivt.s - x86 Interrupts - the asm part ;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-
-;section .text
 
 [BITS 32]
 [EXTERN interrupt_handler]
 [GLOBAL idt_flush]
+[GLOBAL isr0]
+[GLOBAL isr1]
 
 %macro ISR_NOERRCODE 1
-    [GLOBAL isr%1]
     isr%1:
         cli
-        push 0
         push %1
-        jmp 0x08:isr_common_stub
+        jmp 0x08:isr_no_err_stub
 %endmacro
 
 %macro ISR_ERRCODE 1
-    [GLOBAL isr%1]
     isr%1:
         cli
-        nop
-        nop
         push %1
         jmp 0x08:isr_common_stub
 %endmacro
@@ -33,6 +28,8 @@ idt_flush:
     lidt [eax]
     ret
 
+isr_no_err_stub:
+    push 0xDEADBEEF
 isr_common_stub:
     pusha
     mov eax, ds
@@ -73,7 +70,7 @@ ISR_ERRCODE   12
 ISR_ERRCODE   13
 ISR_ERRCODE   14
 
-    ;; Repeat 241 times (to 255)
+;; Repeat 241 times (to 255)
 %assign i 15
 %rep 241
     ISR_NOERRCODE i
