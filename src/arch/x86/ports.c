@@ -7,6 +7,7 @@
 #include <stdint.h>
 #include <arch/x86/ports.h>
 #include <sys/resource.h>
+#include <errno.h>
 
 void outb(uint16_t port, uint8_t value)
 {
@@ -106,7 +107,7 @@ static int resource_io_data_op(void *src, resource_t *r, resource_type_t off,
                 width = 4;
                 break;
             default:
-                return -1;
+                return -EIO;
         }
     }
 
@@ -127,7 +128,7 @@ static int resource_io_data_op(void *src, resource_t *r, resource_type_t off,
                 width = 4;
                 break;
             default:
-                return -1;
+                return -EIO;
         }
     }
     switch(r->flags & 0x0F)
@@ -170,7 +171,7 @@ static int resource_io_data_op(void *src, resource_t *r, resource_type_t off,
             break;
 
         default:
-            return -1;
+            return -ENOTSUPP;
     }
 
     return 0;

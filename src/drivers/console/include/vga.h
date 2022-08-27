@@ -1,10 +1,6 @@
 #ifndef __VGA_TEXT_H
 #define __VGA_TEXT_H
 
-#define VGA_BASE_POINTER_1 0xA0000 
-#define VGA_BASE_POINTER_2 0xB0000 
-#define VGA_BASE_POINTER_3 0xB8000 
-
 // VGA Colors
 #define VGA_C_BLACK           0
 #define VGA_C_BLUE            1

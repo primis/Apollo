@@ -24,12 +24,10 @@ char console_char_buf[CONSOLE_BUF_SZ];   // 80*50
 int register_console(console_t *c)
 {
     // spinlock_acquire(&lock);
-    int first_console = 0; // Used to detect if we dump the buffer.
     if (consoles) {
         consoles->prev = c;
-    } else {
-        first_console = 1;
     }
+
     c->next = consoles;
     c->prev = NULL;
 
@@ -40,13 +38,11 @@ int register_console(console_t *c)
         c->open(c);
     }
 
-    if (first_console) {
+    // Spit current contents of the ringbuffer to the console
+    if (c->write) {
         char buf[CONSOLE_BUF_SZ]; // Magic number = 80*50
         char_ringbuf_read(&console_buf, buf, console_buf.buffer_length);
-        // Printf works here. if we use write_console we get garbage.
-        // Honestly I have no idea why.
-        printf("\033[0m\f");
-        printf("%s",buf);
+        c->write(c, buf, strlen(buf));
     }
 
     //spinlock_release(&lock);
@@ -143,7 +139,7 @@ static int shutdown_console()
 
 int console_init()
 {
-    memset(console_char_buf, 0, CONSOLE_BUF_SZ);                  // Zero out the buffer.
+    memset(console_char_buf, 0, CONSOLE_BUF_SZ);         // Zero out the buffer.
     console_buf = make_char_ringbuf(console_char_buf, CONSOLE_BUF_SZ);
     return 0;
 }

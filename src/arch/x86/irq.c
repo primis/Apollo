@@ -1,14 +1,13 @@
 /*
- * (C) 2018 Apollo Project Developers
+ * (C) 2022 Apollo Project Developers
  * For terms, see LICENSE
- * irq.c - Interrupt Request Lines (hardware)
+ * irq.c - x86 specific IRQ driver bringup
  */
 
 #include <sys/hal.h>
-#include <sys/irqchip.h>
 #include <sys/resource.h>
-
-extern int i8259_init(irqchip_t*, int);
+#include <sys/irqchip.h>
+#include <sys/device.h>
 
 static resource_t at_pic0_resource = {
     .name   = "irqchip/at_pic0",
@@ -16,7 +15,6 @@ static resource_t at_pic0_resource = {
     .end    = 0x21,
     .flags  = RESOURCE_IO | RESOURCE_IO_SLOW | RESOURCE_WIDTH_8,
     .parent = NULL,
-    .child  = NULL
 };
 
 static resource_t at_pic1_resource = {
@@ -25,7 +23,6 @@ static resource_t at_pic1_resource = {
     .end    = 0xA1,
     .flags  = RESOURCE_IO | RESOURCE_IO_SLOW | RESOURCE_WIDTH_8,
     .parent = &at_pic0_resource,
-    .child  = NULL
 };
 
 static irqchip_t at_pic0 = {
@@ -42,13 +39,27 @@ static irqchip_t at_pic1 = {
     .data = (uintptr_t)&at_pic1_resource
 };
 
+static int config[] = {0x4, 0x2};
+
+static device_t at_pic0_dev = {
+    .name   = "at_pic0",
+    .data   = &at_pic0
+};
+
+static device_t at_pic1_dev = {
+    .name   = "at_pic1",
+    .data   = &at_pic1
+};
+
 int init_irq()
 {
     int i, ret;
 
-    ret = i8259_init(&at_pic0, 0x4);
-    ret |= i8259_init(&at_pic1, 0x2);
-    
+    ret = device_register(&at_pic0_dev, base_device(), "irqchip/8254_pic");
+    ret |= device_register(&at_pic1_dev, base_device(), "irqchip/8254_pic");
+    ret |= device_init(&at_pic0_dev, &config[0]);
+    ret |= device_init(&at_pic1_dev, &config[1]);
+
     // Mask all interrupts
     for(i = 32; i < 48; i++) {
         irqchip_mask(i);
@@ -58,4 +69,3 @@ int init_irq()
 
     return ret;
 }
-

@@ -9,6 +9,7 @@
 
 #include <sys/irqchip.h>
 #include <sys/resource.h>
+#include <sys/device.h>
 
 #include "include/8259_pic.h"
 
@@ -226,3 +227,15 @@ int i8259_init(irqchip_t *chip, uint8_t icw3)
 
     return 0;
 }
+
+static int configure(device_t *device, void *p)
+{
+    uint32_t *config = (uint32_t *)p;
+    irqchip_t *chip = (irqchip_t *)device->data;
+    return i8259_init(chip, *config);
+}
+
+DRIVER = {
+    .compat = "irqchip/8254_pic",
+    .init   = &configure
+};

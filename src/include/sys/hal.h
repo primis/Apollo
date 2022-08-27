@@ -353,7 +353,9 @@ bool cow_handle_page_fault(uintptr_t addr, uintptr_t error_code);
 typedef uint32_t dev_t;
 
 // Character stream device.
-typedef struct char_device{
+typedef struct char_device {
+  int (*open)(struct char_device *obj);
+  int (*close)(struct char_device *obj);
   int (*read)(struct char_device *obj, char *buf, uint64_t len);
   int (*write)(struct char_device *obj, char *buf, uint64_t len);
   void (*flush)(struct char_device *obj);
@@ -370,6 +372,8 @@ typedef struct char_device{
 
 // A block device - a random access device.
 typedef struct block_device {
+  int (*open)(struct block_device *o);
+  int (*close)(struct block_device *o);
   int (*read)(struct block_device *o, uint64_t offset, void *buf, uint64_t len);
   int (*write)(struct block_device *o, uint64_t offset, void *buf,uint64_t len);
   void (*flush)(struct block_device *o);
@@ -379,27 +383,6 @@ typedef struct block_device {
   dev_t id;
   void *data;
 } block_device_t;
-
-// Known device major numbers.
-#define DEV_MAJ_NULL 0
-#define DEV_MAJ_ZERO 1
-#define DEV_MAJ_HDA  2
-#define DEV_MAJ_HDB  3
-#define DEV_MAJ_HDC  4
-#define DEV_MAJ_HDD  5
-#define DEV_MAJ_SDA  6
-#define DEV_MAJ_SDB  7
-#define DEV_MAJ_SDC  8
-#define DEV_MAJ_SDD  9
-static inline unsigned minor(dev_t x) {
-  return x & 0xFFFF;
-}
-static inline unsigned major(dev_t x) {
-  return (x >> 16) & 0xFFFF;
-}
-static inline dev_t makedev(unsigned major, unsigned minor) {
-  return ((major&0xFFFF) << 16) | (minor & 0xFFFF);
-}
 
 int register_char_device(dev_t id, char_device_t *dev);
 int register_block_device(dev_t id, block_device_t *dev);

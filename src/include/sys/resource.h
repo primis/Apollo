@@ -5,6 +5,7 @@
 
 /* Bits 8-11: Resource Type */
 #define RESOURCE_TYPE       0x00000F00
+#define RESOURCE_META       0x00000000  /* Meta Resource */
 #define RESOURCE_IO         0x00000100  /* IO Bus */
 #define RESOURCE_MEM        0x00000200  /* Memory Bus */
 
@@ -37,6 +38,9 @@ typedef struct resource {
     uint32_t flags;
     struct resource *parent, *sibling, *child; 
 } resource_t;
+
+void resource_register(resource_t *r, resource_t *parent);
+resource_t *resource_find(const char *name, resource_t *parent);
 
 int resource_write(void *src, resource_t *r, resource_type_t off, size_t n);
 int resource_read(void *dest, resource_t *r, resource_type_t off, size_t n);

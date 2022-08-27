@@ -1,10 +1,8 @@
 menuconfig ARCH
-    bool "Architectures"
+    bool "Architecture"
     help
       This menu contains all the architectures supported for building.
 if ARCH
-
-menu "Architectures"
 
 config TARGET
     string "Target Definition"
@@ -14,18 +12,6 @@ config TARGET
         Available platforms are:
          - hosted
          - x86
-         
-if TARGET=x86
-config X86_BASE
-    bool "x86 Base Functionality"
-    default y
-    select LIBC
-    select IRQCHIP_8259
-    help
-        This package should always be selected when building for 32 bit
-        Intel machines that are IBM PC compatible. Unless you really
-        know what you are doing do not turn this off.
-endif
 
 if TARGET=hosted
 config HOSTED_BASE
@@ -37,5 +23,8 @@ config HOSTED_BASE
         enviorments. Without it dependencies will not be met.
 endif
 
-endmenu
+if TARGET=x86
+source "src/arch/x86/Kconfig"
+endif
+
 endif #if ARCH

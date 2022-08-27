@@ -1,0 +1,10 @@
+config X86_BASE
+    bool "x86 Base Functionality"
+    default y
+    select LIBC
+    select IRQCHIP_8259
+    help
+        This package should always be selected when building for 32 bit
+        Intel machines that are IBM PC compatible. Unless you really
+        know what you are doing do not turn this off.
+
