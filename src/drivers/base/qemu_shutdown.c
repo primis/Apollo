@@ -4,14 +4,27 @@
  * qemu_shutdown.c - Driver for the x86 emulator qemu to allow quick shutdown
  */
 
-#include <arch/x86/ports.h>
-#include <sys/hal.h>
 #include <stdint.h>
+#include <sys/resource.h>
+
+static resource_t old_qemu = {
+    .start = 0xB004,
+    .end   = 0xB004,
+    .flags = RESOURCE_IO
+};
+
+static resource_t new_qemu = {
+    .start = 0x604,
+    .end   = 0x604,
+    .flags = RESOURCE_IO
+};
 
 void system_shutdown()
 {
+    uint16_t cmd = 0x2000;
+
     // First try older version (Qemu version older than 2.0)
-    outw(0xB004, 0x2000);
+    resource_write(&cmd, &old_qemu, 0, 1);
     // Next try newer versions
-    outw(0x604, 0x2000);
+    resource_write(&cmd, &new_qemu, 0, 1);
 }
