@@ -2,7 +2,6 @@
 #define __1655_UART_H
 
 #include <adt/ringbuf.h>
-#include <arch/x86/ports.h>
 
 // TODO: seperate UART and x86 specific stuff here...
 #define UART_BASE_COM1 0x3f8
@@ -136,7 +135,5 @@ typedef struct serial_state {
     int parity;
     int stop_bits;
 } serial_state_t;
-
-
 
 #endif

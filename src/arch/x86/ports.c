@@ -5,45 +5,9 @@
  */
 
 #include <stdint.h>
-#include <arch/x86/ports.h>
 #include <sys/resource.h>
 #include <errno.h>
-
-void outb(uint16_t port, uint8_t value)
-{
-    __asm__ __volatile__ ("outb %0, %1" : : "dN" (port), "a" (value));
-}
-
-void outw(uint16_t port, uint16_t value)
-{
-    __asm__ __volatile__ ("outw %0, %1" : : "dN" (port), "a" (value));
-}
-
-void outl(uint16_t port, uint32_t value)
-{
-    __asm__ __volatile__ ("out %0, %1" : : "dN" (port), "a" (value));
-}
-
-uint8_t inb(uint16_t port)
-{
-    uint8_t ret;
-    __asm__ __volatile__ ("inb %0, %1" : "=a" (ret) : "dN" (port));
-    return ret;
-}
-
-uint16_t inw(uint16_t port)
-{
-    uint16_t ret;
-    __asm__ __volatile__ ("inw %0, %1" : "=a" (ret) : "dN" (port));
-    return ret;
-}
-
-uint32_t inl(uint16_t port)
-{
-    uint32_t ret;
-    __asm__ __volatile__ ("in %0, %1" : "=a" (ret) : "dN" (port));
-    return ret;
-}
+#include "include/ports.h"
 
 void iowait(void)
 {
@@ -56,32 +20,41 @@ void iowait(void)
 
 static void io_write_8(uint16_t port, void* data)
 {
-    outb(port, *(uint8_t*)data);
+    uint8_t value = *(uint8_t *)data;
+    __asm__ __volatile__ ("outb %0, %1" : : "dN" (port), "a" (value));
 }
 
 static void io_write_16(uint16_t port, void* data)
 {
-    outw(port, *(uint16_t*)data);
+    uint16_t value = *(uint16_t *)data;
+    __asm__ __volatile__ ("outw %0, %1" : : "dN" (port), "a" (value));
 }
 
 static void io_write_32(uint16_t port, void* data)
 {
-    outl(port, *(uint32_t*)data);
+    uint32_t value = *(uint32_t *)data;
+    __asm__ __volatile__ ("out %0, %1" : : "dN" (port), "a" (value));
 }
 
 static void io_read_8(uint16_t port, void* data)
 {
-    *(uint8_t*)data = inb(port);
+    uint8_t ret;
+    __asm__ __volatile__ ("inb %0, %1" : "=a" (ret) : "dN" (port));
+    *(uint8_t*)data = ret;
 }
 
 static void io_read_16(uint16_t port, void* data)
 {
-    *(uint16_t*)data = inw(port);
+    uint16_t ret;
+    __asm__ __volatile__ ("inw %0, %1" : "=a" (ret) : "dN" (port));
+    *(uint16_t*)data = ret;
 }
 
 static void io_read_32(uint16_t port, void* data)
 {
-    *(uint32_t*)data = inl(port);
+    uint32_t ret;
+    __asm__ __volatile__ ("in %0, %1" : "=a" (ret) : "dN" (port));
+    *(uint32_t*)data = ret;
 }
 
 static int resource_io_data_op(void *src, resource_t *r, resource_type_t off, 
@@ -160,12 +133,12 @@ static int resource_io_data_op(void *src, resource_t *r, resource_type_t off,
         case RESOURCE_IO_INDEXED: /* Write to the indexing port, then data */
             for(i = 0; i < n; i++)
             {
+                uint8_t index = (off + i); 
                 if(r->flags & RESOURCE_IO_SLOW)
                 {
                     iowait();
-                }
-                
-                outb(r->start, i + off);
+                }      
+                io_write_8(r->start, &index);
                 io_op(r->end, (src + i));
             }
             break;
@@ -185,18 +158,6 @@ int resource_io_write(void *src, resource_t *r, resource_type_t off, size_t n)
 int resource_io_read(void *dest, resource_t *r, resource_type_t off, size_t n)
 {
         return resource_io_data_op(dest, r, off, n, 1);
-}
-
-// Write to an offset port given a base
-void write_register(int base, int reg, uint8_t value)
-{
-    outb((uint16_t)base+reg, value);
-}
-
-// Same, but read
-uint8_t read_register(int base, int reg)
-{
-    return inb((uint16_t)base+reg);
 }
 
 inline uint32_t read_cr0()

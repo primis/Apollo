@@ -4,12 +4,16 @@
  * 16550_uart.c - x86 standard Serial Driver
  */
 
+// TODO: Fix this!!
+
+#if 0
+
 // TODO: Implement interrupts for read / write so we dont end up with busy loops
 
 #include <arch/x86/ports.h>
 #include <adt/ringbuf.h>
-#include "include/16550_uart.h"
 #include <sys/hal.h>
+#include "include/16550_uart.h"
 
 #define UART_BUFSZ 32
 
@@ -236,3 +240,5 @@ MODULE = {
     .init       = &register_serial,
     .fini       = NULL
 };
+
+#endif
