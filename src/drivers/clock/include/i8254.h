@@ -3,13 +3,9 @@
  * i8254.h - Definitions for controlling the intel 8253/8254 
  */
 
-#ifndef __ARCH_X86_PIT_H
-#define __ARCH_X86_PIT_H
+#ifndef __DRIVER_I8254_H
+#define __DRIVER_I8254_H
 #include <stdint.h>
-
-#define i8254_BASE_FREQ 1193182 /* 1.193181666666666 MHz */
-
-#define i8254_DATA_PORT 0x40
 
 #define i8254_DATA_0    0
 #define i8254_DATA_1    1

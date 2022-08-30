@@ -5,4 +5,4 @@
 ##############################
 
 obj_y = hal.c main.c kmain.c early_pmm.c 
-obj_y += irqchip.c resource.c
+obj_y += irqchip.c resource.c devices.c

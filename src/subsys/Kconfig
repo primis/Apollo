@@ -1,0 +1,15 @@
+menu Subsystems
+
+config TIMEKEEPING
+    bool "Timekeeping"
+    default y
+    help
+        This option enables the kernel to have support for timekeeping functions
+
+config CONSOLE
+    bool "Kernel Console"
+    default y
+    help
+        This option allows the kernel to log it's status to external devices.
+        
+endmenu

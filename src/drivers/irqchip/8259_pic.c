@@ -9,6 +9,7 @@
 
 #include <sys/irqchip.h>
 #include <sys/resource.h>
+#include <sys/device.h>
 
 #include "include/8259_pic.h"
 
@@ -26,17 +27,13 @@ static int i8259_ack(irqchip_t *chip, uint32_t n)
         return -1;
     }
     base = (resource_t *)chip->data;
-    if(base == NULL)
-    {
-        return -1;
-    }
 
     cmd = PIC_EOI;
 
     /* Check to see if we're a cascaded PIC, if so, run an EOI against the 
      * main PIC too 
      */
-    if(base->parent != NULL)
+    if(chip->flags & IRQCHIP_CASCADE_SECONDARY)
     {
         if(resource_write(&cmd, base->parent, 0, 1))
         {
@@ -65,10 +62,6 @@ static int i8259_mask(irqchip_t *chip, uint32_t n)
         return -1;
     }
     base = (resource_t *)chip->data;
-    if(base == NULL)
-    {
-        return -1;
-    }
 
     /* Retrieve existing mask from the Interrupt Mask Register.
      * The IMR, set via OCW1, is described in Fig. 8 of the data sheet.
@@ -102,10 +95,6 @@ static int i8259_unmask(irqchip_t *chip, uint32_t n)
         return -1;
     }
     base = (resource_t *)chip->data;
-    if(base == NULL)
-    {
-        return -1;
-    }
 
     /* Retrieve existing mask from the Interrupt Mask Register.
      * The IMR, set via OCW1, is described in Fig. 8 of the data sheet.
@@ -134,7 +123,7 @@ int i8259_init(irqchip_t *chip, uint8_t icw3)
     uint8_t mask;
     uint8_t cmd;
     resource_t *base; 
-    int cascade_mode = 1;
+    int cascade_mode = 0;
 
     /* Quick null pointer check */
     if(chip == NULL)
@@ -155,9 +144,10 @@ int i8259_init(irqchip_t *chip, uint8_t icw3)
     }
 
     /* Check to see if we need ICW3 or not */
-    if(base->parent == NULL && base->child == NULL)
+    if((chip->flags & IRQCHIP_CASCADE_PRIMARY) ||
+       (chip->flags & IRQCHIP_CASCADE_SECONDARY))
     {
-        cascade_mode = 0;
+        cascade_mode = 1;
     }
 
     if(resource_read(&mask, base, 1, 1))
@@ -232,9 +222,20 @@ int i8259_init(irqchip_t *chip, uint8_t icw3)
     chip->ack = &i8259_ack;
     chip->mask = &i8259_mask;
     chip->unmask = &i8259_unmask;
-    chip->name = base->name;
 
     irqchip_register(chip);
 
     return 0;
 }
+
+static int configure(device_t *device, void *p)
+{
+    uint32_t *config = (uint32_t *)p;
+    irqchip_t *chip = (irqchip_t *)device->data;
+    return i8259_init(chip, *config);
+}
+
+DRIVER = {
+    .compat = "irqchip/8254_pic",
+    .init   = &configure
+};

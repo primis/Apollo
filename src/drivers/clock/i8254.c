@@ -4,81 +4,81 @@
  * i8254.c - Driver for the 8253/8254 Programmable Interrupt Timer
  */
 
-#include <arch/x86/ports.h>
-#include <sys/hal.h>
+#include <sys/resource.h>
 #include <sys/timekeeping.h>
+#include <sys/device.h>
 #include <stdint.h>
-
 #include "include/i8254.h"
 
-static timekeeping_state_t state; 
-
-// Desired Frequency, us per tick, fractional nanoseconds leftover
-static const uint32_t i8254_config[] = { 36157, 27, 657 };
-
-static int timekeeping(struct regs *regs, void *p)
-{
-    // Grab current timestamp so we can update it
-    uint64_t ts = get_timestamp();
-
-    state.ns_count += state.ns_per_tick;
-    if(state.ns_count >= 1000) { // Did we hit a microsecond?
-        ts += (state.ns_count / 1000);
-        state.ns_count %= 1000;
-    }
-    // Add Microseconds to the clock.
-    ts += state.us_per_tick;
-    set_timestamp(ts);
-    return 0;
-}
-
-static int i8254_init()
+int i8254_configure(timekeeping_state_t *chip, int channel, int mode)
 {
     uint32_t divisor;
     uint8_t low, high, init_byte;
+    uint8_t channel_select = 0;
+    int ret;
 
-    int interrupt_state;
+    switch(channel)
+    {
+        case 0:
+            channel_select = i8254_DATA_0;    
+            init_byte = i8254_CHANNEL_0;
+            break;
+        case 1:
+            channel_select = i8254_DATA_1;
+            init_byte = i8254_CHANNEL_1;
+            break;
+        case 2:
+            channel_select = i8254_DATA_2;
+            init_byte = i8254_CHANNEL_2;
+            break;
+        default:
+            return -1;
+    }
 
-    // Nearest integer frequency of the PIT
-    state.frequency     = i8254_config[0];
-    // Calculated Microseconds per tick (from real frequency)
-    state.us_per_tick   = i8254_config[1];
-    // Calculated Nanoseconds per tick (3 Significant Figures, only the ns part)
-    state.ns_per_tick   = i8254_config[2];
-    state.ns_count      = 0;
-    state.priority      = 100;
+    switch(mode)
+    {
+        case 0: 
+            init_byte |= i8254_MODE_0;
+            break;
+        case 1: 
+            init_byte |= i8254_MODE_1;
+            break; 
+        case 2: 
+            init_byte |= i8254_MODE_2;
+            break; 
+        case 3: 
+            init_byte |= i8254_MODE_3;
+            break; 
+        case 4: 
+            init_byte |= i8254_MODE_4;
+            break; 
+        case 5: 
+            init_byte |= i8254_MODE_5;
+            break; 
+        default:
+            return -1;
+    }
 
-    // Re-init the timestamp.
-    set_timestamp(0);
+    init_byte |= i8254_LHBYTE | i8254_BIN_MODE;
+    divisor    = chip->base_frequency / chip->frequency;
+    low        = (uint8_t)(divisor & 0xFF);
+    high       = (uint8_t)((divisor >> 8) & 0xFF);
 
-    init_byte = i8254_CHANNEL_0 | i8254_LHBYTE | i8254_MODE_2 | i8254_BIN_MODE;
-    divisor   = i8254_BASE_FREQ / i8254_config[0];
-    low       = (uint8_t)(divisor & 0xFF);
-    high      = (uint8_t)((divisor >> 8) & 0xFF);
+    ret  = resource_write(&init_byte, chip->data, i8254_CMD, 1);
+    ret |= resource_write(&low, chip->data, channel_select, 1);
+    ret |= resource_write(&high, chip->data, channel_select, 1);
 
-    interrupt_state = get_interrupt_state();
-    disable_interrupts();
-
-    // Atomic Section
-
-    write_register(i8254_DATA_PORT, i8254_CMD, init_byte);
-    write_register(i8254_DATA_PORT, i8254_DATA_0, low);
-    write_register(i8254_DATA_PORT, i8254_DATA_0, high);
-    // PIC is on IRQ 0, which is int 32.
-    register_interrupt_handler(32, &timekeeping, NULL);
-
-    set_interrupt_state(interrupt_state);
-    // End Atomic Section
-
-    return 0;
+    return ret;
 }
 
-static prereq_t prereqs[] = {{"interrupts", NULL}, {NULL, NULL}};
+static int configure(device_t *device, void *p)
+{
+    int *config = (int *)p;
+    timekeeping_state_t *chip = (timekeeping_state_t *)device->data;
+    return i8254_configure(chip, config[0], config[1]);
+}
 
-MODULE = {
-    .name = "timekeeping",
-    .required = prereqs,
-    .load_after = NULL,
-    .init = &i8254_init,
-    .fini = NULL,
+DRIVER = {
+    .compat = "clock/i8254",
+    .init   = &configure
 };

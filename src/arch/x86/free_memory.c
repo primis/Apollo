@@ -90,7 +90,7 @@ static int free_memory()
     init_virtual_memory(ranges, n);
     init_physical_memory();
     init_cow_refcnts(ranges, n);
-    total_megabytes = (mboot.mem_upper / 1024) + 1;
+    total_megabytes = (mboot.mem_upper / 1024) + 2;
     return 0;
 }
 

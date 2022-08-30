@@ -34,7 +34,6 @@ void kmain(int argc, char **argv)
     {
         printf(" [%d] = %s\n", i, argv[i]);
     }
-    
     uint64_t t0 = get_timestamp();
     uint64_t t1 = 500000;
     i = 0;

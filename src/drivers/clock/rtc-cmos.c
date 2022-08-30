@@ -5,16 +5,23 @@
  */
 
 #include <sys/hal.h>
-#include <arch/x86/ports.h>
+#include <sys/resource.h>
 #include "include/rtc_cmos.h"
 
 // This is cumulative days, not real "days"
-const uint32_t days_from_month[12] = {
+static const uint32_t days_from_month[12] = {
 // Jan, Feb, Mar, Apr, May, Jun, Jul, Aug, Sep, Oct, Nov, Dec
      0,  31,  59,  90, 120, 151, 181, 212, 243, 273, 304, 334
 };
-const uint32_t seconds_in_a_day  = 86400;
-const uint32_t seconds_in_a_year = 31536000;
+static const uint32_t seconds_in_a_day  = 86400;
+static const uint32_t seconds_in_a_year = 31536000;
+
+static resource_t rtc = {
+    .name   = "cmos-registers",
+    .start  = 0x70,
+    .end    = 0x71,
+    .flags  = RESOURCE_IO | RESOURCE_IO_INDEXED | RESOURCE_IO_SLOW
+};
 
 // Returns number of leap days since beginning of epoch (January 1970)
 // This doesn't work for divisible by 100 non-leap years (2100, for example)
@@ -29,65 +36,62 @@ static int leap_days(uint8_t year, uint8_t month)
     if ((year/4 == 0) && (month <= 2)) {
         days--;
     }
-    return days;
-}
 
-static uint8_t get_CMOS_register(uint8_t reg)
-{
-    // It's important for this to be atomic, since we're grabbing a timestamp
-    int interrupt_state = get_interrupt_state();
-    uint8_t ret;
-    disable_interrupts();
-    outb(CMOS_INDEX_PORT, reg);
-    ret = inb(CMOS_DATA_PORT);
-    set_interrupt_state(interrupt_state);
-    return ret;
+    return days;
 }
 
 static int cmos_update_in_progress()
 {
     uint8_t ret;
-    ret = get_CMOS_register(CMOS_REGISTER_STATUSA);
+    resource_read(&ret, &rtc, CMOS_REGISTER_STATUSA, 1);
     return ret & 0x80;
 }
 
-static void read_RTC(cmos_register_t cmos)
+static void read_RTC(cmos_register_t *cmos)
 {
+    int interrupt_state;
+    
     while(cmos_update_in_progress()); // Wait until CMOS finished an update
 
-    cmos.second     = get_CMOS_register(CMOS_REGISTER_SECOND);
-    cmos.minute     = get_CMOS_register(CMOS_REGISTER_MINUTE);
-    cmos.hour       = get_CMOS_register(CMOS_REGISTER_HOUR);
-    cmos.day        = get_CMOS_register(CMOS_REGISTER_DAY);
-    cmos.month      = get_CMOS_register(CMOS_REGISTER_MONTH);
-    cmos.year       = get_CMOS_register(CMOS_REGISTER_YEAR);
-    cmos.registera  = get_CMOS_register(CMOS_REGISTER_STATUSA);
-    cmos.registerb  = get_CMOS_register(CMOS_REGISTER_STATUSB);
-    cmos.registerc  = get_CMOS_register(CMOS_REGISTER_STATUSC);
-    cmos.registerd  = get_CMOS_register(CMOS_REGISTER_STATUSD);
+    // Atomic section
+    interrupt_state = get_interrupt_state();
+    disable_interrupts();
+    resource_read(&(cmos->second   ), &rtc, CMOS_REGISTER_SECOND, 1);
+    resource_read(&(cmos->minute   ), &rtc, CMOS_REGISTER_MINUTE, 1);
+    resource_read(&(cmos->hour     ), &rtc, CMOS_REGISTER_HOUR,   1);
+    resource_read(&(cmos->day      ), &rtc, CMOS_REGISTER_DAY,    1);
+    resource_read(&(cmos->month    ), &rtc, CMOS_REGISTER_MONTH,  1);
+    resource_read(&(cmos->year     ), &rtc, CMOS_REGISTER_YEAR,   1);
+    resource_read(&(cmos->registera), &rtc, CMOS_REGISTER_STATUSA,1);
+    resource_read(&(cmos->registerb), &rtc, CMOS_REGISTER_STATUSB,1);
+    resource_read(&(cmos->registerc), &rtc, CMOS_REGISTER_STATUSC,1);
+    resource_read(&(cmos->registerd), &rtc, CMOS_REGISTER_STATUSD,1);
+    // End of Atomic section
+    set_interrupt_state(interrupt_state);
+
+
     // Check if the time is in BCD format
-    if (!(cmos.registerb & CMOS_BINARY_DATE_MODE)) {
+    if (!(cmos->registerb & CMOS_BINARY_DATE_MODE)) {
         // Convert out of BCD, very simple
-        cmos.second = (cmos.second & 0xF) + ((cmos.second / 16) * 10);
-        cmos.minute = (cmos.minute & 0xF) + ((cmos.minute / 16) * 10);
-        cmos.hour   = (cmos.hour   & 0xF) + ((cmos.hour   / 16) * 10);
-        cmos.day    = (cmos.day    & 0xF) + ((cmos.day    / 16) * 10);
-        cmos.month  = (cmos.month  & 0xF) + ((cmos.month  / 16) * 10);
-        cmos.year   = (cmos.year   & 0xF) + ((cmos.year   / 16) * 10);
+        cmos->second = (cmos->second & 0xF) + ((cmos->second / 16) * 10);
+        cmos->minute = (cmos->minute & 0xF) + ((cmos->minute / 16) * 10);
+        cmos->hour   = (cmos->hour   & 0xF) + ((cmos->hour   / 16) * 10);
+        cmos->day    = (cmos->day    & 0xF) + ((cmos->day    / 16) * 10);
+        cmos->month  = (cmos->month  & 0xF) + ((cmos->month  / 16) * 10);
+        cmos->year   = (cmos->year   & 0xF) + ((cmos->year   / 16) * 10);
     }
     // Assume it's not 21xx year
-    cmos.year += 2000;
+    cmos->year += 2000;
 }
 
 // Returns the number of seconds since January 1st, 1970.
 uint32_t get_epoch_time()
 {
     uint32_t time;
-    // Init one of these so gcc doesn't yell at us
-    cmos_register_t cmos = {.day = 0};
+    cmos_register_t cmos;
 
     // Populate cmos
-    read_RTC(cmos);
+    read_RTC(&cmos);
     // Start adding seconds
     time =  cmos.second;
     time += cmos.minute                 * 60;

@@ -6,11 +6,15 @@
  * that can output a charecter set
  */
 
-
-#include <arch/x86/ports.h>
-#include <string.h>
+#include <sys/device.h>
 #include <sys/hal.h>
+#include <sys/resource.h>
+#include <errno.h>
+#include <string.h>
+
 #include "include/vga.h"
+
+// TODO: throw this all in a struct
 
 static const int defaultBackColor = VGA_C_BLUE;
 static const int defaultForeColor = VGA_C_LIGHTGRAY;
@@ -21,7 +25,10 @@ static int      escape_nums[4];
 static int      escape_num_idx = 0;
 static uint8_t  cursorY = 0;
 static uint8_t  cursorX = 0;
-static uint16_t *VGAPointer;
+
+static device_t   *dev;
+static resource_t *framebuffer;
+static uint16_t   max_rows;
 
 static int      backColor = defaultBackColor;
 static int      foreColor = defaultForeColor;
@@ -30,26 +37,15 @@ static int      foreBold  = 0;
 static int      in_escape = 0;
 
 static void cls();
+static void put_char(char c);
 
-// These are inflexible in design, for full support, include VGA Display driver
-void vga_move_cursor(uint16_t, uint16_t)  __attribute__((__weak__));
-void vga_move_cursor(uint16_t cursorX, uint16_t cursorY) {
-  return;
-}
+static void move_cursor() {
+    uint32_t api_args[3];
+    api_args[0] = 0;
+    api_args[1] = cursorX;
+    api_args[2] = cursorY;
 
-void vga_set_font(int)  __attribute__((__weak__));
-void vga_set_font(int size) {
-  return;
-}
-
-uint16_t vga_get_max_rows() __attribute__((__weak__));
-uint16_t vga_get_max_rows() {
-  return 25;
-}
-
-void* vga_get_framebuffer_base() __attribute__((__weak__));
-void* vga_get_framebuffer_base() {
-  return (void*) 0xB8000;
+    device_api_call(dev->parent, &api_args);
 }
 
 static void handle_colour_escape(int e) {
@@ -131,10 +127,12 @@ static int handle_escape(char c) {
 
 static void scroll()
 {
+    uint16_t *VGAPointer = (uint16_t *)framebuffer->start;
+
     // Yes this isn't a byte, but the real info is only in 8 bits.
     uint16_t attributeByte = (backColor<<12) | (foreColor<<8);
     uint16_t blank = 0x20 | attributeByte;
-    uint16_t max_rows = vga_get_max_rows();
+
     if(cursorY >= max_rows) {
         int i;
         for(i = 0; i < ((max_rows-1)*80); i++) {
@@ -150,7 +148,9 @@ static void scroll()
 static void put_char(char c)
 {
     uint16_t attributeByte = (backColor<<12) | (foreColor<<8);
+    uint16_t *VGAPointer = (uint16_t *)framebuffer->start;
     uint16_t *location;
+    
     if (in_escape) {
         in_escape = handle_escape(c);
         return;
@@ -179,18 +179,16 @@ static void put_char(char c)
         cursorY++;
     }
     scroll();
-    vga_move_cursor(cursorX, cursorY);
 }
 
 static void cls()
 {
     int i;
-    for(i=0; i<= (vga_get_max_rows()*80); i++) {
+    for(i=0; i <= (max_rows * 80); i++) {
         put_char(' ');
     }
     cursorY = 0;
     cursorX = 0;
-    vga_move_cursor(cursorX, cursorY);
 }
 
 static int write(console_t *obj, const char *buf, int len)
@@ -198,11 +196,18 @@ static int write(console_t *obj, const char *buf, int len)
     for (int i = 0; i<len; i++){
         put_char(buf[i]);
     }
+    move_cursor();
     return len;
 }
 
+static int open(console_t *obj)
+{
+    cls();
+    return 0;
+}
+
 console_t c = {
-    .open = NULL,
+    .open = &open,
     .close = NULL,
     .read = NULL,
     .write = &write,
@@ -210,20 +215,19 @@ console_t c = {
     .data  = NULL
 };
 
-static int register_screen()
+static int init(device_t *d, void *p)
 {
-    VGAPointer = (uint16_t*)vga_get_framebuffer_base();
-    vga_set_font(8);
+    uint32_t *config = (uint32_t *)p;
+    framebuffer = (resource_t *)d->data;
+    max_rows = *config;
+    dev = d;
+
     cls();
     register_console(&c);
     return 0;
 }
 
-static prereq_t prereqs[] = { {"console",NULL}, {NULL,NULL} };
-MODULE = {
-    .name = "x86/VGA/Text",
-    .required = prereqs,
-    .load_after = NULL,
-    .init = &register_screen,
-    .fini = NULL
+DRIVER = {
+  .compat = "console/vga",
+  .init = &init
 };
