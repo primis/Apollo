@@ -1,7 +1,7 @@
 #############################
 ## Apollo Project Makefile ##
 #############################
-.PHONY: all clean iso
+.PHONY: all clean link iso
 
 # Git revision number
 GIT_REV		!= git rev-parse --short HEAD 2>/dev/null |tr '[:lower:]' '[:upper:]'
@@ -56,6 +56,8 @@ $(BUILD)/apollo/$(BIN): $(OBJECTS)
 	@mkdir -p $(BUILD)/apollo
 	@$(CC) $(DEFS) $(WARNINGS) $(LDFLAGS) $(TARGET_LDFLAGS) \
 	-o $(BUILD)/apollo/$(BIN) $(OBJECTS)
+
+link: $(BUILD)/apollo/$(BIN)
 
 clean:
 	@printf "\033[1mCLEAN\033[0m \n"
