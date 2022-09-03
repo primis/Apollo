@@ -1,14 +1,12 @@
-config LIBC
-    bool "C Library Functions"
+menuconfig LIBC
+    bool "Standard Library Functions"
     select LIBC_MATH
     select LIBC_STDIO
     select LIBC_STRING
     help 
         Standard library functionality is used throughout the kernel. Do not
         disable this functionality unless you know what you are doing.
-
 if LIBC
-menu "Standard Library Functions"
 
 config LIBC_MATH
     bool "<math.h> Compatiblity"
@@ -26,6 +24,4 @@ config LIBC_STRING
     help
         Enables functions found in string.h
 
-endmenu # Standard Library
-
-endif #if LIBC
+endif

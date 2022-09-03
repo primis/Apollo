@@ -24,6 +24,11 @@ ASFLAGS			:= -felf -dGITREV="'$(GIT_REV)'"
 TARGET_DEFS 	:= -DX86=1 -m32 -masm=intel -ffreestanding -nostdlib -Os 
 TARGET_LDFLAGS	?= -m32 -Tsrc/arch/x86/x86-link.ld -nostdlib -lgcc -n
 
-$(BUILD)/%.s.o: %.s | setup_builddir
+$(BUILD)/%.s.o: %.s
 	@printf "\033[1mAS\033[0m   $<\n"
+	@mkdir -p $(@D)
 	@$(AS) $(ASFLAGS) $< -o $@
+
+$(BUILD)/%.iso: $(BUILD)/apollo/$(BIN)
+	@$(STRIP) -s $<
+	@cd $(BUILD) && ../scripts/grub-isocreate.sh apollo/$(BIN)

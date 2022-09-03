@@ -1,3 +1,4 @@
+if TIMEKEEPING
 menu "Timekeeping"
 
 config CLOCK_RTC_CMOS
@@ -17,3 +18,4 @@ config CLOCK_8254
         Timekeeping functionality unless another method is being used.
 
 endmenu
+endif

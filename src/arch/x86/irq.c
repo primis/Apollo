@@ -29,14 +29,14 @@ static irqchip_t at_pic0 = {
     .name = "at_pic0",
     .flags = IRQCHIP_CASCADE_PRIMARY,
     .isr_start = 32,
-    .data = (uintptr_t)&at_pic0_resource
+    .data = &at_pic0_resource
 };
 
 static irqchip_t at_pic1 = {
     .name = "at_pic1",
     .flags = IRQCHIP_CASCADE_SECONDARY,
     .isr_start = 40,
-    .data = (uintptr_t)&at_pic1_resource
+    .data = &at_pic1_resource
 };
 
 static int config[] = {0x4, 0x2};

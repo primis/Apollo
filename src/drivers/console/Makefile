@@ -4,9 +4,6 @@
 # (c) 2022 Apollo Developers #
 ##############################
 
-# Required for any Console
-obj_$(CONFIG_CONSOLE) += kernel_console.c
-
 # Hosted local console
 obj_$(CONFIG_CONSOLE_HOSTED) += hosted_console.c
 

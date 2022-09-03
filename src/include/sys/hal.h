@@ -23,6 +23,8 @@ typedef struct spinlock {
 #include "arch/x86/hal.h"
 #elif defined(HOSTED)
 #include "arch/hosted/hal.h"
+#elif defined(RPI4)
+#include "arch/rpi4/hal.h"
 #else
 #error Unknown Target. Please use an existing target.
 #endif

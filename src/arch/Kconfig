@@ -1,8 +1,4 @@
-menuconfig ARCH
-    bool "Architecture"
-    help
-      This menu contains all the architectures supported for building.
-if ARCH
+menu "Architecture"
 
 config TARGET
     string "Target Definition"
@@ -12,6 +8,7 @@ config TARGET
         Available platforms are:
          - hosted
          - x86
+         - rpi4
 
 if TARGET=hosted
 config HOSTED_BASE
@@ -27,4 +24,8 @@ if TARGET=x86
 source "src/arch/x86/Kconfig"
 endif
 
-endif #if ARCH
+if TARGET=rpi4
+source "src/arch/rpi4/Kconfig"
+endif
+
+endmenu
