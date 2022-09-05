@@ -3,10 +3,3 @@ config CONSOLE_SERIAL_16550_UART
     help
         Enables the 16550 driver, and enables kernel console output
         on the primary 16550 port.
-
-config CONSOLE_SERIAL_RPI4_UART
-    bool "Raspberry Pi 4B UART Console"
-    depends on RPI4_BASE
-    help
-        Enables the driver for the Raspberry Pi 4 mini UART, and enables kernel
-        console output to it.

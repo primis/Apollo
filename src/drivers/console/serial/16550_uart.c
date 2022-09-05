@@ -11,7 +11,7 @@
 #include "include/16550_uart.h"
 
 static int is_transmit_empty(device_t *d) {
-    uint8_t data;
+    uint32_t data;
     resource_read(&data, d->access, UART_LSR, 1);
     if(data & UART_EMPTY_TRANS) {
         return 1;
@@ -22,7 +22,8 @@ static int is_transmit_empty(device_t *d) {
 static void write_char(device_t *d, char c)
 {
     while(!is_transmit_empty(d));
-    resource_write(&c, d->access, UART_RXTX, 1);
+    uint32_t actual = c;
+    resource_write(&actual, d->access, UART_RXTX, 1);
 }
 
 static int write(console_t *obj, const char *buffer, int len)
@@ -42,7 +43,7 @@ static int write(console_t *obj, const char *buffer, int len)
 static void flush(console_t *obj)
 {
     device_t *dev = (device_t *)obj->data;
-    uint8_t data = 0;
+    uint32_t data = 0;
     while((data & UART_EMPTY_DATA) == 0) {
         resource_read(&data, dev->access, UART_LSR, 1);
     }
@@ -52,7 +53,7 @@ static int open(console_t *obj)
 {
     device_t *dev = (device_t *)obj->data;
     // Enable Data Terminal Ready, and Request to Send
-    uint8_t data = UART_DATA_TERM_READY | UART_REQ_TO_SEND | 
+    uint32_t data = UART_DATA_TERM_READY | UART_REQ_TO_SEND | 
         UART_AUX_OUTPUT_2;  // Aux Output 2 enables the IRQ on PC compatibles        
     resource_write(&data, dev->access, UART_MCR, 1);    // Modem Control Register
 
@@ -71,7 +72,7 @@ static int close(console_t *obj)
 {
     device_t *dev = (device_t *)obj->data;
 
-    uint8_t data = 0;
+    uint32_t data = 0;
     resource_write(&data, dev->access, UART_MCR, 1);  // Disable Modem Controls
     resource_write(&data, dev->access, UART_INTEN, 1);   // Disable Interrupts
 
@@ -90,7 +91,7 @@ static int init(device_t *d, void *p)
 {
     // UART Clock is in reference to 115200 baud
     uint16_t baud_div = (*(uint32_t *)p / 115200);
-    uint8_t data;
+    uint32_t data;
 
     data = 0;
     resource_write(&data, d->access, UART_INTEN, 1);    // Mask All Interrupts
