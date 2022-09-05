@@ -218,7 +218,7 @@ console_t c = {
 static int init(device_t *d, void *p)
 {
     uint32_t *config = (uint32_t *)p;
-    framebuffer = (resource_t *)d->data;
+    framebuffer = (resource_t *)d->access;
     max_rows = *config;
     dev = d;
 

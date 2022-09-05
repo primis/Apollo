@@ -1,6 +1,5 @@
 config CONSOLE_SERIAL_16550_UART
-    bool "16550 UART UART Console"
-    depends on X86_BASE
+    bool "16550 UART Console"
     help
         Enables the 16550 driver, and enables kernel console output
         on the primary 16550 port.

@@ -1,6 +1,0 @@
-config X86_TIMEKEEPING
-    bool "x86 Timekeeping"
-    default y
-    help
-        This package allows for IBM PC compatible timekeeping functionality to
-        work properly.

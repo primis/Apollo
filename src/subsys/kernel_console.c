@@ -137,7 +137,7 @@ static int shutdown_console()
     return 0;
 }
 
-int console_init()
+static int console_init()
 {
     memset(console_char_buf, 0, CONSOLE_BUF_SZ);         // Zero out the buffer.
     console_buf = make_char_ringbuf(console_char_buf, CONSOLE_BUF_SZ);

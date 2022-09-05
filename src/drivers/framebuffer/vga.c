@@ -234,7 +234,7 @@ static int init(device_t *dev, void *p)
         return -EINVAL;
     }
     // Save the top level resource locally
-    vga_base = (resource_t *)dev->data;
+    vga_base = (resource_t *)dev->access;
 
     // Fill out all the sub-resources!
     framebuffer = resource_find("framebuffer", vga_base);
