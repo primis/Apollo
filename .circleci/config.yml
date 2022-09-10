@@ -6,20 +6,91 @@ version: 2.1
 # See: https://circleci.com/docs/2.0/configuration-reference/#jobs
 jobs:
   build:
+    parameters:
+      platform:
+        type: string
+    environment:
+      PLATFORM: << parameters.platform >>
     docker:
       - image: primis11/gcc-cross:latest
     steps:
       - checkout
       - run:
-          name: "x86 compilation"
-          command: "cp x86.config .config && make link"
+          name: "Compilation"
+          command: |
+            cp $PLATFORM.config .config 
+            make
       - run:
-          name: "rpi4 compilation"
-          command: "cp rpi4.config .config && make link"
+          name: "Persist Artifact"
+          working_directory: ~/build
+          command: |
+            gzip ~/project/build-$PLATFORM/apollo.iso
+            cp ~/project/build-$PLATFORM/apollo.iso.gz $PLATFORM.iso.gz
+      - persist_to_workspace:
+          root: ~/build
+          paths:
+            - .
+      - store_artifacts:
+          path: ~/build/<< parameters.platform >>.iso.gz
+
+  release:
+    docker: 
+      - image: cimg/go:1.19.0
+    steps:
+      - attach_workspace:
+          at: ~/build
+      - checkout
+      - run:
+          name: Install Github Release Tool
+          command: "go get github.com/tcnksm/ghr"
+      - run:
+          name: Generate Release Notes
+          command: |
+            FIRST_COMMIT=$(git rev-list --max-parents=0 HEAD)
+            GIT_TAGS=($(git tag -l --sort=-version:refname))
+            LATEST_TAG=${GIT_TAGS[0]}
+            PREVIOUS_TAG=${GIT_TAGS[1]:-${FIRST_COMMIT}}
+            COMMITS=$(git log $PREVIOUS_TAG..$LATEST_TAG --pretty=format:"%H")
+            RELEASE_NOTES="${LATEST_TAG}\n"
+            for COMMIT in $COMMITS; do
+              SUBJECT=$(git log -1 ${COMMIT} --pretty=format:"%s")
+              PULL_REQUEST_SUBJECT=$(echo -n $SUBJECT | grep -Eo "Merge pull request #[0-9]+" || true)
+              if [[ $PULL_REQUEST_SUBJECT ]]; then
+                PULL_REQUEST_NUM=${PULL_REQUEST_SUBJECT#"Merge pull request #"}
+                DESCRIPTION=$(git log -1 ${COMMIT} --pretty=format:"%b" | sed -E 's/(\[){0,1}GOV\-[0-9]+(\]){0,1} *//')
+                RELEASE_NOTES+='\n'
+                RELEASE_NOTES+=" - #$PULL_REQUEST_NUM: $DESCRIPTION"
+              fi
+            done
+            echo -e $RELEASE_NOTES > release_notes.md
+            cat release_notes.md
+      - run:
+          name: Publish GitHub Release
+          command: |
+            ghr --token $GITHUB_TOKEN \
+              --username $CIRCLE_PROJECT_USERNAME \
+              --repository $CIRCLE_PROJECT_REPONAME \
+              --commitish $CIRCLE_SHA1 \
+              --name $(git describe --tags --abbrev=0) \
+              --body "$(cat release_notes.md)" \
+              --replace $(git describe --tags --abbrev=0) ~/build
 
 # Invoke jobs via workflows
 # See: https://circleci.com/docs/2.0/configuration-reference/#workflows
 workflows:
   build-workflow:
     jobs:
-      - build
+      - build:
+          matrix:
+            parameters:
+              platform:
+                - x86
+                - rpi4
+      - release:
+          requires:
+            - build
+          filters:
+            branches:
+              ignore: /.*/
+            tags:
+              only: /^v.*/
