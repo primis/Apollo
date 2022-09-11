@@ -4,6 +4,22 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to
 [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.0.5] - 2022-09-10
+### Added
+- Raspberry Pi 4 Support (In Progress)
+- Driver Subsystem
+- Resource Management API
+- CircleCI Artifacts and Releases
+
+### Changed
+- Serial driver (16550) rewrite
+- Change existing driver code to be platform agnostic
+- Makefile Changes to facilitate multi-arch
+- Markdown to HTML Generation with `markdown` instead of `pandoc`
+
+### Bugfixes
+- x86 IDT code working properly
+
 ## [0.0.4] - 2022-07-30
 ### Added
 - Fancy VGA support (8x8 Font)
