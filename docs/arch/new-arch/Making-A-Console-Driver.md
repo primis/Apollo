@@ -3,37 +3,38 @@ Creating a Console Driver
 
 Introduction
 -------------
-
 One of the essential parts of the boot process is a console terminal driver.
 This driver allows the kernel to output early debug information before the
 system comes online. The console driver is part of the kernel. The kernel
-defines console_write(), which allows a string to be outputted to console.
-
-Inside the architecture folder itself, you must implement a function called
-void console_put(char). The Console driver will call this function to output
-a single charecter to the console device.
+defines access to logging functions but it is up to the architecture to create
+a console driver and initialize it.
 
 Initialization
 ---------------
-
-The kernel will call archInit() before it attempts to use the Console driver.
-See [Making a New Architecture](Making-A-New-Arch.html) for more information 
-about archInit().
+Calling `register_console()` is how you register a new console with the kernel.
+The only functions required to implement are `init()` and `write()`.
 
 Control Charecters
 -------------------
+The kernel internally accepts ascii data for logging, but it also uses several
+ASCII control codes which should be implemented by your console:
 
-console_put(char) accepts an ASCII charecter as input, but it should also 
-support the following basic ascii control characters:
+\t  Tab.    This should move the cursor to the next tab indent.
+            We recommend using 8 space tabs, though this is left up to 
+            the implementation.
 
-\t or 0x09 : Tab. This should move the cursor to the next tab indent.
-             We recommend using 8 space tabs, though this is left up to 
-             the implementation.
+\n  Newline. This should drop to a new line, and also perform a 
+            carriage return back to Column 0.
 
-\n or 0x0A : Newline. This should drop to a new line, and also perform a 
-             carriage return back to Column 0.
+\f  Form feed. This should either clear the screen, or on a non-screen
+            console, create some sort of page break like a horizontal rule
+            does in html.
 
-\f or 0x0C : Form feed: This should either clear the screen, or on a non-screen
-             console, create some sort of page break like a horizontal rule
-             does in html.
+\b  Backspace. This should move the cursor backwards one character but not null
+               out the character glyph at that location.
 
+Color Codes
+-----------
+Parts of the kernel use ANSI escape codes for colors. If your console supports
+color codes, try to support them. If your console does not, these codes may need
+to be stripped out of the data stream.

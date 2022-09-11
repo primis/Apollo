@@ -6,13 +6,6 @@
 # Git revision number
 GIT_REV		!= git rev-parse --short HEAD 2>/dev/null |tr '[:lower:]' '[:upper:]'
 
-# Documentation
-MDSOURCES	!= find docs -type f -name '*.md'
-MARKDOWN 	:= markdown
-HTMLDIR		:= html
-HTMLDOCS	:= $(patsubst docs/%.md,$(HTMLDIR)/%.html,$(MDSOURCES))
-HTMLDIRS 	:= $(shell cd docs && find -type d | tr '\n' ' ')
-
 INCLUDEDIR	!= find src -type d -name "include" -printf "-I%p "
 
 include .config
@@ -40,7 +33,7 @@ endif
 OBJECTS		:= $(patsubst %.o,$(BUILD)/%.o,$(OBJECTS))
 SRCDIR		!= find src/ -type d | tr '\n' ' '
 
-all: $(BUILD)/apollo.iso doc
+all: $(BUILD)/apollo.iso
 
 # C files are compiled universally the same, assembler targets are defined in
 # The target specific makefiles
@@ -61,17 +54,6 @@ clean:
 	@printf "\033[1mCLEAN\033[0m \n"
 	@find . -type d -name "build*" -exec rm -rf {} +
 	@rm -rf $(HTMLDIR)
-
-doc_setup:
-	@mkdir -p $(HTMLDIR)
-	@cd $(HTMLDIR) && mkdir -p $(HTMLDIRS)
-
-doc: $(HTMLDOCS)
-
-$(HTMLDIR)/%.html: docs/%.md
-	@mkdir -p $(@D)
-	@printf "\033[1mHTML\033[0m $<\n"
-	$(MARKDOWN) $< > $@
 
 menuconfig:
 	@kconfig-mconf Kconfig

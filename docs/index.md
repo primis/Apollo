@@ -1,10 +1,9 @@
 Sections
 --------
 
-- [The Architechture](arch/)
-- [The core](core/)
-- [Compilation](make/)
-- [The API](api/)
+- [The Architechture](arch)
+- [Drivers](drivers)
+- [Compilation](make)
 
 Introduction
 ------------
@@ -19,4 +18,4 @@ future.
 
 The Future
 ----------
-[Roadmap](roadmap.html)
+[Roadmap](roadmap)
