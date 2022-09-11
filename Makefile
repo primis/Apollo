@@ -8,10 +8,8 @@ GIT_REV		!= git rev-parse --short HEAD 2>/dev/null |tr '[:lower:]' '[:upper:]'
 
 # Documentation
 MDSOURCES	!= find docs -type f -name '*.md'
-MARKDOWN 	:= pandoc
+MARKDOWN 	:= markdown
 HTMLDIR		:= html
-MDFLAGS		:= --from gfm --to html --standalone \
-		--metadata title="Apollo Kernel Documentation"
 HTMLDOCS	:= $(patsubst docs/%.md,$(HTMLDIR)/%.html,$(MDSOURCES))
 HTMLDIRS 	:= $(shell cd docs && find -type d | tr '\n' ' ')
 
@@ -73,7 +71,7 @@ doc: $(HTMLDOCS)
 $(HTMLDIR)/%.html: docs/%.md
 	@mkdir -p $(@D)
 	@printf "\033[1mHTML\033[0m $<\n"
-	$(MARKDOWN) $(MDFLAGS) $< --output $@
+	$(MARKDOWN) $< > $@
 
 menuconfig:
 	@kconfig-mconf Kconfig
