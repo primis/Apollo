@@ -7,12 +7,15 @@ version: 2.1
 jobs:
   build:
     docker:
-      - image: joshwyant/gcc-cross:latest
+      - image: primis11/gcc-cross:latest
     steps:
       - checkout
       - run:
-          name: "Try Compilation"
-          command: "make link"
+          name: "x86 compilation"
+          command: "cp x86.config .config && make link"
+      - run:
+          name: "rpi4 compilation"
+          command: "cp rpi4.config .config && make link"
 
 # Invoke jobs via workflows
 # See: https://circleci.com/docs/2.0/configuration-reference/#workflows

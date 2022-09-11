@@ -1,8 +1,3 @@
-config CONSOLE
-    bool "Kernel Console"
-    help 
-        Enable Kernel Console support.
-
 if CONSOLE
 menu "Console Drivers"
 
@@ -14,7 +9,8 @@ config CONSOLE_HOSTED
 
 config CONSOLE_VGA
     bool "VGA Text Console"
-    depends on X86_BASE
+    select FRAMEBUFFER
+    select FRAMEBUFFER_VGA
     help
         Driver that utilizes the VGA Framebuffer for kernel console
 

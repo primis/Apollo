@@ -1,0 +1,7 @@
+config RPI4_BASE
+    bool "Raspberry Pi Model 4B Base Functionality"
+    default y
+    help
+        This package should always be selected when building for the Raspberry
+        Pi Model 4B. It contains the bootup code as well as functional drivers.
+

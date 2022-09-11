@@ -30,7 +30,7 @@ typedef struct irqchip {
     uint32_t isr_len;
 
     struct irqchip *next;
-    uintptr_t data;
+    void *data;
 } irqchip_t;
 
 /**

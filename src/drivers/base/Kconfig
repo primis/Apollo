@@ -1,3 +1,5 @@
+if BASE_SYSTEM
+
 menu "Base System Drivers"
 
 config QEMU_SHUTDOWN
@@ -6,4 +8,11 @@ config QEMU_SHUTDOWN
     help
         Allow QEMU to be shut down and exit without using ACPI Calls.
 
+config BCM2711_GPIO
+    bool "BCM2711 GPIO Driver"
+    depends on RPI4_BASE
+    help
+        Allow configuration of the BCM2711's GPIO pins.
 endmenu
+
+endif

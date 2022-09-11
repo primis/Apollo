@@ -2,7 +2,6 @@
 #include <errno.h>
 #include <sys/device.h>
 
-
 extern device_driver_t __start_drivers, __stop_drivers;
 
 static device_t root_device = {
@@ -130,3 +129,11 @@ int device_api_call(device_t *device, void *data)
     }
     return device->driver->api(device, data);
 }
+
+/* Driver for the root device, this is here so the linker doesn't yell at us */
+DRIVER = {
+    .compat = "root",
+    .init   = NULL,
+    .fini   = NULL,
+    .api    = NULL
+};

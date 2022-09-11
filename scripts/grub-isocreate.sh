@@ -4,7 +4,7 @@ set -e
 
 mkdir -p isodir/boot/grub
 
-cp apollo/kernel.mod isodir/boot/kernel.mod
+cp $1 isodir/boot/kernel.mod
 
 cat > isodir/boot/grub/grub.cfg << EOF
 menuentry "Apollo" {

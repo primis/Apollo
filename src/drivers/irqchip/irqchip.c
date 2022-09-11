@@ -29,6 +29,14 @@ int irqchip_register(irqchip_t *c) {
 int irqchip_unregister(irqchip_t *c) {
     irqchip_t *current = irq_chips;
     irqchip_t *previous = NULL;
+    if(current == NULL)
+    {
+        return 0;
+    }
+    if(c == NULL)
+    {
+        return 0;
+    }
     while(current != c)
     {
         if(current->next == NULL)

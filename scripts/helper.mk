@@ -8,8 +8,7 @@ ifeq ($(CONFIG_TESTING),y)
 	obj_y 	+= $(test_y) 
 endif
 
-obj_y		:= $(patsubst %.c,$(CUR_DIR)/%.c.o,$(obj_y))
-obj_y		:= $(patsubst %.s,$(CUR_DIR)/%.s.o,$(obj_y))
+obj_y		:= $(patsubst %,$(CUR_DIR)/%.o,$(obj_y))
 
 all:
 	@echo $(obj_y)

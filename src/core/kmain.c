@@ -17,7 +17,6 @@ void kmain(int argc, char **argv)
     int proc_count = get_num_processors();
     int major = hal_version_major();
     int minor = hal_version_minor();
-
     printf("Apollo Kernel Version %d.%d (Build %s).\n", major, minor, GITREV);
     printf("%d System Processor", proc_count);
 

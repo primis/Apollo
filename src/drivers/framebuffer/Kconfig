@@ -1,0 +1,12 @@
+if FRAMEBUFFER
+menu "Framebuffer Drivers"
+
+config FRAMEBUFFER_VGA
+    bool "VGA Framebuffer"
+    depends on X86_BASE
+    help
+        Driver that utilize the VGA Framebuffer.
+
+endmenu
+
+endif # if Framebuffer

@@ -1,6 +1,8 @@
 #ifndef __SYS_DEVICE_H
 #define __SYS_DEVICE_H
 
+#include <sys/resource.h>
+
 typedef struct device_struct device_t;
 
 typedef struct {
@@ -15,14 +17,16 @@ typedef struct {
  * 
  * @name:       Name of this device instance
  * @data:       Private data
+ * @access:     Resource pointer to access device 
  * @driver:     (semi-opaque) Driver associated with this device.
  * @parent:     (semi-opaque) Parent device in the device tree
  * @sibling:    (semi-opaque) Next sibling device in the device tree
  * @child:      (semi-opaque) Child device in the device tree.
  */
 struct device_struct {
-    const char *name;
-    const void *data;
+    char *name;
+    void *data;
+    resource_t *access;
     device_driver_t *driver;
     device_t *parent, *sibling, *child;
 };

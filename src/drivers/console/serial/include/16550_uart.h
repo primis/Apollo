@@ -1,29 +1,16 @@
 #ifndef __1655_UART_H
 #define __1655_UART_H
 
-#include <adt/ringbuf.h>
-
-// TODO: seperate UART and x86 specific stuff here...
-#define UART_BASE_COM1 0x3f8
-#define UART_BASE_COM2 0x2f8
-#define UART_BASE_COM3 0x3e8
-#define UART_BASE_COM4 0x2e8
-
-#define UART_IRQ_COM1 IRQ(4)
-#define UART_IRQ_COM2 IRQ(3)
-#define UART_IRQ_COM3 IRQ(4)
-#define UART_IRQ_COM4 IRQ(3)
-
 // UART REGISTERS
 
-#define UART_RXTX    0    // THR/RBR when DLAB = 0, DLL when DLAB = 1
-#define UART_INTEN   1    // IER when DLAB = 0, DLH when DLAB = 1
-#define UART_IIFIFO  2    // IIR as Read, FCR for Write
-#define UART_LCR     3    // Line Control Register
-#define UART_MCR     4    // Modem Control Register
-#define UART_LSR     5    // Line Status Register
-#define UART_MSR     6    // Modem Status Register
-#define UART_SR      7    // Scratch Register
+#define UART_RXTX    0x0    // THR/RBR when DLAB = 0, DLL when DLAB = 1
+#define UART_INTEN   0x1    // IER when DLAB = 0, DLH when DLAB = 1
+#define UART_IIFIFO  0x2    // IIR as Read, FCR for Write
+#define UART_LCR     0x3    // Line Control Register
+#define UART_MCR     0x4    // Modem Control Register
+#define UART_LSR     0x5    // Line Status Register
+#define UART_MSR     0x6    // Modem Status Register
+#define UART_SCRATCH 0x7    // Scratch Register
 
 // Interrupt Enable Register (IER)
 
@@ -55,19 +42,17 @@
 #define UART_DMA_MODE_SELECT  0x08
 #define UART_ENABLE_FIFO_64   0x20
 // FIFO Interrupt Trigger levels for 16 byte FIFO
-#define UART_FIFO_INT_1       0x00
-#define UART_FIFO_INT_4       0x40
-#define UART_FIFO_INT_8       0x80
-#define UART_FIFO_INT_14      0xC0
+#define UART_FIFO_INT_1       0x00  // Trigger interrupts every byte
+#define UART_FIFO_INT_4       0x40  // Trigger interrupts every 4 bytes
+#define UART_FIFO_INT_8       0x80  // Trigger interrupts every 8 bytes
+#define UART_FIFO_INT_14      0xC0  // Trigger interrupts every 14 bytes
 // FIFO Interrupt Trigger levels for 64 byte FIFO
 // Yes, these are the same values as above
 #define UART_FIFO_INT_16      0x40
 #define UART_FIFO_INT_32      0x80
 #define UART_FIFO_INT_56      0xC0
 
-
-// Line Control Register (LCR)i
-
+// Line Control Register (LCR)
 
 #define UART_DATA_BIT_5   0x0
 #define UART_DATA_BIT_6   0x1
@@ -84,7 +69,6 @@
 #define UART_BREAK_ENABLE 0x40 // Bit 6
 #define UART_DLAB         0x80 // Bit 7
 
-
 // Modem Control Register (MCR)
 
 #define UART_DATA_TERM_READY  0x01 // Data Terminal Ready
@@ -93,7 +77,6 @@
 #define UART_AUX_OUTPUT_2     0x08 // Auxiliary Out 2
 #define UART_LOOPBACK_MODE    0x10 // Loopback Mode
 #define UART_AUTOFLOW         0x20 // Autoflow Control (16750)
-
 
 // Line Status Register (LSR)
 
@@ -106,34 +89,15 @@
 #define UART_EMPTY_DATA   0x40    // Empty Data Holding Register
 #define UART_FIFO_ERR     0x80    // Error in Recieved FIFO
 
-
 // Modem Status Register (MSR)
 
 #define UART_DEL_CLR_TO_SEND  0x01    // Delta Clear to Send
-#define UART_DEL_DATA_SET_RDY 0x02    // Deltat Data Set Ready
+#define UART_DEL_DATA_SET_RDY 0x02    // Delta Data Set Ready
 #define UART_TRAIL_RING_IND   0x04    // Trailing Ring Indicator
 #define UART_DEL_DATA_CARRIER 0x08    // Delta Data Carrier Detect
 #define UART_CLEAR_TO_SEND    0x10    // Clear to Send
 #define UART_DATA_SET_READY   0x20    // Data Set Ready
 #define UART_RING_IND         0x40    // Ring Indicator
 #define UART_CARRIER_DETECT   0x80    // Carrier Detect
-
-// Definitions for types of UART detected
-// Should this be an enum?
-#define UART_8250    1
-#define UART_16450   2
-#define UART_16550   3
-#define UART_16550A  4
-#define UART_16750   5
-
-
-typedef struct serial_state {
-    int base;
-    char_ringbuf_t buf;
-    int baud;
-    int data_bits;
-    int parity;
-    int stop_bits;
-} serial_state_t;
 
 #endif
