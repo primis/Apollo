@@ -19,18 +19,18 @@ interactions with the project.
 ## Pull Request Process
 
 1.  Update CHANGELOG.md with details of the changes implemented. This includes
-    any tests created as well
+    any tests created as well.
 2.  Don't break any old tests or functionality when updating unless the test has
-    been determined to be wrong (requires discussion beforehand)
+    been determined to be wrong. (requires discussion beforehand)
 3.  Add tests for any new functionality in the appropriate `test` folder
     in the source tree. Tests should be comprehensive to make sure the kernel
     does not lose stability.
 4.  Any commits *must* be gpg signed with a key associated with your account.
     This keeps a chain of custody to allow proper back tracking of commits.
-5.  Pull requests should be flattened into a single commit.
+5.  Pull requests should be flattened into a single commit where relevant.
 6.  Recognize that all code will be considered under the license found in 
     LICENSE.md, any code which cannot be legally distributed under this license
-    will not be considered for pull requests
+    will not be considered for pull requests.
 
 ## Coding style
 All code should follow the standard coding style enforced herein.
@@ -41,7 +41,8 @@ All code should follow the standard coding style enforced herein.
 2.  K&R style bracing should be used consistently.
 3.  Comments should be used, but not overused for obvious content. Comments
     should use the c++ `//` style except for file descriptors at the beginning
-    of each file. Comments should not include any inappropriate or offensive
+    of each file, and function description blocks, following the doxygen 
+    standard. Comments should not include any inappropriate or offensive
     language.
 4.  Avoid monolithic functions. Indented code should never drop below 4 indents.
     Consider exposing that to a separate function or rewriting the logic at that
@@ -72,7 +73,7 @@ include:
 Examples of unacceptable behavior by participants include:
 
 * The use of sexualized language or imagery and unwelcome sexual attention or
-advances
+  advances
 * Trolling, insulting/derogatory comments, and personal or political attacks
 * Public or private harassment
 * Publishing others' private information, such as a physical or electronic
@@ -104,11 +105,11 @@ further defined and clarified by project maintainers.
 ### Enforcement
 
 Instances of abusive, harassing, or otherwise unacceptable behavior may be
-reported by contacting the project team at allie@sargente.org. All
-complaints will be reviewed and investigated and will result in a response that
-is deemed necessary and appropriate to the circumstances. The project team is
-obligated to maintain confidentiality with regard to the reporter of an incident.
-Further details of specific enforcement policies may be posted separately.
+reported by contacting the project team at allie@sargente.org. All complaints 
+will be reviewed and investigated and will result in a response that is deemed 
+necessary and appropriate to the circumstances. The project team is obligated to
+maintain confidentiality with regard to the reporter of an incident. Further 
+details of specific enforcement policies may be posted separately.
 
 Project maintainers who do not follow or enforce the Code of Conduct in good
 faith may face temporary or permanent repercussions as determined by other
@@ -116,8 +117,8 @@ members of the project's leadership.
 
 ### Attribution
 
-This Code of Conduct is adapted from the [Contributor Covenant][homepage], version 1.4,
-available at [http://contributor-covenant.org/version/1/4][version]
+This Code of Conduct is adapted from the [Contributor Covenant][homepage], 
+version 1.4, available at [http://contributor-covenant.org/version/1/4][version]
 
 [homepage]: http://contributor-covenant.org
 [version]: http://contributor-covenant.org/version/1/4/

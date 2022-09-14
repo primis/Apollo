@@ -33,5 +33,3 @@ Release 0.1.0
 - [ ] Inter-Process Communication
     - [ ] Message Passing 
     - [ ] Semaphores
-
-
