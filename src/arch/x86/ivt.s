@@ -54,25 +54,43 @@ isr_common_stub:
     add esp, 8
     iret
 
-ISR_NOERRCODE 0
-ISR_NOERRCODE 1
-ISR_NOERRCODE 2
-ISR_NOERRCODE 3
-ISR_NOERRCODE 4
-ISR_NOERRCODE 5
-ISR_NOERRCODE 6
-ISR_NOERRCODE 7
-ISR_ERRCODE   8
-ISR_NOERRCODE 9
-ISR_ERRCODE   10
-ISR_ERRCODE   11
-ISR_ERRCODE   12
-ISR_ERRCODE   13
-ISR_ERRCODE   14
+;===================; Type      | Name 
+ISR_NOERRCODE 0     ; Fault     | Divide By Zero
+ISR_NOERRCODE 1     ; Trap      | Debug
+ISR_NOERRCODE 2     ; Interrupt | Non-Maskable Interrupt
+ISR_NOERRCODE 3     ; Trap      | Breakpoint
+ISR_NOERRCODE 4     ; Trap      | Overflow
+ISR_NOERRCODE 5     ; Fault     | Bound Range Exceeded
+ISR_NOERRCODE 6     ; Fault     | Invalid Opcode
+ISR_NOERRCODE 7     ; Fault     | Device Not Available
+ISR_ERRCODE   8     ; Abort     | Double Fault
+ISR_NOERRCODE 9     ; Fault     | Coprocesser Segment Overrun
+ISR_ERRCODE   10    ; Fault     | Invalid TSS
+ISR_ERRCODE   11    ; Fault     | Segment Not Present
+ISR_ERRCODE   12    ; Fault     | Stack-Segment Fault
+ISR_ERRCODE   13    ; Fault     | General Protection Fault
+ISR_ERRCODE   14    ; Fault     | Page Fault
+ISR_NOERRCODE 15    ;           | Reserved
+ISR_NOERRCODE 16    ; Fault     | x87 Floating-Point Exception
+ISR_ERRCODE   17    ; Fault     | Alignment Check
+ISR_NOERRCODE 18    ; Abort     | Machine Check
+ISR_NOERRCODE 19    ; Fault     | SIMD Floating Point Exception
+ISR_NOERRCODE 20    ; Fault     | Virtualization Exception
+ISR_ERRCODE   21    ; Fault     | Control Protection Exception
+ISR_NOERRCODE 22    ;           | Reserved
+ISR_NOERRCODE 23    ;           | Reserved
+ISR_NOERRCODE 24    ;           | Reserved
+ISR_NOERRCODE 25    ;           | Reserved
+ISR_NOERRCODE 26    ;           | Reserved
+ISR_NOERRCODE 27    ;           | Reserved 
+ISR_NOERRCODE 28    ; Fault     | Hypervisor Injection Exception
+ISR_ERRCODE   29    ; Fault     | VMM Communication Exception
+ISR_NOERRCODE 30    ; Fault     | Security Exception
+ISR_NOERRCODE 31    ;           | Reserved
 
-;; Repeat 241 times (to 255)
-%assign i 15
-%rep 241
+;; Repeat 223 times (to 255) for non-CPU generated Interrupt Vectors
+%assign i 32
+%rep 223
     ISR_NOERRCODE i
     %assign i i+1
 %endrep

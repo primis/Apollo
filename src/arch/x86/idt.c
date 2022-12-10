@@ -12,13 +12,13 @@
 extern void idt_flush(uint32_t);
 extern int init_irq();
 
-#define NUM_TRAP_STRS 20 	// x86 has 20 hardware traps
-#define NUM_HANDLERS 256    // Max handlers x86 allows
+#define NUM_TRAP_STRS 22 	    // x86 has 20 hardware traps
+#define NUM_HANDLERS 256        // Max handlers x86 allows
 #define MAX_HANDLERS_PER_INT 4  // Number of software handlers per interrupt
 
 static const char *trap_strs[NUM_TRAP_STRS] = {
-	"Division error",
-	"Reserved",
+	"Divide By Zero",
+	"Debug",
 	"Non-Maskable Interrupt",
 	"Breakpoint",
 	"Overflow",
@@ -36,7 +36,9 @@ static const char *trap_strs[NUM_TRAP_STRS] = {
 	"x87 FPU floating-point error",
 	"Alignment check exception",
 	"Machine check exception",
-	"SIMD floating-point exception"
+	"SIMD floating-point exception",
+    "Virtualization exception",
+    "Control Protection exception"
 };
 
 extern void isr0(), isr1();
@@ -220,9 +222,6 @@ void interrupt_handler(x86_regs_t *regs)
         num = regs->error_code; 
     }
 
-    // Acknowledge any IRQ lines
-    irqchip_ack(num);
-
     if (num_handlers[num]) {
         for (i = 0, e = num_handlers[num]; i != e; i++) {
             handlers[num][i].handler(regs, handlers[num][i].p);
@@ -238,6 +237,8 @@ void interrupt_handler(x86_regs_t *regs)
         }
         debugger_except(regs, desc);
     }
+    // Acknowledge any IRQ lines
+    irqchip_ack(num);
 }
 
 static prereq_t prereqs[] = { {"x86/gdt",NULL}, {NULL,NULL} };
