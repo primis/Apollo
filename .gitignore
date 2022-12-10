@@ -1,4 +1,4 @@
-# User Setting files 
+# User Setting files
 .vscode*/
 
 # Prereq files
@@ -6,6 +6,9 @@
 
 # Object Files
 *.o
+
+# Misc
+*.patch
 
 # The build trees
 build*/
