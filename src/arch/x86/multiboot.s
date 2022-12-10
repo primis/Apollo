@@ -1,5 +1,5 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;; (c) 2019 Apollo Project Developers            ;;
+;; (c) 2022 Apollo Project Developers            ;;
 ;; For terms, see LICENSE                        ;;
 ;; multiboot.s - talk to multiboot               ;;
 ;; This will eventually have multiboot 2 as well ;;
@@ -57,9 +57,7 @@ _start:
 .end:                           ; end of function
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-
 ; Multiboot Padding
 section .init.bss nobits
 pd: resb    0x1000  ; Descriptors
-pt: resb    0x1000  ; Page tabled
-
+pt: resb    0x1000  ; Page table
