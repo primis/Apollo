@@ -10,7 +10,7 @@ SECTIONS
         PROVIDE (__start = .);
         *(.init)
     }
-    
+
     .init.bss ALIGN(4096) :
     {
         *(.init.bss)
@@ -28,8 +28,10 @@ SECTIONS
         *(.text .stub .text.* .gnu.linkonce.t.*)
         *(.gnu.warning)
 	}
-    
-    .rodata ALIGN(4096) : AT(ADDR(.rodata) - 0xC0000000) 
+
+    .   += CONSTANT(COMMONPAGESIZE);
+
+    .rodata ALIGN(4096) : AT(ADDR(.rodata) - 0xC0000000)
     {
         *(.rodata .rodata.* .gnu.linkonce.r.*)
     }

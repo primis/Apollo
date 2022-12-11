@@ -6,7 +6,7 @@
 # Check for different Cross compilers in reverse order
 # We need to make the shell bash for "command -v" to work
 SHELL	:= $(shell which bash)
-STRIP	:= $(shell which strip)ß
+STRIP	:= $(shell which strip)
 CC		:= $(shell command -v i586-elf-gcc)
 ifndef CC
 CC		:= $(shell command -v i686-elf-gcc)

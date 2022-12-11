@@ -20,7 +20,9 @@ SECTIONS
         *(.gnu.warning)
     }
 
-    .rodata ALIGN(4096): 
+    . += CONSTANT(COMMONPAGESIZE);
+
+    .rodata ALIGN(4096):
     { 
         *(.data .data.* .gnu.linkonce.r*) 
     }
@@ -33,13 +35,13 @@ SECTIONS
         PROVIDE (__shutdown_begin = .);
         *(.shutdown)
         PROVIDE (__shutdown_end = .);
-        
+
         *(.data .data.* .gnu.linkonce.d)
         SORT(CONSTRUCTORS)
 
         PROVIDE(__ctors_begin = .);
         *(.ctors)
-        PROVIDE(__ctors_end = .);    
+        PROVIDE(__ctors_end = .);
     }
 
     .bss ALIGN(4096) :
@@ -52,5 +54,5 @@ SECTIONS
     __bss_end = .;
     __bss_size = __bss_end - __bss_start;
 
-    __kernel_end = .; 
+    __kernel_end = .;
 }
