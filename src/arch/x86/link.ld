@@ -11,14 +11,14 @@ SECTIONS
         *(.init)
     }
 
-    .init.bss ALIGN(4096) :
+    .init.bss ALIGN(CONSTANT(MAXPAGESIZE)) :
     {
         *(.init.bss)
     }
     /* Higher half stuff, add 3GB to all addresses below */
     . += 0xC0000000;
 
-    .text ALIGN(4096) : AT(ADDR(.text) - 0xC0000000)
+    .text ALIGN(CONSTANT(MAXPAGESIZE)) : AT(ADDR(.text) - 0xC0000000)
 	{
         *(.mboot)
         *(.text.unlikely .text.*_unlikely)
@@ -29,14 +29,12 @@ SECTIONS
         *(.gnu.warning)
 	}
 
-    .   += CONSTANT(COMMONPAGESIZE);
-
-    .rodata ALIGN(4096) : AT(ADDR(.rodata) - 0xC0000000)
+    .rodata ALIGN(CONSTANT(MAXPAGESIZE)) : AT(ADDR(.rodata) - 0xC0000000)
     {
         *(.rodata .rodata.* .gnu.linkonce.r.*)
     }
 
-	.data ALIGN(4096) : AT(ADDR(.data) - 0xC0000000)
+	.data ALIGN(CONSTANT(MAXPAGESIZE)) : AT(ADDR(.data) - 0xC0000000)
 	{
         PROVIDE (__startup_begin = .);
         *(.startup)
@@ -53,7 +51,7 @@ SECTIONS
         PROVIDE(__ctors_end = .);
 	}
 
-	.bss ALIGN(4096) : AT(ADDR(.bss) - 0xC0000000) 
+	.bss ALIGN(CONSTANT(MAXPAGESIZE)) : AT(ADDR(.bss) - 0xC0000000) 
 	{
 		*(.bss .bss.* .gnu.linkonce.b.*)
         *(COMMON)

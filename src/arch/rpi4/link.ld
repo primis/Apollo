@@ -2,16 +2,14 @@ ENTRY(_start)
 
 SECTIONS
 {
-
     .init 0x80000 :
     {
         PROVIDE (__start = .);
         *(.init)
     }
 
-    .text ALIGN(4096) :
+    .text ALIGN(CONSTANT(MAXPAGESIZE)) :
     {
-        *(.init)
         *(.text.unlikely .text.*_unlikely)
         *(.text.exit .text.exit.*)
         *(.text.startup text.startup.*)
@@ -20,14 +18,12 @@ SECTIONS
         *(.gnu.warning)
     }
 
-    . += CONSTANT(COMMONPAGESIZE);
-
-    .rodata ALIGN(4096):
+    .rodata ALIGN(CONSTANT(MAXPAGESIZE)):
     { 
-        *(.data .data.* .gnu.linkonce.r*) 
+        *(.rodata .rodata.* .gnu.linkonce.r*) 
     }
 
-    .data ALIGN(4096):
+    .data ALIGN(CONSTANT(MAXPAGESIZE)):
     {
         PROVIDE (__startup_begin = .);
         *(.startup)
@@ -44,7 +40,7 @@ SECTIONS
         PROVIDE(__ctors_end = .);
     }
 
-    .bss ALIGN(4096) :
+    .bss ALIGN(CONSTANT(MAXPAGESIZE)) :
     {
         bss = .;
         __bss_start = .;

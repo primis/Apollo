@@ -21,8 +21,8 @@ endif
 
 AS				:= nasm
 ASFLAGS			:= -felf -dGITREV="'$(GIT_REV)'"
-TARGET_DEFS 	:= -DX86=1 -m32 -masm=intel -ffreestanding -nostdlib -Os 
-TARGET_LDFLAGS	?= -m32 -Tsrc/arch/x86/link.ld -nostdlib -lgcc -n
+TARGET_CFLAGS 	:= -DX86=1 -m32 -masm=intel -ffreestanding -nostdlib -Os 
+TARGET_LDFLAGS	?= -m32 -Tsrc/arch/x86/link.ld -nostdlib -lgcc
 
 $(BUILD)/%.s.o: %.s
 	@printf "\033[1mAS\033[0m   $<\n"

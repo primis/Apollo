@@ -15,7 +15,7 @@ BIN			:= kernel.mod
 include $(shell pwd)/scripts/target-$(TARGETL).mk
 
 WARNINGS	:= -Wall -Wextra -Wno-unused-parameter
-DEFS		:= $(INCLUDEDIR) -fbuiltin -DGITREV="\"$(GIT_REV)\""
+CFLAGS		:= $(INCLUDEDIR) -fbuiltin -DGITREV="\"$(GIT_REV)\""
 
 HELPER_MK	:= $(shell pwd)/scripts/helper.mk
 MK_FLAGS	:= --no-print-directory -s
@@ -27,7 +27,7 @@ OBJECTS		:= $(shell for dir in $(SUBDIRS); do\
 				 done;)
 
 ifeq ($(CONFIG_TESTING),y)
-	DEFS	+= -DTEST_HARNESS=1
+	CFLAGS	+= -DTEST_HARNESS=1
 endif
 
 OBJECTS		:= $(patsubst %.o,$(BUILD)/%.o,$(OBJECTS))
@@ -40,13 +40,12 @@ all: $(BUILD)/apollo.iso
 $(BUILD)/%.c.o: %.c
 	@printf "\033[1mCC\033[0m   $<\n"
 	@mkdir -p $(@D)
-	@$(CC) -c $< -o $@ $(DEFS) $(TARGET_DEFS) $(WARNINGS)
+	@$(CC) -c $< -o $@ $(CFLAGS) $(TARGET_CFLAGS) $(WARNINGS)
 
 $(BUILD)/apollo/$(BIN): $(OBJECTS)
 	@printf "\033[1mLINK\033[0m $@\n"
 	@mkdir -p $(BUILD)/apollo
-	@$(CC) $(DEFS) $(WARNINGS) $(LDFLAGS) $(TARGET_LDFLAGS) \
-	-o $(BUILD)/apollo/$(BIN) $(OBJECTS)
+	@$(CC) $(LDFLAGS) $(TARGET_LDFLAGS) -o $(BUILD)/apollo/$(BIN) $(OBJECTS)
 
 link: $(BUILD)/apollo/$(BIN)
 
