@@ -1,5 +1,5 @@
 /*
- * (c) 2018 Apollo Project Developers
+ * Copyright (c) 2018 - 2022 Apollo Project Developers
  * <sys/hal.h> - Hardware Abstraction Layer
  *
  * Thank you to James Molloy for the concept
@@ -85,7 +85,7 @@ typedef struct module {
     uintptr_t padding[2];   // Alignment.
 } module_t;
 
-#define MODULE static module_t x __attribute__((__section__("modules"),used))
+#define MODULE static module_t x __attribute__((__section__(".modules"),used))
 
 /******************************************************************************
  * Console funtionality

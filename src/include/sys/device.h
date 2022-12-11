@@ -1,3 +1,10 @@
+/*
+ * Copyright (c) 2022 Apollo Project Developers
+ * For terms, see LICENSE
+ * <sys/device.h> - Device abstraction layer
+ *
+ */
+
 #ifndef __SYS_DEVICE_H
 #define __SYS_DEVICE_H
 
@@ -14,10 +21,10 @@ typedef struct {
 
 /**
  * @brief Device instance definition.
- * 
+ *
  * @name:       Name of this device instance
  * @data:       Private data
- * @access:     Resource pointer to access device 
+ * @access:     Resource pointer to access device
  * @driver:     (semi-opaque) Driver associated with this device.
  * @parent:     (semi-opaque) Parent device in the device tree
  * @sibling:    (semi-opaque) Next sibling device in the device tree
@@ -33,8 +40,8 @@ struct device_struct {
 
 /**
  * @brief Retrieve a pointer to the base device
- * 
- * @return device_t* 
+ *
+ * @return device_t*
  */
 device_t *base_device();
 
@@ -44,6 +51,6 @@ int device_init(device_t *d, void *config);
 int device_api_call(device_t *d, void *data);
 
 #define DRIVER static device_driver_t x \
-    __attribute__((__section__("drivers"),used))
+    __attribute__((__section__(".drivers"),used))
 
 #endif

@@ -1,54 +1,17 @@
+/*
+ * Copyright (c) 2022 Apollo Project Developers
+ * For terms, see LICENSE
+ * x86 architecture specific linker script
+ */
+
+/* TODO: Higher half for 64-bit addressing */
+VIRT_OFFSET = 0x0;
+
+/* Multiboot compliance dumps us here */
+INIT_OFFSET = 0x80000;
+
+/* Defined in boot.S */
 ENTRY(_start)
 
-SECTIONS
-{
-    .init 0x80000 :
-    {
-        PROVIDE (__start = .);
-        *(.init)
-    }
-
-    .text ALIGN(CONSTANT(MAXPAGESIZE)) :
-    {
-        *(.text.unlikely .text.*_unlikely)
-        *(.text.exit .text.exit.*)
-        *(.text.startup text.startup.*)
-        *(.text.hot .text.hot.*)
-        *(.text .stub .text.* .gnu.linkonce.t.*)
-        *(.gnu.warning)
-    }
-
-    .rodata ALIGN(CONSTANT(MAXPAGESIZE)):
-    { 
-        *(.rodata .rodata.* .gnu.linkonce.r*) 
-    }
-
-    .data ALIGN(CONSTANT(MAXPAGESIZE)):
-    {
-        PROVIDE (__startup_begin = .);
-        *(.startup)
-        PROVIDE (__startup_end = .);
-        PROVIDE (__shutdown_begin = .);
-        *(.shutdown)
-        PROVIDE (__shutdown_end = .);
-
-        *(.data .data.* .gnu.linkonce.d)
-        SORT(CONSTRUCTORS)
-
-        PROVIDE(__ctors_begin = .);
-        *(.ctors)
-        PROVIDE(__ctors_end = .);
-    }
-
-    .bss ALIGN(CONSTANT(MAXPAGESIZE)) :
-    {
-        bss = .;
-        __bss_start = .;
-        *(COMMON)
-        *(.bss .bss.*)
-    }
-    __bss_end = .;
-    __bss_size = __bss_end - __bss_start;
-
-    __kernel_end = .;
-}
+/* Defines the actual sections */
+INCLUDE scripts/common.ld

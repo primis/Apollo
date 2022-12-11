@@ -1,8 +1,8 @@
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;; (c) 2018 Apollo Project Developers ;;
-;; For terms, see LICENSE             ;;
-;; start.s - x86 bootloader passover  ;;
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; (c) 2018 - 2022  Apollo Project Developers ;;
+;; For terms, see LICENSE                     ;;
+;; start.s - x86 bootloader passover          ;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 ; Kernel Stack size definition up here for visibility
 KERNEL_STACK_SIZE       equ 0x4000
@@ -18,7 +18,7 @@ KERNEL_STACK_SIZE       equ 0x4000
 ;============================;
 ; Bootloader's dropoff point ;
 ; Dropped here from start    ;
-;============================; 
+;============================;
 section .text
 global higherhalf:function higherhalf.end-higherhalf
 higherhalf:
@@ -42,9 +42,3 @@ global stack_base
 stack_base:
     resb KERNEL_STACK_SIZE
 stack:  ; label for esp only (bottom of the stack)
-
-section .comment
-KERN_INFO:
-db 'Apollo Kernel 32 Bit Intel', 0
-GIT_REV:
-db 'GIT build number ', GITREV, 0

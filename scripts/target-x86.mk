@@ -1,7 +1,7 @@
+# Copyright (c) 2022 Apollo Developers
+# For terms, see LICENSE
 # Makefile for Apollo Project
 # Target is x86
-# Copyright 2022 Apollo Developers
-
 
 # Check for different Cross compilers in reverse order
 # We need to make the shell bash for "command -v" to work
@@ -15,13 +15,13 @@ endif
 # Fall back case to regular GCC
 ifndef CC
 CC		:= gcc
-TARGET_LDFLAGS	:= -m32 -Tsrc/arch/x86/x86-link.ld -nostdlib -n
+TARGET_LDFLAGS	:= -m32 -Tsrc/arch/x86/x86-link.ld -nostdlib
 $(warning Using default GCC, please consider installing a cross compiler!)
 endif
 
 AS				:= nasm
-ASFLAGS			:= -felf -dGITREV="'$(GIT_REV)'"
-TARGET_CFLAGS 	:= -DX86=1 -m32 -masm=intel -ffreestanding -nostdlib -Os 
+ASFLAGS			:= -felf
+TARGET_CFLAGS 	:= -DX86=1 -m32 -masm=intel -ffreestanding -nostdlib -Os
 TARGET_LDFLAGS	?= -m32 -Tsrc/arch/x86/link.ld -nostdlib -lgcc
 
 $(BUILD)/%.s.o: %.s

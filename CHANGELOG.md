@@ -8,12 +8,18 @@ and this project adheres to
 
 ### Added
 - Documentation for existing Code
+- Spinlock Support
 
 ### Removed
 - Remove `make doc` functionality.
+- Removal of unused linker sections
+- Removal of code to handle c++ ctors (we're not using them)
 
 ### Changed
 - Rewrite of docs/ subdirectory
+- Rewrite of linker files (Fixes gcc warning)
+- Move "modules" & "drivers" sections to ".modules" & ".drivers" respectively
+
 
 ## [0.0.5] - 2022-09-10
 ### Added

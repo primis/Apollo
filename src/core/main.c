@@ -1,5 +1,5 @@
 /*
- * (c) 2022 Apollo Project Developers
+ * Copyright (c) 2022 Apollo Project Developers
  * For terms, see LICENSE
  * Main.c - Main function of kernel activity
  */
@@ -9,7 +9,7 @@
 #include <stdio.h>
 
 // These are defined by the linker from the "modules" section
-extern module_t __start_modules, __stop_modules;
+extern module_t __modules_begin, __modules_end;
 
 // Function definitions that are only used inside main. (these will be moved)
 static void earlypanic(const char *msg, const char *msg2);
@@ -27,7 +27,7 @@ module_t *test_module __attribute__((weak)) = (module_t*)NULL;
 
 static int logLevel;
 
-static int search_argv(const char* arg, int argc, char **argv) 
+static int search_argv(const char* arg, int argc, char **argv)
 {
     int i;
     for(i = 0; i < argc; i++)
@@ -45,12 +45,12 @@ int main(int argc, char* argv[])
 
     set_log_level(log_level_setting); // Turn on logging
     // Set all module states to not initialised so the dependency tree works
-    for(module_t *m = &__start_modules, *e = &__stop_modules; m < e; m++) {
+    for(module_t *m = &__modules_begin, *e = &__modules_end; m < e; m++) {
         m->state = MODULE_NOT_INITIALISED;
     }
     // Resolve prereqs of the module.
 
-    for(module_t *m = &__start_modules, *e = &__stop_modules; m < e; m++) {
+    for(module_t *m = &__modules_begin, *e = &__modules_end; m < e; m++) {
         resolve_module(m);
     }
 
@@ -61,7 +61,7 @@ int main(int argc, char* argv[])
         init_module(console);
     }
 
-    for(module_t *m = &__start_modules, *e = &__stop_modules; m < e; m++) {
+    for(module_t *m = &__modules_begin, *e = &__modules_end; m < e; m++) {
         if((m != test_module) && (m != console)) { // this should be done last!
             init_module(m);
         }
@@ -77,7 +77,7 @@ int main(int argc, char* argv[])
 
     // We've returned from kernel, that means we're shutting down.
     // Run the finishing modules.
-    for(module_t *m = &__start_modules, *e = &__stop_modules; m < e; m++) {
+    for(module_t *m = &__modules_begin, *e = &__modules_end; m < e; m++) {
         fini_module(m);
     }
 #ifndef HOSTED
@@ -174,7 +174,7 @@ static void fini_module(module_t *m)
 
 static module_t *find_module(const char *name)
 {
-    for(module_t *i = &__start_modules, *e = &__stop_modules; i < e; i++) {
+    for(module_t *i = &__modules_begin, *e = &__modules_end; i < e; i++) {
         if (!strcmp(name, i->name)) {
             return i;
         }

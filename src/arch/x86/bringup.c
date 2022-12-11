@@ -1,5 +1,5 @@
 /*
- * (c) 2019 Apollo Project Developers
+ * Copyright (c) 2019 - 2022 Apollo Project Developers
  * For terms, see LICENSE
  * arch/x86/init.c - Initialization function for x86 platform.
  */
@@ -32,7 +32,7 @@ static uint32_t earlyalloc(unsigned len)
 
 static int tokenize(char tok, char *in, char **out, int maxout) {
   int n = 0;
-  
+
   while(*in && n < maxout) {
     out[n++] = in;
 
@@ -55,13 +55,6 @@ int arch_init(multiboot_info_t* mbt, unsigned int magic)
     uint32_t i;
     static char *argv[256];
     multiboot_module_t *mod_old, *mod_new;
-    
-    // Be nice to c++
-    extern size_t __ctors_begin;
-    extern size_t __ctors_end;
-    for (size_t *i = &__ctors_begin; i< &__ctors_end; i++) {
-        ((void (*)(void)) *i)();
-    }
 
     memcpy((uint8_t*)&mboot, (uint8_t*)(mbt), sizeof(multiboot_info_t));
     // Now copy info inside to malloc()'d space
@@ -89,7 +82,7 @@ int arch_init(multiboot_info_t* mbt, unsigned int magic)
             {
                 len = strlen((char*)mod_old[i].cmdline) + 1;
                 mod_new[i].cmdline = earlyalloc(len);
-                memcpy((uint8_t*)mod_new[i].cmdline, 
+                memcpy((uint8_t*)mod_new[i].cmdline,
                     (uint8_t*)mod_old[i].cmdline, len);
                 mod_new[i].mod_start += 0xC0000000;
                 mod_new[i].mod_end   += 0xC0000000;
@@ -101,7 +94,7 @@ int arch_init(multiboot_info_t* mbt, unsigned int magic)
         len = mboot.u.elf_sec.num * mboot.u.elf_sec.size;
         mboot.u.elf_sec.addr = earlyalloc(len);
         if (mboot.u.elf_sec.addr) {
-            memcpy((uint8_t*)mboot.u.elf_sec.addr, 
+            memcpy((uint8_t*)mboot.u.elf_sec.addr,
                 (uint8_t*)mbt->u.elf_sec.addr, len);
         }
     }
@@ -115,7 +108,7 @@ int arch_init(multiboot_info_t* mbt, unsigned int magic)
             mboot.mmap_addr = mbt->mmap_addr;
         }
     }
-    
+
     // Tokenize!
     argc = tokenize(' ', (char*)mboot.cmdline, argv, 256);
 
@@ -123,4 +116,3 @@ int arch_init(multiboot_info_t* mbt, unsigned int magic)
 
     return 0;
 }
-

@@ -1,8 +1,14 @@
+/*
+ * Copyright (c) 2022 Apollo Project Developers
+ * For terms, see LICENSE
+ * Device bootstrap and initialization
+ */
+
 #include <string.h>
 #include <errno.h>
 #include <sys/device.h>
 
-extern device_driver_t __start_drivers, __stop_drivers;
+extern device_driver_t __drivers_begin, __drivers_end;
 
 static device_t root_device = {
     .name = "sys",
@@ -11,7 +17,7 @@ static device_t root_device = {
 
 static device_driver_t *find_driver(const char *name)
 {
-    for(device_driver_t *i = &__start_drivers, *e = &__stop_drivers; 
+    for(device_driver_t *i = &__drivers_begin, *e = &__drivers_end;
         i < e; i++) {
         if (!strcmp(name, i->compat)) {
             return i;

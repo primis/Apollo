@@ -1,7 +1,7 @@
+# Copyright (c) 2022 Apollo Developers
+# For terms, see LICENSE
 # Makefile for Apollo Project
 # Target is the Raspberry Pi 4
-# Copyright 2022 Apollo Developers
-
 
 # Check for different Cross compilers in reverse order
 # We need to make the shell bash for "command -v" to work
@@ -19,4 +19,4 @@ $(BUILD)/%.S.o: %.S
 
 $(BUILD)/%.iso: $(BUILD)/apollo/$(BIN)
 	@$(OBJCOPY) $(BUILD)/apollo/$(BIN) -O binary $(BUILD)/kernel8.img
-	@cd $(BUILD) && ../scripts/rpi4-isocreate.sh kernel8.img 
+	@cd $(BUILD) && ../scripts/rpi4-isocreate.sh kernel8.img
