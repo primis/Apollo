@@ -10,14 +10,11 @@
 extern uint8_t vga_8x8_font[2048];
 extern uint8_t vga_8x16_font[4096];
 
-static uint16_t h_res = 640, v_res=400;
-
-static resource_t *vga_base, *framebuffer, *attribute_control, *sequencer;
-static resource_t *graphics, *crtc;
+static vga_state_t state;
 
 /**
- * @brief Set the VGA plane (0-3) 
- * 
+ * @brief Set the VGA plane (0-3)
+ *
  * @param p plane ID (0-3)
  */
 static void set_plane(int p)
@@ -25,11 +22,11 @@ static void set_plane(int p)
     uint8_t pmask;
     p &= 3;
     pmask = 1 << p;
-   
+
     // Set Read Plane
-    resource_write(&p, graphics, VGA_READ_MAP_SELECT, 1);
+    resource_write(&p, &state.graphics, VGA_READ_MAP_SELECT, 1);
     // Set Write Plane
-    resource_write(&pmask, sequencer, VGA_MAP_MASK, 1);
+    resource_write(&pmask, &state.sequencer, VGA_MAP_MASK, 1);
 }
 
 /**
@@ -43,25 +40,24 @@ static void write_font(uint8_t *buf, uint8_t height)
     uint8_t map_mask, memory_mode, read_map_sel, graphics_mode, misc_graphics;
     uint8_t new_memory_mode, new_graphics_mode, new_misc_graphics;
 
-    void *framebuffer_base = (void *)framebuffer->start;
     int i;
 
     // Save State of things we need to modify
-    resource_read(&map_mask, sequencer, VGA_MAP_MASK, 1);
-    resource_read(&memory_mode, sequencer, VGA_SEQ_MEM_MODE, 1);
-    resource_read(&read_map_sel, graphics, VGA_READ_MAP_SELECT, 1);
-    resource_read(&graphics_mode, graphics, VGA_GRAPHICS_MODE, 1);
-    resource_read(&misc_graphics, graphics, VGA_MISC_GRAPHICS, 1);
+    resource_read(&map_mask,      &state.sequencer, VGA_MAP_MASK,        1);
+    resource_read(&memory_mode,   &state.sequencer, VGA_SEQ_MEM_MODE,    1);
+    resource_read(&read_map_sel,  &state.graphics,  VGA_READ_MAP_SELECT, 1);
+    resource_read(&graphics_mode, &state.graphics,  VGA_GRAPHICS_MODE,   1);
+    resource_read(&misc_graphics, &state.graphics,  VGA_MISC_GRAPHICS,   1);
 
-    new_memory_mode    = memory_mode | 0x04;
-    new_memory_mode   &= ~0x08;
+    new_memory_mode   = memory_mode   |  0x04;
+    new_memory_mode  &=                 ~0x08;
     new_graphics_mode = graphics_mode & ~0x10;
     new_misc_graphics = misc_graphics & ~0x02;
 
     // Turn off even-odd addressing (set flat)
-    resource_write(&new_memory_mode, sequencer, VGA_SEQ_MEM_MODE, 1);
-    resource_write(&new_graphics_mode, graphics, VGA_GRAPHICS_MODE, 1);
-    resource_write(&new_misc_graphics, graphics, VGA_MISC_GRAPHICS, 1);
+    resource_write(&new_memory_mode,   &state.sequencer, VGA_SEQ_MEM_MODE,  1);
+    resource_write(&new_graphics_mode, &state.graphics,  VGA_GRAPHICS_MODE, 1);
+    resource_write(&new_misc_graphics, &state.graphics,  VGA_MISC_GRAPHICS, 1);
 
     // Set plane to P4
     set_plane(2);
@@ -69,47 +65,47 @@ static void write_font(uint8_t *buf, uint8_t height)
     // write Font 0 (Standard)
     for(i = 0; i < 256; i++)
     {
-        memcpy(framebuffer_base + (i * 32), buf, height);
+        resource_write(buf, state.framebuffer, (i * 32), height);
         buf += height;
     }
 
     // Restore State of things modified.
-    resource_write(&map_mask, sequencer, VGA_MAP_MASK, 1);
-    resource_write(&memory_mode, sequencer, VGA_SEQ_MEM_MODE, 1);
-    resource_write(&read_map_sel, graphics, VGA_READ_MAP_SELECT, 1);
-    resource_write(&graphics_mode, graphics, VGA_GRAPHICS_MODE, 1);
-    resource_write(&misc_graphics, graphics, VGA_MISC_GRAPHICS, 1);
+    resource_write(&map_mask,      &state.sequencer, VGA_MAP_MASK,        1);
+    resource_write(&memory_mode,   &state.sequencer, VGA_SEQ_MEM_MODE,    1);
+    resource_write(&read_map_sel,  &state.graphics,  VGA_READ_MAP_SELECT, 1);
+    resource_write(&graphics_mode, &state.graphics,  VGA_GRAPHICS_MODE,   1);
+    resource_write(&misc_graphics, &state.graphics,  VGA_MISC_GRAPHICS,   1);
 }
 
-static void set_text_mode(uint8_t *font, uint8_t height, 
+static void set_text_mode(uint8_t *font, uint8_t height,
     uint8_t cursor_start, uint8_t cursor_end)
 {
     uint8_t config_data;
 
-    // Set char height to 8 tall  
-    resource_read(&config_data, crtc, VGA_MAX_SCAN_LINE, 1);
+    // Set char height to 8 tall
+    resource_read(&config_data,   &state.crtc,       VGA_MAX_SCAN_LINE, 1);
     config_data &= 0xE0;
     config_data += (height - 1);
-    resource_write(&config_data, crtc, VGA_MAX_SCAN_LINE, 1);
+    resource_write(&config_data,  &state.crtc,       VGA_MAX_SCAN_LINE, 1);
 
     // Change cursor scanline start / end
-    resource_write(&cursor_start, crtc, VGA_CURSOR_START, 1);
-    resource_write(&cursor_end, crtc, VGA_CURSOR_END, 1);
+    resource_write(&cursor_start, &state.crtc,       VGA_CURSOR_START,  1);
+    resource_write(&cursor_end,   &state.crtc,       VGA_CURSOR_END,    1);
 
     // Write the font to VGA memory
     write_font(font, height);
 
     // Enable character generator latches
-    resource_read(&config_data, graphics, VGA_MISC_GRAPHICS, 1);
+    resource_read(&config_data,  &state.graphics,    VGA_MISC_GRAPHICS, 1);
     config_data &= ~0x01; // Clear the Alphanumeric mode Disable flag
-    resource_write(&config_data, graphics, VGA_MISC_GRAPHICS, 1);
+    resource_write(&config_data, &state.graphics,    VGA_MISC_GRAPHICS, 1);
 }
 
 static uint32_t vga_get_framebuffer_base_offset()
 {
     uint8_t map_sel;
 
-    resource_read(&map_sel, graphics, VGA_MISC_GRAPHICS, 1);
+    resource_read(&map_sel, &state.graphics, VGA_MISC_GRAPHICS, 1);
 
     // Isolate bits 2 and 3
     map_sel >>= 2;
@@ -132,7 +128,7 @@ static uint32_t vga_get_framebuffer_size()
 {
     uint8_t map_sel;
 
-    resource_read(&map_sel, graphics, VGA_MISC_GRAPHICS, 1);
+    resource_read(&map_sel, &state.graphics, VGA_MISC_GRAPHICS, 1);
     // Isolate bits 2 and 3
     map_sel >>= 2;
     map_sel &= 3;
@@ -153,17 +149,17 @@ static uint32_t vga_get_framebuffer_size()
 
 static void vga_move_cursor(uint16_t cursorX, uint16_t cursorY)
 {
-    uint16_t cursorLocation = cursorY * (h_res / 8) + cursorX;
+    uint16_t cursorLocation = cursorY * (state.h_res / 8) + cursorX;
     uint8_t cursorByte = cursorLocation >> 8;
-    resource_write(&cursorByte, crtc, VGA_CURSOR_HIGH_BYTE, 1);
+    resource_write(&cursorByte, &state.crtc, VGA_CURSOR_HIGH_BYTE, 1);
     cursorByte = cursorLocation;
-    resource_write(&cursorByte, crtc, VGA_CURSOR_LOW_BYTE, 1);
+    resource_write(&cursorByte, &state.crtc, VGA_CURSOR_LOW_BYTE, 1);
 }
 
 static int api_call(device_t *dev, void *api_data)
 {
     uint32_t *data = (uint32_t *)api_data;
-    switch(data[0]) 
+    switch(data[0])
     {
         case 0: // move cursor (data[1] = cursorX, data[2] = cursorY)
             vga_move_cursor(data[1], data[2]);
@@ -176,7 +172,7 @@ static int api_call(device_t *dev, void *api_data)
 
 /**
  * @brief Set VGA Video mode (Think BIOS video mode numbers)
- * 
+ *
  * @param mode - Video mode as described by BIOS INT 0x10 / AH=0
  * @param font_height - Font height desired (for graphics modes, set to 0)
  * @return int -1 if mode unsupported or error
@@ -190,8 +186,8 @@ static int vga_set_video_mode(uint32_t mode, uint32_t font_height)
             return -EOPNOTSUPP;
         case 0x02:  // 640x400    16     T    CGA
         case 0x03:  // 640x400    16     T    CGA
-            h_res = 640;
-            v_res = 400;
+            state.h_res = 640;
+            state.v_res = 400;
             break; // Our standard mode! :D
         case 0x04:  // 320x200    4      G    CGA
         case 0x05:  // 320x200    4      G    CGA
@@ -209,8 +205,10 @@ static int vga_set_video_mode(uint32_t mode, uint32_t font_height)
     }
 
     // Remap framebuffer location, as it might have moved.
-    framebuffer->start += vga_base->start + vga_get_framebuffer_base_offset();
-    framebuffer->end = vga_base->end + vga_get_framebuffer_size();
+    state.framebuffer->start =
+        state.vga_base->start + vga_get_framebuffer_base_offset();
+    state.framebuffer->end =
+        state.vga_base->end + vga_get_framebuffer_size();
 
     switch(font_height)
     {
@@ -223,40 +221,51 @@ static int vga_set_video_mode(uint32_t mode, uint32_t font_height)
             set_text_mode(vga_8x16_font, 16, 14, 15);
             break;
     }
-
     return 0;
 }
 
 static int init(device_t *dev, void *p)
 {
     uint32_t *config = (uint32_t *)p;
-        if(config == NULL) {
+    if(config == NULL) {
         return -EINVAL;
     }
     // Save the top level resource locally
-    vga_base = (resource_t *)dev->access;
+    state.vga_base = dev->access;
+
+    state.vga_control_base = resource_find("control_base", state.vga_base);
+    if (state.vga_control_base == NULL) {
+        return -ENXIO;
+    }
+
+    state.framebuffer = resource_find("framebuffer", state.vga_base);
+    if(state.framebuffer == NULL) {
+        return -ENXIO;
+    }
 
     // Fill out all the sub-resources!
-    framebuffer = resource_find("framebuffer", vga_base);
-    if(framebuffer == NULL) {
-        return -1;
-    }
-    attribute_control = resource_find("attribute_control", vga_base);
-    if(attribute_control == NULL) {
-        return -1;
-    }
-    sequencer = resource_find("sequencer", vga_base);
-    if(sequencer == NULL) {
-        return -1;
-    }
-    graphics = resource_find("graphics", vga_base);
-    if(graphics == NULL) {
-        return -1;
-    }
-    crtc = resource_find("crtc", vga_base);
-    if(crtc == NULL) {
-        return -1;
-    }
+    state.attribute_control.name = "attribute_control";
+    state.attribute_control.flags = state.vga_control_base->flags;
+    state.attribute_control.start =
+        state.vga_control_base->start + VGA_ATTRIBUTE_REG_OFFSET;
+    state.attribute_control.end = state.attribute_control.start + 1;
+
+    state.sequencer.name = "sequencer";
+    state.sequencer.flags = state.vga_control_base->flags;
+    state.sequencer.start =
+        state.vga_control_base->start + VGA_SEQUENCER_REG_OFFSET;
+    state.sequencer.end = state.sequencer.start + 1;
+
+    state.graphics.name  = "graphics";
+    state.graphics.flags = state.vga_control_base->flags;
+    state.graphics.start =
+        state.vga_control_base->start + VGA_GRAPHICS_REG_OFFSET;
+    state.graphics.end = state.graphics.start + 1;
+
+    state.crtc.name = "crtc";
+    state.crtc.flags = state.vga_control_base->flags;
+    state.crtc.start = state.vga_control_base->start + VGA_CRTC_REG_OFFSET;
+    state.crtc.end = state.crtc.start + 1;
 
     return vga_set_video_mode(config[0], config[1]);
 }

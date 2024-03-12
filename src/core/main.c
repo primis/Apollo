@@ -187,9 +187,9 @@ static void log_status(int status, const char *name, const char *text) {
         return; // No logging enabled
     }
     if (status == 0) {
-        printf("[\033[32m OK \033[0m] ");
+        printf("[\033[32m  OK  \033[0m] ");
     } else {
-        printf("[\033[31mFAIL\033[0m] ");
+        printf("[\033[31mFAILED\033[0m] ");
     }
     printf("%s %s\n", text, name);
 #ifdef HOSTED
