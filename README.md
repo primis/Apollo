@@ -1,7 +1,6 @@
 The Apollo Project
 =================
-_(C) 2013 - 2022 Primis Computers (Allie Sargente et al)_
-![](https://img.shields.io/apm/l/vim-mode.svg)
+_(C) 2013 - 2024 Primis Computers (Allie Sargente et al)_
 
 Requirements:
 --------------------------------------------------
@@ -9,13 +8,13 @@ Requirements:
 X86 requirements are
 * [GNU Make](https://www.gnu.org/software/make/) (Or Compatible)
 * [NASM](https://www.nasm.us/), The Netwide Assembler
-* [GCC cross compiler](https://wiki.osdev.org/GCC_Cross-Compiler) targeting 
+* [GCC cross compiler](https://wiki.osdev.org/GCC_Cross-Compiler) targeting
     i586-elf or i686-elf
 * [grub-mkrescue](https://manpages.ubuntu.com/manpages/bionic/man1/grub-mkrescue.1.html)
 
 RPI4 requirements are
 * [GNU Make](https://www.gnu.org/software/make/) (Or Compatible)
-* [GCC cross compiler](https://wiki.osdev.org/GCC_Cross-Compiler) targeting 
+* [GCC cross compiler](https://wiki.osdev.org/GCC_Cross-Compiler) targeting
     i586-elf or i686-elf
 * [MTools](https://www.gnu.org/software/mtools/)
 
@@ -45,12 +44,12 @@ Running
 --------------------------------------------------
 All targets generate a bootable apollo.iso file.
 This file can be used with a virtual machine, burnt to a flash drive or other
-bootable media. Please note that for some targets, the iso file is actually a 
+bootable media. Please note that for some targets, the iso file is actually a
 generic image file, and should not be burned to a CD (for example, for the rpi4)
 
 Configuration
 --------------------------------------------------
-Once all the pre-requisites software has been aquired for a specific 
+Once all the pre-requisites software has been aquired for a specific
 archetecture, copy the architecture .config file to `.config` at the root of the
 project. The provided configuration files are examples only, and can be
 customized by running `make menuconfig` if you have a `kconfig` editor installed
@@ -60,7 +59,7 @@ kernel compilation options you desire.
 
 Building
 --------------------------------------------------
-You can build the kernel simply by `make`. 
+You can build the kernel simply by `make`.
 After compilation is done, a file called `apollo.iso` will be generated within
 the build directory.
 
