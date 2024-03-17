@@ -12,7 +12,7 @@
 extern void idt_flush(uint32_t);
 extern int init_irq();
 
-#define NUM_TRAP_STRS 22 	    // x86 has 20 hardware traps
+#define NUM_TRAP_STRS 22 	    // x86 has 22 hardware traps
 #define NUM_HANDLERS 256        // Max handlers x86 allows
 #define MAX_HANDLERS_PER_INT 4  // Number of software handlers per interrupt
 
@@ -135,7 +135,7 @@ static void set_idt_entry(uint8_t n, uint32_t base, uint16_t sel, uint8_t flags)
 static int init_idt()
 {
     uint32_t i, delta, base;
-    
+
     delta = (uint32_t)isr1 - (uint32_t)isr0;
 
     idt_ptr.limit   = sizeof(idt_entry_t) * 256 - 1;
@@ -216,10 +216,10 @@ void interrupt_handler(x86_regs_t *regs)
     char buf[64];
 
     // We use a small hack. Seeing int code of 0xDEADBEEF means actual int code
-    // Is in the error code 
+    // Is in the error code
     if(num == 0xDEADBEEF)
     {
-        num = regs->error_code; 
+        num = regs->error_code;
     }
 
     if (num_handlers[num]) {

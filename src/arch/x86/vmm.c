@@ -9,8 +9,6 @@
 #include <string.h>
 #include <arch/x86/regs.h>
 
-#include "include/ports.h"
-
 #ifdef DEBUG_vmm
 # define dbg(args...) printf("vmm: " args)
 #else

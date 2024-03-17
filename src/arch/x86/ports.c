@@ -1,5 +1,5 @@
 /*
- * (c) 2022 Apollo Project Developers
+ * (c) 2024 Apollo Project Developers
  * For terms, see LICENSE
  * ports.c - x86 I/O databus commends
  */
@@ -7,7 +7,7 @@
 #include <stdint.h>
 #include <sys/resource.h>
 #include <errno.h>
-#include "include/ports.h"
+#include <arch/x86/regs.h>
 
 void iowait(void)
 {
@@ -57,7 +57,7 @@ static void io_read_32(uint16_t port, void* data)
     *(uint32_t*)data = ret;
 }
 
-static int resource_io_data_op(void *src, resource_t *r, resource_type_t off, 
+static int resource_io_data_op(void *src, resource_t *r, resource_type_t off,
     size_t n, int read)
 {
     int width;
@@ -129,15 +129,15 @@ static int resource_io_data_op(void *src, resource_t *r, resource_type_t off,
                 io_op(r->start, (src + i));
             }
             break;
-            
+
         case RESOURCE_IO_INDEXED: /* Write to the indexing port, then data */
             for(i = 0; i < n; i++)
             {
-                uint8_t index = (off + i); 
+                uint8_t index = (off + i);
                 if(r->flags & RESOURCE_IO_SLOW)
                 {
                     iowait();
-                }      
+                }
                 io_write_8(r->start, &index);
                 io_op(r->end, (src + i));
             }

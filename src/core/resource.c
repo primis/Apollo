@@ -4,18 +4,18 @@
 
 #define weak __attribute__((__weak__))
 
-int resource_io_write(void *src, resource_t *r, 
+int resource_io_write(void *src, resource_t *r,
 resource_type_t off, size_t n) weak;
-int resource_io_write(void *src, resource_t *r, resource_type_t off, size_t n) 
+int resource_io_write(void *src, resource_t *r, resource_type_t off, size_t n)
 {
-    return -1; 
+    return -ENOTSUPP;
 }
 
-int resource_io_read(void *dest, resource_t *r, 
+int resource_io_read(void *dest, resource_t *r,
 resource_type_t off, size_t n) weak;
 int resource_io_read(void *dest, resource_t *r, resource_type_t off, size_t n)
 {
-    return -1;
+    return -ENOTSUPP;
 }
 
 static void resource_mem_read_8(void *buf, void *reg)
@@ -74,7 +74,7 @@ static void resource_mem_write_64(void *reg, void *buf)
     *(dest) = *(src);
 }
 
-static int resource_mem_write(void *buf, resource_t *r, resource_type_t off, 
+static int resource_mem_write(void *buf, resource_t *r, resource_type_t off,
 size_t n)
 {
     size_t i, width = 1;
@@ -112,7 +112,8 @@ size_t n)
     return 0;
 }
 
-static int resource_mem_read(void *buf, resource_t *r, resource_type_t off, size_t n)
+static int resource_mem_read(void *buf, resource_t *r, resource_type_t off,
+size_t n)
 {
     size_t i, width = 1;
     void(*io_op)(void *, void *);
@@ -138,7 +139,7 @@ static int resource_mem_read(void *buf, resource_t *r, resource_type_t off, size
         default:
             return -EIO;
     }
-    
+
     off *= width;
     off += r->start;
 
@@ -151,7 +152,7 @@ static int resource_mem_read(void *buf, resource_t *r, resource_type_t off, size
 
 /**
  * @brief Perform a data write to a resource.
- * 
+ *
  * @param dest Buffer which contains data to write
  * @param r Resource to write to
  * @param off Offset from start of resource to start writing to
@@ -172,13 +173,13 @@ int resource_write(void *src, resource_t *r, resource_type_t off, size_t n)
         case RESOURCE_IO:
             return resource_io_write(src, r, off, n);
     }
-    
+
     return -ENOTSUPP;
 }
 
 /**
  * @brief Perform a data read of a resource.
- * 
+ *
  * @param dest Buffer to store read results
  * @param r Resource to read from
  * @param off Offset from start of resource to start reading from
@@ -191,7 +192,7 @@ int resource_read(void *dest, resource_t *r, resource_type_t off, size_t n)
     {
         return -EINVAL;
     }
-    
+
     switch (r->flags & RESOURCE_TYPE)
     {
         case RESOURCE_MEM:
@@ -205,7 +206,7 @@ int resource_read(void *dest, resource_t *r, resource_type_t off, size_t n)
 
 /**
  * @brief Register a resource with a parent node
- * 
+ *
  * @param r The resource to register
  * @param parent The parent resource to add this to.
  */
@@ -216,7 +217,7 @@ void resource_register(resource_t *r, resource_t *parent)
     {
         return; // Not linking this resource to a parent, end early
     }
-    
+
     r->parent = parent;
 
     if(parent->child == NULL)
@@ -227,19 +228,19 @@ void resource_register(resource_t *r, resource_t *parent)
     next = parent->child;
     while(next->sibling != NULL)
     {
-        next = next->sibling;   // Iterate through children until the youngest 
+        next = next->sibling;   // Iterate through children until the youngest
     }
     next->sibling = r;          // Become new youngest sibling
 }
 
 /**
  * @brief Find a resource by it's name
- * 
+ *
  * @todo Add recursive search
- * 
+ *
  * @param name The name of the resource to find
  * @param parent The parent node to search against
- * @return resource_t* NULL on failure, else the resource requested 
+ * @return resource_t* NULL on failure, else the resource requested
  */
 resource_t *resource_find(const char *name, resource_t *parent)
 {
